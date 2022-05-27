@@ -93,17 +93,25 @@ class _StudentsState extends State<Students> {
               child: Container(),
             ),
             IconButton(
-              icon: const Icon(Icons.settings),
-              color: dark.withOpacity(.7),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const Settings(),
-                  ),
-                );
-              },
-            ),
+                icon: const Icon(Icons.settings),
+                color: dark.withOpacity(.7),
+                onPressed: () async {
+                  SharedPreferences localStorage =
+                      await SharedPreferences.getInstance();
+
+                  if (localStorage.getString("token") == null) {
+                    context.showSnackBar(
+                        'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
+                        isError: true);
+                  } else {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Settings(),
+                      ),
+                    );
+                  }
+                }),
             Container(
               width: 1,
               height: 22,
@@ -112,7 +120,10 @@ class _StudentsState extends State<Students> {
             IconButton(
               icon: const Icon(Icons.logout_rounded),
               color: dark.withOpacity(.7),
-              onPressed: () {
+              onPressed: () async {
+                SharedPreferences preferences =
+                    await SharedPreferences.getInstance();
+                await preferences.clear();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(

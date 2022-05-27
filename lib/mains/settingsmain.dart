@@ -8,6 +8,7 @@ import 'package:schoolmanagement/dashboards/dashboars.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:schoolmanagement/dashboards/settingsdash.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings extends StatefulWidget {
   static const String id = 'settings';
@@ -49,7 +50,10 @@ class _SettingsState extends State<Settings> {
               IconButton(
                 icon: const Icon(Icons.logout_rounded),
                 color: dark.withOpacity(.7),
-                onPressed: () {
+                onPressed: () async {
+                  SharedPreferences preferences =
+                      await SharedPreferences.getInstance();
+                  await preferences.clear();
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(

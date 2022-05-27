@@ -94,7 +94,10 @@ class _CoursesState extends State<Courses> {
             IconButton(
               icon: const Icon(Icons.logout_rounded),
               color: dark.withOpacity(.7),
-              onPressed: () {
+              onPressed: () async {
+                SharedPreferences preferences =
+                    await SharedPreferences.getInstance();
+                await preferences.clear();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(

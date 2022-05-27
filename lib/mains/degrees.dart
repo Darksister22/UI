@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:http/http.dart' as http;
 import 'package:schoolmanagement/components/sidemenus.dart';
+import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../addpages/addCourse.dart';
 import '../addpages/stu_add.dart';
@@ -65,17 +67,25 @@ class _DegreesState extends State<Degrees> {
               child: Container(),
             ),
             IconButton(
-              icon: const Icon(Icons.settings),
-              color: dark.withOpacity(.7),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const Settings(),
-                  ),
-                );
-              },
-            ),
+                icon: const Icon(Icons.settings),
+                color: dark.withOpacity(.7),
+                onPressed: () async {
+                  SharedPreferences localStorage =
+                      await SharedPreferences.getInstance();
+                  print(localStorage.getString('token'));
+                  if (localStorage.getString("token") == null) {
+                    context.showSnackBar(
+                        'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
+                        isError: true);
+                  } else {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Settings(),
+                      ),
+                    );
+                  }
+                }),
             Container(
               width: 1,
               height: 22,
@@ -84,7 +94,10 @@ class _DegreesState extends State<Degrees> {
             IconButton(
               icon: const Icon(Icons.logout_rounded),
               color: dark.withOpacity(.7),
-              onPressed: () {
+              onPressed: () async {
+                SharedPreferences preferences =
+                    await SharedPreferences.getInstance();
+                await preferences.clear();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
