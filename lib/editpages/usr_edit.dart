@@ -1,47 +1,82 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
-import 'package:schoolmanagement/models/users.dart';
+import 'package:schoolmanagement/mains/users.dart';
+import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/translate.dart';
-
+import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:schoolmanagement/components/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../api.dart';
+import '../mains/students.dart';
+import '../models/users.dart';
 
-class userEditAlert extends StatelessWidget {
-  final List<String> _auth = ['عضو - قراءة و تعديل', 'رئيس - جميع الصلاحيات'];
-
+class userEditAlert extends StatefulWidget {
   User current;
-  bool isEnabled = false;
   userEditAlert({Key? key, required this.current}) : super(key: key);
 
+  @override
+  State<userEditAlert> createState() => _userEditAlertState();
+}
+
+class _userEditAlertState extends State<userEditAlert> {
+  final List<String> _auth = ['عضو - قراءة و تعديل', 'رئيس - جميع الصلاحيات'];
+
+  bool isEnabled = false;
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   late String selection = 'عضو - قراءة و تعديل';
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = widget.current.name;
+    emailController.text = widget.current.email;
+  }
+
+  // static Student currents = const Student(
+
   // static String namear = current.level;
   var snack = '';
+
   var error = false;
-  Future _addStu() async {
+
+  Future _delUsr() async {
+    String id = widget.current.id.toString();
     var data = {
-      'name_ar': 'nameAr.text',
-      'name_en': 'nameEn.text',
-      //  "level": translateLevelAE(sel_level),
-      // "year": translateYearAE(sel_year)
+      'id': id,
     };
 
     try {
-      final response = await CallApi().postData(data, '/api/students/create');
+      final response = await CallApi().postData(data, "/api/users/destroy/$id");
 
-      if (response.statusCode == 403) {
-        snack = 'لا تملك الصلاحية لاضافة طالب';
+      snack = 'تم حذف المستخدم بنجاح';
+    } catch (e) {
+      snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
+      error = true;
+    }
+  }
+
+  Future _editUsr() async {
+    String id = widget.current.id.toString();
+    var data = {
+      'id': id,
+      'email': emailController.text,
+      'name': nameController.text,
+      "role": translateRoleAE(selection),
+    };
+
+    try {
+      final response = await CallApi().postData(data, "/api/users/update");
+      print(response.statusCode);
+      if (response.statusCode == 409) {
+        snack = 'الايميل مكرر, يرجى ادخال ايميل جديد';
         error = true;
       } else {
-        snack = 'تم اضافة الطالب بنجاح';
+        snack = 'تم تحديث معلومات المستخدم بنجاح';
       }
-      //  nameAr.text = '';
-      //   nameEn.text = '';
     } catch (e) {
       snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
       error = true;
@@ -64,6 +99,12 @@ class userEditAlert extends StatelessWidget {
                     TextFormField(
                       controller: nameController,
                       enabled: isEnabled,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "لا يمكن ترك الحقل فارغاً";
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                         labelText: 'اسم المستخدم',
                         prefixIcon: const Icon(Icons.person),
@@ -76,6 +117,12 @@ class userEditAlert extends StatelessWidget {
                     TextFormField(
                       controller: emailController,
                       enabled: isEnabled,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "لا يمكن ترك الحقل فارغاً";
+                        }
+                        return null;
+                      },
                       textDirection: TextDirection.ltr,
                       decoration: InputDecoration(
                         labelText: 'البريد الالكتروني',
@@ -128,32 +175,59 @@ class userEditAlert extends StatelessWidget {
               },
               child: const Text('الخروج')),
           ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  isEnabled = true;
-                });
+              onPressed: () async {
+                SharedPreferences localStorage =
+                    await SharedPreferences.getInstance();
+
+                if (localStorage.getString("token") == null) {
+                  context.showSnackBar('لا تملك صلاحية الوصول', isError: true);
+                } else {
+                  setState(() {
+                    isEnabled = true;
+                  });
+                }
               },
               child: const Text('تعديل المعلومات')),
           ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  isEnabled = true;
-                });
+              onPressed: () async {
+                SharedPreferences localStorage =
+                    await SharedPreferences.getInstance();
+
+                if (localStorage.getString("token") == null) {
+                  context.showSnackBar('لا تملك صلاحية الوصول', isError: true);
+                } else {
+                  await _delUsr();
+                  context.showSnackBar(snack, isError: error);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Users(),
+                    ),
+                  );
+                }
               },
               child: const Text('حذف الطالب')),
           ElevatedButton(
               onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  //  await _addStu();
-                  // nameAr.text = current.email;
-                  //   nameEn.text = '';
+                SharedPreferences localStorage =
+                    await SharedPreferences.getInstance();
+
+                if (localStorage.getString("token") == null) {
+                  context.showSnackBar('لا تملك صلاحية الوصول', isError: true);
+                } else {
+                  await _editUsr();
+                  context.showSnackBar(snack, isError: error);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Users(),
+                    ),
+                  );
                 }
               },
-              child: const Text('حفظ التغييرات'))
+              child: const Text('حفظ التغييرات')),
         ],
       );
     });
   }
-
-  void setState(Null Function() param0) {}
 }

@@ -29,7 +29,8 @@ class Course {
         code: json['code'],
         success: json['success'],
         unit: json['unit'],
-        student: json["students"],
+        student:
+            (json["students"] as List).map((e) => Student.fromJson(e)).toList(),
         level: json['level'],
         year: json['year']);
   }

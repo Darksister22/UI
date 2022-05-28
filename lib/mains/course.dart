@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:js';
+import 'package:schoolmanagement/addpages/addCourse.dart';
 import 'package:schoolmanagement/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
@@ -181,7 +182,7 @@ class _CoursesState extends State<Courses> {
                     } else {
                       showDialog(
                         context: context,
-                        builder: (context) => addStuAlert(),
+                        builder: (context) => addCourse(),
                       );
                     }
                   },

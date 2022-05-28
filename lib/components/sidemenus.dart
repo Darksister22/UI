@@ -44,13 +44,9 @@ class SideBarWidget {
             route: Instructors.id,
             icon: Icons.assignment_ind_outlined),
         MenuItem(
-            title: 'الكورسات الدراسية',
+            title: 'الفصل الدراسي الحالي',
             route: Courses.id,
             icon: Icons.library_books_outlined),
-        MenuItem(
-            title: 'الفصل الدراسي الحالي',
-            route: Semesters.id,
-            icon: Icons.feed_outlined),
         MenuItem(
             title: 'درجات الطلبة',
             route: Degrees.id,
@@ -59,11 +55,6 @@ class SideBarWidget {
             title: 'عرض الطلبة المتخرجين',
             route: Grads.id,
             icon: Icons.school_outlined),
-        MenuItem(
-          title: 'api test',
-          route: ProfileSection.id,
-          icon: Icons.help,
-        ),
       ],
       selectedRoute: selectedRoute,
       onSelected: (item) {

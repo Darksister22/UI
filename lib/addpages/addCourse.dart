@@ -47,7 +47,7 @@ class _addCourseState extends State<addCourse> {
   String? sel_level;
   String? sel_year;
 
-  final _formKey = GlobalKey<FormBuilderState>();
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return AdminScaffold(

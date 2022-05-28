@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
-import 'package:schoolmanagement/editpages/user_edit.dart';
+import 'package:schoolmanagement/editpages/usr_edit.dart';
 import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/models/users.dart';
 import 'package:schoolmanagement/module/extension.dart';
