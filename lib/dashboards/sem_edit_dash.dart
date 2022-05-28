@@ -22,52 +22,36 @@ class SemesterEditDash extends StatefulWidget {
 
 class _SemesterEditDashState extends State<SemesterEditDash> {
   final _formKey = GlobalKey<FormState>();
-  final List<String> _auth = ['الفصل الاول', 'الفصل الثاني'];
+  final List<String> _number = ['الفصل الاول', 'الفصل الثاني'];
+  String selection = 'الفصل الاول';
   TextEditingController semyearController = TextEditingController();
-  TextEditingController semnumController = TextEditingController();
-  late String selection = 'الفصل الاول';
-  late String sel_level = 'بكالوريوس';
+
   late String sel_year = 'السنة الاولى';
-  final List<String> _Level = [
-    'بكالوريوس',
-    'ماجستير',
-    'دكتوراة',
-  ];
-  final List<String> _Year = [
-    'السنة الاولى',
-    'السنة الثانية',
-    'السنة الثالثة',
-    'السنة الرابعة',
-    'السنة الخامسة',
-    'السنة السادسة',
-    'السنة الثامنة',
-    'السنة التاسعة',
-    'السنة العاشرة',
-  ];
-  // Future _addUsr() async {
-  //   var data = {
-  //     'email': emailController.text,
-  //     'password': passwordController.text,
-  //     'role': translateRoleAE(selection),
-  //     'name': nameController.text,
-  //   };
-  //   print(selection);
-  //   try {
-  //     final response = await CallApi().postData(data, '/api/users/create');
-  //     if (response.statusCode == 409) {
-  //       context.showSnackBar('البريد الالكتروني مأخوذ سابقاً', isError: true);
-  //     } else if (response.statusCode == 403) {
-  //       context.showSnackBar('لا تملك الصلاحية', isError: true);
-  //     } else {
-  //       context.showSnackBar('تم اضافة المستخدم بنجاح');
-  //     }
-  //     emailController.text = '';
-  //     passwordController.text = '';
-  //   } catch (e, s) {
-  //     print(e);
-  //     context.showSnackBar('احد الحقول فارغة او غير صحيحة', isError: true);
-  //   }
-  // }
+
+  Future _addSem() async {
+    var data = {
+      'year': semyearController.text,
+      'number': translateNumAE(selection),
+    };
+
+    try {
+      final response = await CallApi().postData(data, '/api/semesters/create');
+      print(response.statusCode);
+      if (response.statusCode == 409) {
+        context.showSnackBar(
+            'لا يمكنك بدأ فصل جديد, الرجاء انهاء الفصل الحالي اولاً',
+            isError: true);
+      } else if (response.statusCode == 403) {
+        context.showSnackBar('لا تملك الصلاحية', isError: true);
+      } else {
+        context.showSnackBar('تم بدأ الفصل بنجاح');
+      }
+      semyearController.text = '';
+    } catch (e, s) {
+      print(e);
+      context.showSnackBar('احد الحقول فارغة او غير صحيحة', isError: true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +142,7 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                                                             newValue.toString();
                                                       });
                                                     },
-                                                    items: _auth.map((level) {
+                                                    items: _number.map((level) {
                                                       return DropdownMenuItem(
                                                         child: Text(level),
                                                         value: level,
@@ -190,7 +174,7 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                                   ElevatedButton(
                                       onPressed: () async {
                                         if (_formKey.currentState!.validate()) {
-                                          //await _addUsr();
+                                          await _addSem();
                                           // passwordController.text = '';
                                           //   emailController.text = '';
                                           Navigator.pop(context);
@@ -213,7 +197,7 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                     children: [
                       ButtonCard(
                         bezierCOlor: Colors.greenAccent,
-                        value: 'بدأ فصل دراسي جديد',
+                        value: 'انهاء الفصل الدراسي الحالي',
                         add: IconButton(
                           icon: const Icon(Icons.add),
                           onPressed: () {
@@ -223,7 +207,7 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                                 title: const Text('انهاء الفصل الدراسي الحالي'),
                                 content: Container(
                                     child: Text(
-                                        ' هل انت متأكد؟ لن تتمكن من تعديل الفصل الدراسي هذا بعد انهاءه')),
+                                        ' هل انت متأكد؟ لن تتمكن من تعديل معلومات الفصل الدراسي هذا بعد انهاءه')),
                                 actions: [
                                   ElevatedButton(
                                       onPressed: () {

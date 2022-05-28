@@ -56,6 +56,28 @@ class _SettingsDashState extends State<SettingsDash> {
     }
   }
 
+  Future _addHelp() async {
+    var data = {
+      'source': sourceController.text,
+      'amt': amtController.text,
+    };
+
+    try {
+      final response =
+          await CallApi().postData(data, '/api/degrees/createhelp');
+      if (response.statusCode == 403) {
+        context.showSnackBar('لا تملك الصلاحية', isError: true);
+      } else {
+        context.showSnackBar('تم اضافة الدرجة بنجاح');
+      }
+      emailController.text = '';
+      passwordController.text = '';
+    } catch (e, s) {
+      print(e);
+      context.showSnackBar('احد الحقول فارغة او غير صحيحة', isError: true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double _width = MediaQuery.of(context).size.width;
@@ -309,7 +331,7 @@ class _SettingsDashState extends State<SettingsDash> {
                                             ).margin9,
                                             const SizedBox(height: 10),
                                             TextFormField(
-                                              controller: nameController,
+                                              controller: amtController,
                                               validator: (value) {
                                                 if (value == null ||
                                                     value.isEmpty) {
@@ -343,10 +365,9 @@ class _SettingsDashState extends State<SettingsDash> {
                                   ElevatedButton(
                                       onPressed: () async {
                                         if (_formKey.currentState!.validate()) {
-                                          await _addUsr();
-                                          nameController.text = '';
-                                          passwordController.text = '';
-                                          emailController.text = '';
+                                          await _addHelp();
+                                          amtController.text = '';
+                                          sourceController.text = '';
                                           Navigator.pop(context);
                                         }
                                       },

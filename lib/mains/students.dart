@@ -99,9 +99,9 @@ class _StudentsState extends State<Students> {
                   SharedPreferences localStorage =
                       await SharedPreferences.getInstance();
 
-                  if (localStorage.getString("token") == null) {
-                    context.showSnackBar(
-                        'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
+                  if (localStorage.getString("token") == null ||
+                      localStorage.getString("role") == "admin") {
+                    context.showSnackBar('لا تملك صلاحية الوصول',
                         isError: true);
                   } else {
                     Navigator.pushReplacement(

@@ -7,13 +7,14 @@ import 'package:http/http.dart' as http;
 
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
-import 'package:schoolmanagement/models/student.dart';
+import 'package:schoolmanagement/models/instructor.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../addpages/ins_add.dart';
 import '../addpages/stu_add.dart';
 import '../editpages/stu_edit.dart';
 import 'login.dart';
@@ -25,20 +26,20 @@ Widget _verticalDivider = VerticalDivider(
 );
 
 class Instructors extends StatefulWidget {
-  static const String id = 'students';
+  static const String id = 'instructors';
   const Instructors({Key? key}) : super(key: key);
 
   @override
   _InstructorsState createState() => _InstructorsState();
 }
 
-Future<List<Student>> fetchAlbum() async {
+Future<List<Instructor>> fetchAlbum() async {
   final response =
-      await http.get(Uri.parse('http://127.0.0.1:8000/api/students'));
+      await http.get(Uri.parse('http://127.0.0.1:8000/api/instructors'));
   if (response.statusCode == 200) {
     final result = jsonDecode(response.body) as List;
 
-    return result.map((e) => Student.fromJson(e)).toList();
+    return result.map((e) => Instructor.fromJson(e)).toList();
   } else {
     // If that call was not successful, throw an error.
     throw Exception('Failed to load');
@@ -46,8 +47,8 @@ Future<List<Student>> fetchAlbum() async {
 }
 
 class _InstructorsState extends State<Instructors> {
-  late Future<List<Student>> futureAlbum;
-  List<Student> _data = [];
+  late Future<List<Instructor>> futureAlbum;
+  List<Instructor> _data = [];
   @override
   void initState() {
     super.initState();
@@ -58,24 +59,7 @@ class _InstructorsState extends State<Instructors> {
   Widget build(BuildContext context) {
     SideBarWidget _sideBar = SideBarWidget();
     TextEditingController search = TextEditingController();
-    String? sel_level;
-    String? sel_year;
-    List<String> _Level = [
-      'بكالوريوس',
-      'ماجستير',
-      'دكتوراة',
-    ];
-    List<String> _Year = [
-      'السنة الاولى',
-      'السنة الثانية',
-      'السنة الثالثة',
-      'السنة الرابعة',
-      'السنة الخامسة',
-      'السنة السادسة',
-      'السنة الثامنة',
-      'السنة التاسعة',
-      'السنة العاشرة',
-    ];
+
     final _formKey = GlobalKey<FormState>();
 
     return AdminScaffold(
@@ -99,9 +83,9 @@ class _InstructorsState extends State<Instructors> {
                   SharedPreferences localStorage =
                       await SharedPreferences.getInstance();
                   print(localStorage.getString('token'));
-                  if (localStorage.getString("token") == null) {
-                    context.showSnackBar(
-                        'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
+                  if (localStorage.getString("token") == null ||
+                      localStorage.getString("role") == "admin") {
+                    context.showSnackBar('لا تملك صلاحية الوصول',
                         isError: true);
                   } else {
                     Navigator.pushReplacement(
@@ -158,7 +142,7 @@ class _InstructorsState extends State<Instructors> {
                   child: Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: Text(
-                      'اضافة طالب جديد',
+                      'اضافة تدريسي جديد',
                       style: buttons,
                     ),
                   ),
@@ -180,14 +164,14 @@ class _InstructorsState extends State<Instructors> {
                     } else {
                       showDialog(
                         context: context,
-                        builder: (context) => addStuAlert(),
+                        builder: (context) => addInsAlert(),
                       );
                     }
                   },
                 ),
               ),
               const SizedBox(width: 16),
-              FutureBuilder<List<Student>>(
+              FutureBuilder<List<Instructor>>(
                   future: futureAlbum,
                   builder: (context, snapshot) {
                     {
@@ -202,7 +186,7 @@ class _InstructorsState extends State<Instructors> {
                                   child: TextFormField(
                                     controller: search,
                                     decoration: InputDecoration(
-                                        labelText: 'البحث عن طالب',
+                                        labelText: 'البحث عن تدريسي',
                                         labelStyle:
                                             const TextStyle(color: Colors.grey),
                                         border: OutlineInputBorder(
@@ -239,179 +223,21 @@ class _InstructorsState extends State<Instructors> {
                               DataColumn(label: _verticalDivider),
                               DataColumn(
                                   label: Text(
-                                'رقم الطالب',
+                                'رقم التدريسي',
                                 style: header,
                               )),
                               DataColumn(label: _verticalDivider),
                               DataColumn(
-                                  label: Text('اسم الطالب ', style: header)),
-                              DataColumn(label: _verticalDivider),
-                              DataColumn(
-                                  label: Text('Student Name', style: header)),
-                              DataColumn(label: _verticalDivider),
-                              DataColumn(
-                                  label: Text('السنة الدراسية', style: header)),
+                                  label: Text('اسم التدريسي ', style: header)),
                               DataColumn(label: _verticalDivider),
                               DataColumn(
                                   label:
-                                      Text('المرحلة الدراسية', style: header)),
+                                      Text('Instructor Name', style: header)),
                             ],
                             arrowHeadColor: blue,
-                            source: MyData(_data, (_data) {
-                              showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    stuEditAlert(current: _data),
-                              );
-                            }),
-                            columnSpacing: 35,
+                            source: MyData(_data, () {}),
+                            columnSpacing: 95,
                             showCheckboxColumn: true,
-                            actions: [
-                              IconButton(
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: Text('عرض المعلومات حسب...'),
-                                        content: SingleChildScrollView(
-                                          child: Column(
-                                            children: [
-                                              Form(
-                                                key: _formKey,
-                                                child: Column(
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Container(
-                                                        width: MediaQuery.of(
-                                                                context)
-                                                            .size
-                                                            .width,
-                                                        height: 40,
-                                                        child: ButtonTheme(
-                                                          child:
-                                                              DropdownButtonFormField(
-                                                            isExpanded: true,
-                                                            hint: Text(
-                                                                'اختيار المرحلة الدراسية'),
-                                                            value: sel_level,
-                                                            onChanged:
-                                                                (newValue) {
-                                                              setState(() {
-                                                                sel_level = newValue
-                                                                    .toString();
-                                                              });
-                                                            },
-                                                            items: _Level.map(
-                                                                (level) {
-                                                              return DropdownMenuItem(
-                                                                child: new Text(
-                                                                    level),
-                                                                value: level,
-                                                              );
-                                                            }).toList(),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 10),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Container(
-                                                        width: MediaQuery.of(
-                                                                context)
-                                                            .size
-                                                            .width,
-                                                        height: 40,
-                                                        child: ButtonTheme(
-                                                          child:
-                                                              DropdownButtonFormField(
-                                                            isExpanded: true,
-                                                            hint: Text(
-                                                                'اختيار السنة الدراسية'),
-                                                            value: sel_year,
-                                                            onChanged:
-                                                                (newValue) {
-                                                              setState(() {
-                                                                sel_year = newValue
-                                                                    .toString();
-                                                              });
-                                                            },
-                                                            items: _Year.map(
-                                                                (year) {
-                                                              return DropdownMenuItem(
-                                                                child: new Text(
-                                                                    year),
-                                                                value: year,
-                                                              );
-                                                            }).toList(),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        actions: [
-                                          ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text('الغاء')),
-                                          ElevatedButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  if (sel_level == null &&
-                                                      sel_year == null) {
-                                                    Navigator.pop(context);
-                                                    return;
-                                                  } else if (sel_year == null &&
-                                                      sel_level != null) {
-                                                    _data = snapshot.data!
-                                                        .where((s) {
-                                                      return s.level.contains(
-                                                          translateLevelAE(
-                                                              sel_level!));
-                                                    }).toList();
-                                                  } else if (sel_level ==
-                                                          null &&
-                                                      sel_year != null) {
-                                                    _data = snapshot.data!
-                                                        .where((s) {
-                                                      return s.year.contains(
-                                                          translateYearAE(
-                                                              sel_year!));
-                                                    }).toList();
-                                                  } else {
-                                                    _data = snapshot.data!
-                                                        .where((s) {
-                                                      return s.year.contains(
-                                                              translateYearAE(
-                                                                  sel_year!)) &&
-                                                          s.level.contains(
-                                                              translateLevelAE(
-                                                                  sel_level!));
-                                                    }).toList();
-                                                  }
-                                                });
-                                              },
-                                              child: Text('اضافة'))
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                  icon: const Icon(
-                                    Icons.filter_alt_outlined,
-                                    size: 30,
-                                  ))
-                            ],
                           );
                         });
                       } else if (snapshot.hasError) {
@@ -435,8 +261,8 @@ class _InstructorsState extends State<Instructors> {
 }
 
 class MyData extends DataTableSource {
-  final List<Student> snapshot;
-  final Function(Student) onEditPressed;
+  final List<Instructor> snapshot;
+  final Function() onEditPressed;
   MyData(this.snapshot, this.onEditPressed);
 
   // Generate some made-up data
@@ -461,7 +287,7 @@ class MyData extends DataTableSource {
           color: Colors.grey[700],
         ),
         onPressed: () {
-          onEditPressed(current);
+          //  onEditPressed(current);
         },
       )),
       DataCell(_verticalDivider),
@@ -475,14 +301,6 @@ class MyData extends DataTableSource {
       DataCell(_verticalDivider),
       DataCell(
         Text(current.nameEn.toString()),
-      ),
-      DataCell(_verticalDivider),
-      DataCell(
-        Text(translateYearEA(current.year)),
-      ),
-      DataCell(_verticalDivider),
-      DataCell(
-        Text(translateLevelEA(current.level.toString())),
       ),
     ]);
   }

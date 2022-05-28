@@ -38,6 +38,8 @@ class _LoginState extends State<Login> {
         SharedPreferences localStorage = await SharedPreferences.getInstance();
         await localStorage.setString(
             'token', json.decode(response.body)['access_token']);
+        await localStorage.setString(
+            'role', json.decode(response.body)['role']);
 
         context.showSnackBar('تم تسجيل الدخول بنجاح');
 

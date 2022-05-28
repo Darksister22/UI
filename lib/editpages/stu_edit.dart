@@ -12,8 +12,9 @@ import '../api.dart';
 class stuEditAlert extends StatelessWidget {
   late String sel_level = 'بكالوريوس';
   late String sel_year = 'السنة الاولى';
-  Student current;
+
   bool isEnabled = false;
+  Student current;
   stuEditAlert({Key? key, required this.current}) : super(key: key);
 
   final List<String> _Level = [
@@ -32,34 +33,47 @@ class stuEditAlert extends StatelessWidget {
     'السنة التاسعة',
     'السنة العاشرة',
   ];
-  TextEditingController nameAr = TextEditingController();
-  TextEditingController nameEn = TextEditingController();
-  TextEditingController note = TextEditingController();
+  static Student currents = const Student(
+      id: 0,
+      year: "",
+      note: "",
+      level: "",
+      nameAr: '',
+      nameEn: "",
+      avg1: "",
+      avg2: "",
+      avg10: "",
+      avg3: "",
+      avg4: "",
+      avg5: "",
+      avg6: "",
+      avg7: "",
+      avg8: "",
+      avg9: "");
+  @override
+  void initState() {
+    currents = current;
+    print(currents.id);
+  }
+
+  TextEditingController nameAr = TextEditingController(text: currents.nameAr);
+  TextEditingController nameEn = TextEditingController(text: currents.nameEn);
+  TextEditingController note = TextEditingController(text: currents.note);
+
   // static String namear = current.level;
   var snack = '';
   var error = false;
-  Future _addStu() async {
-    var data = {
-      'name_ar': nameAr.text,
-      'name_en': nameEn.text,
-      "level": translateLevelAE(sel_level),
-      "year": translateYearAE(sel_year)
-    };
-
+  Future _delStu() async {
+    String id = current.id.toString();
+    String url = 'http://127.0.0.1:8000/api/students/destroy/' + id;
     try {
-      final response = await CallApi().postData(data, '/api/students/create');
-
-      if (response.statusCode == 403) {
-        snack = 'لا تملك الصلاحية لاضافة طالب';
-        error = true;
-      } else {
-        snack = 'تم اضافة الطالب بنجاح';
+      final response = await http
+          .delete(Uri.parse('http://127.0.0.1:8000/api/students/destroy/$id'));
+      if (response.statusCode == 200) {
+        print('done');
       }
-      nameAr.text = '';
-      nameEn.text = '';
     } catch (e) {
-      snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
-      error = true;
+      print(e);
     }
   }
 
@@ -174,25 +188,17 @@ class stuEditAlert extends StatelessWidget {
               onPressed: () {
                 setState(() {
                   isEnabled = true;
+                  print(currents.id);
                 });
               },
               child: const Text('تعديل المعلومات')),
           ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  isEnabled = true;
-                });
+              onPressed: () async {
+                await _delStu();
               },
               child: const Text('حذف الطالب')),
           ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  //  await _addStu();
-                  nameAr.text = current.level;
-                  nameEn.text = '';
-                }
-              },
-              child: const Text('حفظ التغييرات')),
+              onPressed: () async {}, child: const Text('حفظ التغييرات')),
         ],
       );
     });

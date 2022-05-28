@@ -18,13 +18,15 @@ class addCourse extends StatefulWidget {
   _addCourseState createState() => _addCourseState();
 }
 
+final _formKey = GlobalKey<FormState>();
+
 class _addCourseState extends State<addCourse> {
   final _courseEN = TextEditingController();
   final _courseAR = TextEditingController();
   final _code = TextEditingController();
   final _unit = TextEditingController();
   final _success = TextEditingController(text: '50');
-  final _semester = TextEditingController(text: '2021-2022');
+  final _intructor = TextEditingController();
   List<String> _Level = [
     'بكالوريوس',
     'ماجستير',
@@ -41,10 +43,10 @@ class _addCourseState extends State<addCourse> {
     'السنة التاسعة',
     'السنة العاشرة',
   ];
-  List<String> _Instructor = ['1', '2', '3'];
+
   String? sel_level;
   String? sel_year;
-  String? sel_inst;
+
   final _formKey = GlobalKey<FormBuilderState>();
   @override
   Widget build(BuildContext context) {
@@ -111,6 +113,12 @@ class _addCourseState extends State<addCourse> {
                     children: [
                       TextFormField(
                         controller: _courseEN,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'الرجاء ادخال اسم الكورس';
+                          }
+                          return null;
+                        },
                         decoration: InputDecoration(
                           labelText: 'اسم الكورس English',
                           prefixIcon: Icon(Icons.text_fields),
@@ -129,7 +137,7 @@ class _addCourseState extends State<addCourse> {
                           return null;
                         },
                         decoration: InputDecoration(
-                          labelText: 'اسم الكورس*',
+                          labelText: 'اسم الكورس',
                           prefixIcon: Icon(Icons.text_fields),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -146,7 +154,7 @@ class _addCourseState extends State<addCourse> {
                         },
                         controller: _code,
                         decoration: InputDecoration(
-                          labelText: 'كود الكورس*',
+                          labelText: 'كود الكورس',
                           prefixIcon: Icon(Icons.numbers),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -163,7 +171,7 @@ class _addCourseState extends State<addCourse> {
                         },
                         controller: _unit,
                         decoration: InputDecoration(
-                          labelText: '*وحدة الكورس',
+                          labelText: 'وحدة الكورس',
                           prefixIcon: Icon(Icons.numbers),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -173,8 +181,14 @@ class _addCourseState extends State<addCourse> {
                       SizedBox(height: 10),
                       TextFormField(
                         controller: _success,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'الرجاء ادخال اسم الكورس';
+                          }
+                          return null;
+                        },
                         decoration: InputDecoration(
-                          labelText: 'درجة النجاح*',
+                          labelText: 'درجة النجاح',
                           prefixIcon: Icon(Icons.check),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -182,11 +196,16 @@ class _addCourseState extends State<addCourse> {
                         ),
                       ).margin9,
                       TextFormField(
-                        controller: _semester,
+                        controller: _intructor,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'الرجاء ادخال اسم الكورس';
+                          }
+                          return null;
+                        },
                         decoration: InputDecoration(
-                          labelText: 'الفصل الدراسي*',
+                          labelText: 'اسم التدريسي',
                           prefixIcon: Icon(Icons.date_range),
-                          enabled: false,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -198,9 +217,37 @@ class _addCourseState extends State<addCourse> {
                           width: MediaQuery.of(context).size.width,
                           height: 40,
                           child: ButtonTheme(
+                            child: DropdownButton<String>(
+                              isExpanded: true,
+                              hint: const Text('اختيار المرحلة الدراسية'),
+                              value: sel_level,
+                              onChanged: (newValue) {
+                                print(sel_level);
+                                setState(() {
+                                  sel_level = newValue.toString();
+                                  print(sel_level);
+                                });
+                              },
+                              items: _Level.map((level) {
+                                return DropdownMenuItem(
+                                  child: Text(level),
+                                  value: level,
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 40,
+                          child: ButtonTheme(
                             child: DropdownButtonFormField(
                               isExpanded: true,
-                              hint: Text('*اختيار السنة الدراسية'),
+                              hint: const Text('اختيار السنة الدراسية'),
                               value: sel_year,
                               onChanged: (newValue) {
                                 setState(() {
@@ -209,61 +256,8 @@ class _addCourseState extends State<addCourse> {
                               },
                               items: _Year.map((year) {
                                 return DropdownMenuItem(
-                                  child: new Text(year),
+                                  child: Text(year),
                                   value: year,
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 40,
-                          child: ButtonTheme(
-                            child: DropdownButtonFormField(
-                              isExpanded: true,
-                              hint: Text('*اختيار المرحلة الدراسية'),
-                              value: sel_level,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  sel_level = newValue.toString();
-                                });
-                              },
-                              items: _Level.map((level) {
-                                return DropdownMenuItem(
-                                  child: new Text(level),
-                                  value: level,
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 40,
-                          child: ButtonTheme(
-                            child: DropdownButtonFormField(
-                              isExpanded: true,
-                              hint: Text('*اختيار التدريسي'),
-                              value: sel_inst,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  sel_inst = newValue.toString();
-                                });
-                              },
-                              items: _Instructor.map((inst) {
-                                return DropdownMenuItem(
-                                  child: new Text(inst),
-                                  value: inst,
                                 );
                               }).toList(),
                             ),
@@ -336,12 +330,14 @@ class _addCourseState extends State<addCourse> {
                             ),
                           ),
                           onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Courses(),
-                              ),
-                            );
+                            if (_formKey.currentState!.validate()) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Courses(),
+                                ),
+                              );
+                            }
                           },
                         ).margin9,
                       ),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:schoolmanagement/api.dart';
@@ -11,6 +13,7 @@ import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class SemEditMain extends StatefulWidget {
   static const String id = 'semedit';
@@ -23,6 +26,7 @@ class SemEditMain extends StatefulWidget {
 class _SemEditMainState extends State<SemEditMain> {
   SideBarWidget _sideBarWidget = SideBarWidget();
   late int res;
+
   @override
   Widget build(BuildContext context) {
     return AdminScaffold(
@@ -45,9 +49,9 @@ class _SemEditMainState extends State<SemEditMain> {
                 onPressed: () async {
                   SharedPreferences localStorage =
                       await SharedPreferences.getInstance();
-                  if (localStorage.getString("token") == null) {
-                    context.showSnackBar(
-                        'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
+                  if (localStorage.getString("token") == null ||
+                      localStorage.getString("role") == "admin") {
+                    context.showSnackBar('لا تملك صلاحية الوصول',
                         isError: true);
                   } else {
                     Navigator.pushReplacement(
