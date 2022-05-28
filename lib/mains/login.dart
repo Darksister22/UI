@@ -51,9 +51,8 @@ class _LoginState extends State<Login> {
         );
       }
     } catch (e) {
-      context.showSnackBar(
-          'البريد الالكتروني او الرقم السري غير صحيح, يرجى اعادة المحاولة',
-          isError: true);
+      print(e);
+      context.showSnackBar('حدث خطأ ما, يرجى اعادة المحاولة', isError: true);
     }
   }
 

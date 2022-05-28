@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
-import 'package:schoolmanagement/models/student.dart';
+import 'package:schoolmanagement/models/course.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
@@ -32,13 +32,14 @@ class Courses extends StatefulWidget {
   _CoursesState createState() => _CoursesState();
 }
 
-Future<List<Student>> fetchAlbum() async {
+Future<List<Course>> fetchAlbum() async {
   final response =
-      await http.get(Uri.parse('http://127.0.0.1:8000/api/students'));
+      await http.get(Uri.parse('http://127.0.0.1:8000/api/courses'));
   if (response.statusCode == 200) {
+    print(response.body);
     final result = jsonDecode(response.body) as List;
 
-    return result.map((e) => Student.fromJson(e)).toList();
+    return result.map((e) => Course.fromJson(e)).toList();
   } else {
     // If that call was not successful, throw an error.
     throw Exception('Failed to load');
@@ -46,8 +47,8 @@ Future<List<Student>> fetchAlbum() async {
 }
 
 class _CoursesState extends State<Courses> {
-  late Future<List<Student>> futureAlbum;
-  List<Student> _data = [];
+  late Future<List<Course>> futureAlbum;
+  List<Course> _data = [];
   @override
   void initState() {
     super.initState();
@@ -187,7 +188,7 @@ class _CoursesState extends State<Courses> {
                 ),
               ),
               const SizedBox(width: 16),
-              FutureBuilder<List<Student>>(
+              FutureBuilder<List<Course>>(
                   future: futureAlbum,
                   builder: (context, snapshot) {
                     {
@@ -257,13 +258,7 @@ class _CoursesState extends State<Courses> {
                                       Text('المرحلة الدراسية', style: header)),
                             ],
                             arrowHeadColor: blue,
-                            source: MyData(_data, (_data) {
-                              showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    stuEditAlert(current: _data),
-                              );
-                            }),
+                            source: MyData(_data, () {}),
                             columnSpacing: 35,
                             showCheckboxColumn: true,
                             actions: [
@@ -435,8 +430,8 @@ class _CoursesState extends State<Courses> {
 }
 
 class MyData extends DataTableSource {
-  final List<Student> snapshot;
-  final Function(Student) onEditPressed;
+  final List<Course> snapshot;
+  final Function(/*Course*/) onEditPressed;
   MyData(this.snapshot, this.onEditPressed);
 
   // Generate some made-up data
@@ -461,7 +456,7 @@ class MyData extends DataTableSource {
           color: Colors.grey[700],
         ),
         onPressed: () {
-          onEditPressed(current);
+          //  onEditPressed(current);
         },
       )),
       DataCell(_verticalDivider),

@@ -53,6 +53,24 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
     }
   }
 
+  Future _endSem() async {
+    var data = {"year": '44'};
+
+    try {
+      final response = await CallApi().postData(data, '/api/semesters/end');
+      print(response.statusCode);
+      if (response.statusCode == 409) {
+        context.showSnackBar('الفصل الدراسي منتهي, الرجاء بدأ فصل دراسي جديد',
+            isError: true);
+      } else {
+        context.showSnackBar('تم انهاء الفصل بنجاح');
+      }
+      semyearController.text = '';
+    } catch (e, s) {
+      context.showSnackBar('حدث خطأ ما, يرجى اعادة المحاولة', isError: true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double _width = MediaQuery.of(context).size.width;
@@ -216,12 +234,8 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                                       child: const Text('الغاء')),
                                   ElevatedButton(
                                       onPressed: () async {
-                                        if (_formKey.currentState!.validate()) {
-                                          //await _addUsr();
-                                          // passwordController.text = '';
-                                          //   emailController.text = '';
-                                          Navigator.pop(context);
-                                        }
+                                        await _endSem();
+                                        Navigator.pop(context);
                                       },
                                       child: const Text('نعم'))
                                 ],
