@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
+import 'package:schoolmanagement/editpages/inst_edit.dart';
 import 'package:schoolmanagement/models/instructor.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
@@ -16,6 +17,7 @@ import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../addpages/ins_add.dart';
 import '../addpages/stu_add.dart';
+
 import '../editpages/stu_edit.dart';
 import 'login.dart';
 import 'settingsmain.dart';
@@ -68,7 +70,7 @@ class _InstructorsState extends State<Instructors> {
           children: [
             Visibility(
                 child: CustomText(
-              text: 'تفاصيل الطلبة - نظام اللجنة الامتحانية',
+              text: 'تفاصيل التدريسيين - نظام اللجنة الامتحانية',
               color: lightgrey,
               size: 20,
               fontWeight: FontWeight.bold,
@@ -82,7 +84,7 @@ class _InstructorsState extends State<Instructors> {
                 onPressed: () async {
                   SharedPreferences localStorage =
                       await SharedPreferences.getInstance();
-                  print(localStorage.getString('token'));
+
                   if (localStorage.getString("token") == null ||
                       localStorage.getString("role") == "admin") {
                     context.showSnackBar('لا تملك صلاحية الوصول',
@@ -235,7 +237,13 @@ class _InstructorsState extends State<Instructors> {
                                       Text('Instructor Name', style: header)),
                             ],
                             arrowHeadColor: blue,
-                            source: MyData(_data, () {}),
+                            source: MyData(_data, (_data) {
+                              showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    instEditAlert(current: _data),
+                              );
+                            }),
                             columnSpacing: 95,
                             showCheckboxColumn: true,
                           );
@@ -262,12 +270,8 @@ class _InstructorsState extends State<Instructors> {
 
 class MyData extends DataTableSource {
   final List<Instructor> snapshot;
-  final Function() onEditPressed;
+  final Function(Instructor) onEditPressed;
   MyData(this.snapshot, this.onEditPressed);
-
-  // Generate some made-up data
-  //final List<Map<String, dynamic>> _data =
-  //  List.generate(100, (index) => {"id": index, "price": 11});
 
   @override
   bool get isRowCountApproximate => false;
@@ -287,7 +291,7 @@ class MyData extends DataTableSource {
           color: Colors.grey[700],
         ),
         onPressed: () {
-          //  onEditPressed(current);
+          onEditPressed(current);
         },
       )),
       DataCell(_verticalDivider),

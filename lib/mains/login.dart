@@ -51,7 +51,6 @@ class _LoginState extends State<Login> {
         );
       }
     } catch (e) {
-      print(e);
       context.showSnackBar('حدث خطأ ما, يرجى اعادة المحاولة', isError: true);
     }
   }

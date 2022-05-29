@@ -51,7 +51,6 @@ class _SettingsDashState extends State<SettingsDash> {
       emailController.text = '';
       passwordController.text = '';
     } catch (e, s) {
-      print(e);
       context.showSnackBar('احد الحقول فارغة او غير صحيحة', isError: true);
     }
   }
@@ -73,7 +72,6 @@ class _SettingsDashState extends State<SettingsDash> {
       emailController.text = '';
       passwordController.text = '';
     } catch (e, s) {
-      print(e);
       context.showSnackBar('احد الحقول فارغة او غير صحيحة', isError: true);
     }
   }

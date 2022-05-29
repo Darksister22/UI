@@ -22,7 +22,7 @@ class CallApi {
     var headers = await _setHeaders();
 
     final res = await http.post(Uri.parse(fullUrl), headers: headers);
-    print(res.statusCode);
+
     if (res.statusCode == 403)
       return 0;
     else
@@ -49,7 +49,7 @@ class CallApi {
   _getToken() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var token = localStorage.getString('token');
-    print(token);
+
     return '$token';
   }
 

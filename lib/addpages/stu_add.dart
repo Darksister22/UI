@@ -116,10 +116,8 @@ class addStuAlert extends StatelessWidget {
                             hint: const Text('اختيار المرحلة الدراسية'),
                             value: sel_level,
                             onChanged: (newValue) {
-                              print(sel_level);
                               setState(() {
                                 sel_level = newValue.toString();
-                                print(sel_level);
                               });
                             },
                             items: _Level.map((level) {

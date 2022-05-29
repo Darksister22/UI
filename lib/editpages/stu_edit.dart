@@ -98,7 +98,7 @@ class _stuEditAlertState extends State<stuEditAlert> {
 
     try {
       final response = await CallApi().postData(data, "/api/students/update");
-      print('we got here');
+
       snack = 'تم تحديث معلومات الطالب بنجاح';
     } catch (e) {
       snack = 'حدث خطاُ ما يرجى اعادة المحاولة';

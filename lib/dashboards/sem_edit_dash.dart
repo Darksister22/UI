@@ -36,7 +36,7 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
 
     try {
       final response = await CallApi().postData(data, '/api/semesters/create');
-      print(response.statusCode);
+
       if (response.statusCode == 409) {
         context.showSnackBar(
             'لا يمكنك بدأ فصل جديد, الرجاء انهاء الفصل الحالي اولاً',
@@ -48,7 +48,6 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
       }
       semyearController.text = '';
     } catch (e, s) {
-      print(e);
       context.showSnackBar('احد الحقول فارغة او غير صحيحة', isError: true);
     }
   }
@@ -58,7 +57,7 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
 
     try {
       final response = await CallApi().postData(data, '/api/semesters/end');
-      print(response.statusCode);
+
       if (response.statusCode == 409) {
         context.showSnackBar('الفصل الدراسي منتهي, الرجاء بدأ فصل دراسي جديد',
             isError: true);

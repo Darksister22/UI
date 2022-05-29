@@ -1,26 +1,23 @@
 import 'dart:convert';
 import 'dart:js';
 import 'package:schoolmanagement/addpages/addCourse.dart';
-import 'package:schoolmanagement/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
+import 'package:schoolmanagement/mains/stu_sem.dart';
 import 'package:schoolmanagement/models/course.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
-import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../addpages/stu_add.dart';
-import '../editpages/stu_edit.dart';
 import 'login.dart';
 import 'settingsmain.dart';
 
-Widget _verticalDivider = VerticalDivider(
+Widget _verticalDivider = const VerticalDivider(
   color: Colors.grey,
   thickness: 1,
 );
@@ -37,13 +34,12 @@ Future<List<Course>> fetchAlbum() async {
   final response =
       await http.get(Uri.parse('http://127.0.0.1:8000/api/courses'));
   if (response.statusCode == 200) {
-    print(response.body);
     final result = jsonDecode(response.body) as List;
 
     return result.map((e) => Course.fromJson(e)).toList();
   } else {
-    // If that call was not successful, throw an error.
-    throw Exception('Failed to load');
+    throw Exception(
+        'ان الفصل الدراسي قد انتهى و لا يمكن تعديل معلوماته, ابدأ فصل دراسي لاضافة كورسات جديدة');
   }
 }
 
@@ -86,7 +82,7 @@ class _CoursesState extends State<Courses> {
           children: [
             Visibility(
                 child: CustomText(
-              text: 'تفاصيل الطلبة - نظام اللجنة الامتحانية',
+              text: 'الفصل الدراسي الحالي  - نظام اللجنة الامتحانية',
               color: lightgrey,
               size: 20,
               fontWeight: FontWeight.bold,
@@ -160,7 +156,7 @@ class _CoursesState extends State<Courses> {
                   child: Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: Text(
-                      'اضافة طالب جديد',
+                      'اضافة كورس جديد',
                       style: buttons,
                     ),
                   ),
@@ -204,7 +200,7 @@ class _CoursesState extends State<Courses> {
                                   child: TextFormField(
                                     controller: search,
                                     decoration: InputDecoration(
-                                        labelText: 'البحث عن طالب',
+                                        labelText: 'البحث عن كورس',
                                         labelStyle:
                                             const TextStyle(color: Colors.grey),
                                         border: OutlineInputBorder(
@@ -235,21 +231,21 @@ class _CoursesState extends State<Courses> {
                             columns: [
                               DataColumn(
                                   label: Text(
-                                'عرض المعلومات',
+                                'عرض الطلاب',
                                 style: header,
                               )),
                               DataColumn(label: _verticalDivider),
                               DataColumn(
                                   label: Text(
-                                'رقم الطالب',
+                                'رقم الكورس',
                                 style: header,
                               )),
                               DataColumn(label: _verticalDivider),
                               DataColumn(
-                                  label: Text('اسم الطالب ', style: header)),
+                                  label: Text('اسم الكورس ', style: header)),
                               DataColumn(label: _verticalDivider),
                               DataColumn(
-                                  label: Text('Student Name', style: header)),
+                                  label: Text('Course Name', style: header)),
                               DataColumn(label: _verticalDivider),
                               DataColumn(
                                   label: Text('السنة الدراسية', style: header)),
@@ -259,7 +255,14 @@ class _CoursesState extends State<Courses> {
                                       Text('المرحلة الدراسية', style: header)),
                             ],
                             arrowHeadColor: blue,
-                            source: MyData(_data, () {}),
+                            source: MyData(_data, (_data) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => StuSem(current: _data),
+                                ),
+                              );
+                            }),
                             columnSpacing: 35,
                             showCheckboxColumn: true,
                             actions: [
@@ -358,6 +361,8 @@ class _CoursesState extends State<Courses> {
                                         actions: [
                                           ElevatedButton(
                                               onPressed: () {
+                                                sel_year = null;
+                                                sel_level = null;
                                                 Navigator.pop(context);
                                               },
                                               child: Text('الغاء')),
@@ -397,6 +402,9 @@ class _CoursesState extends State<Courses> {
                                                     }).toList();
                                                   }
                                                 });
+                                                sel_year = null;
+                                                sel_level = null;
+                                                Navigator.pop(context);
                                               },
                                               child: Text('اضافة'))
                                         ],
@@ -432,7 +440,7 @@ class _CoursesState extends State<Courses> {
 
 class MyData extends DataTableSource {
   final List<Course> snapshot;
-  final Function(/*Course*/) onEditPressed;
+  final Function(Course) onEditPressed;
   MyData(this.snapshot, this.onEditPressed);
 
   // Generate some made-up data
@@ -457,7 +465,7 @@ class MyData extends DataTableSource {
           color: Colors.grey[700],
         ),
         onPressed: () {
-          //  onEditPressed(current);
+          onEditPressed(current);
         },
       )),
       DataCell(_verticalDivider),

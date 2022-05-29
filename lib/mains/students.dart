@@ -19,7 +19,7 @@ import '../editpages/stu_edit.dart';
 import 'login.dart';
 import 'settingsmain.dart';
 
-Widget _verticalDivider = VerticalDivider(
+Widget _verticalDivider = const VerticalDivider(
   color: Colors.grey,
   thickness: 1,
 );
@@ -149,52 +149,53 @@ class _StudentsState extends State<Students> {
       body: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Container(
-                width: (MediaQuery.of(context).size.width) / 4,
-                child: TextButton(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      'اضافة طالب جديد',
-                      style: buttons,
-                    ),
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                        return blue;
-                        // Use the component's default.
-                      },
-                    ),
-                  ),
-                  onPressed: () async {
-                    SharedPreferences localStorage =
-                        await SharedPreferences.getInstance();
-                    if (localStorage.getString("token") == null) {
-                      context.showSnackBar(
-                          'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
-                          isError: true);
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) => addStuAlert(),
-                      );
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(width: 16),
-              FutureBuilder<List<Student>>(
-                  future: futureAlbum,
-                  builder: (context, snapshot) {
-                    {
-                      if (snapshot.hasData) {
-                        _data = snapshot.data ?? [];
-                        return StatefulBuilder(builder: (context, setState) {
-                          return PaginatedDataTable(
+          child: FutureBuilder<List<Student>>(
+              future: futureAlbum,
+              builder: (context, snapshot) {
+                {
+                  if (snapshot.hasData) {
+                    _data = snapshot.data ?? [];
+                    return StatefulBuilder(builder: (context, setState) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            width: (MediaQuery.of(context).size.width) / 4,
+                            child: TextButton(
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Text(
+                                  'اضافة طالب جديد',
+                                  style: buttons,
+                                ),
+                              ),
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                  (Set<MaterialState> states) {
+                                    return blue;
+                                    // Use the component's default.
+                                  },
+                                ),
+                              ),
+                              onPressed: () async {
+                                SharedPreferences localStorage =
+                                    await SharedPreferences.getInstance();
+                                if (localStorage.getString("token") == null) {
+                                  context.showSnackBar(
+                                      'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
+                                      isError: true);
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => addStuAlert(),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          PaginatedDataTable(
                             header: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -272,7 +273,8 @@ class _StudentsState extends State<Students> {
                                     showDialog(
                                       context: context,
                                       builder: (context) => AlertDialog(
-                                        title: Text('عرض المعلومات حسب...'),
+                                        title:
+                                            const Text('عرض المعلومات حسب...'),
                                         content: SingleChildScrollView(
                                           child: Column(
                                             children: [
@@ -294,7 +296,7 @@ class _StudentsState extends State<Students> {
                                                           child:
                                                               DropdownButtonFormField(
                                                             isExpanded: true,
-                                                            hint: Text(
+                                                            hint: const Text(
                                                                 'اختيار المرحلة الدراسية'),
                                                             value: sel_level,
                                                             onChanged:
@@ -307,8 +309,8 @@ class _StudentsState extends State<Students> {
                                                             items: _Level.map(
                                                                 (level) {
                                                               return DropdownMenuItem(
-                                                                child: new Text(
-                                                                    level),
+                                                                child:
+                                                                    Text(level),
                                                                 value: level,
                                                               );
                                                             }).toList(),
@@ -316,7 +318,7 @@ class _StudentsState extends State<Students> {
                                                         ),
                                                       ),
                                                     ),
-                                                    SizedBox(height: 10),
+                                                    const SizedBox(height: 10),
                                                     Padding(
                                                       padding:
                                                           const EdgeInsets.all(
@@ -331,7 +333,7 @@ class _StudentsState extends State<Students> {
                                                           child:
                                                               DropdownButtonFormField(
                                                             isExpanded: true,
-                                                            hint: Text(
+                                                            hint: const Text(
                                                                 'اختيار السنة الدراسية'),
                                                             value: sel_year,
                                                             onChanged:
@@ -344,8 +346,8 @@ class _StudentsState extends State<Students> {
                                                             items: _Year.map(
                                                                 (year) {
                                                               return DropdownMenuItem(
-                                                                child: new Text(
-                                                                    year),
+                                                                child:
+                                                                    Text(year),
                                                                 value: year,
                                                               );
                                                             }).toList(),
@@ -362,9 +364,11 @@ class _StudentsState extends State<Students> {
                                         actions: [
                                           ElevatedButton(
                                               onPressed: () {
+                                                sel_year = null;
+                                                sel_level = null;
                                                 Navigator.pop(context);
                                               },
-                                              child: Text('الغاء')),
+                                              child: const Text('الغاء')),
                                           ElevatedButton(
                                               onPressed: () {
                                                 setState(() {
@@ -401,8 +405,11 @@ class _StudentsState extends State<Students> {
                                                     }).toList();
                                                   }
                                                 });
+                                                sel_year = null;
+                                                sel_level = null;
+                                                Navigator.pop(context);
                                               },
-                                              child: Text('اضافة'))
+                                              child: const Text('اضافة'))
                                         ],
                                       ),
                                     );
@@ -412,22 +419,22 @@ class _StudentsState extends State<Students> {
                                     size: 30,
                                   ))
                             ],
-                          );
-                        });
-                      } else if (snapshot.hasError) {
-                        return Text('${snapshot.error}');
-                      }
-
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          CircularProgressIndicator(),
+                          )
                         ],
                       );
-                    }
-                  }),
-            ],
-          ),
+                    });
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  }
+
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CircularProgressIndicator(),
+                    ],
+                  );
+                }
+              }),
         ).margin9,
       ),
     );

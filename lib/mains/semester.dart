@@ -98,7 +98,7 @@ class _SemestersState extends State<Semesters> {
                 onPressed: () async {
                   SharedPreferences localStorage =
                       await SharedPreferences.getInstance();
-                  print(localStorage.getString('token'));
+
                   if (localStorage.getString("token") == null ||
                       localStorage.getString("role") == "admin") {
                     context.showSnackBar('لا تملك صلاحية الوصول',

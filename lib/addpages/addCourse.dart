@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/course.dart';
 
 import 'package:schoolmanagement/components/sidemenus.dart';
@@ -8,8 +10,12 @@ import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/mains/homepage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../api.dart';
 import '../mains/login.dart';
+import '../mains/settingsmain.dart';
+import '../translate.dart';
 
 class addCourse extends StatefulWidget {
   const addCourse({Key? key}) : super(key: key);
@@ -43,9 +49,43 @@ class _addCourseState extends State<addCourse> {
     'السنة التاسعة',
     'السنة العاشرة',
   ];
+  var snack = '';
+  var error = false;
+  Future _addCrs() async {
+    var data = {
+      'name_ar': _courseAR.text,
+      'name_en': _courseEN.text,
+      "level": translateLevelAE(sel_level),
+      "year": translateYearAE(sel_year),
+      "code": _code.text,
+      "unit": _unit.text,
+      "success": _success.text,
+      "ins_name": _intructor.text
+    };
 
-  String? sel_level;
-  String? sel_year;
+    try {
+      final response = await CallApi().postData(data, '/api/courses/create');
+
+      if (response.statusCode == 409) {
+        snack = 'لا يوجد تدريسي بهذا الاسم';
+        error = true;
+      } else {
+        snack = 'تم اضافة الكورس بنجاح';
+      }
+      _courseAR.text = '';
+      _courseEN.text = '';
+      _code.text = "";
+      _unit.text = "";
+      _success.text = "50";
+      _intructor.text = "";
+    } catch (e) {
+      snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
+      error = true;
+    }
+  }
+
+  late String sel_level = 'بكالوريوس';
+  late String sel_year = 'السنة الاولى';
 
   final _formKey = GlobalKey<FormState>();
   @override
@@ -65,10 +105,25 @@ class _addCourseState extends State<addCourse> {
               child: Container(),
             ),
             IconButton(
-              icon: const Icon(Icons.settings),
-              color: dark.withOpacity(.7),
-              onPressed: () {},
-            ),
+                icon: const Icon(Icons.settings),
+                color: dark.withOpacity(.7),
+                onPressed: () async {
+                  SharedPreferences localStorage =
+                      await SharedPreferences.getInstance();
+
+                  if (localStorage.getString("token") == null ||
+                      localStorage.getString("role") == "admin") {
+                    context.showSnackBar('لا تملك صلاحية الوصول',
+                        isError: true);
+                  } else {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Settings(),
+                      ),
+                    );
+                  }
+                }),
             Container(
               width: 1,
               height: 22,
@@ -77,7 +132,10 @@ class _addCourseState extends State<addCourse> {
             IconButton(
               icon: const Icon(Icons.logout_rounded),
               color: dark.withOpacity(.7),
-              onPressed: () {
+              onPressed: () async {
+                SharedPreferences preferences =
+                    await SharedPreferences.getInstance();
+                await preferences.clear();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -99,7 +157,7 @@ class _addCourseState extends State<addCourse> {
         ),
         backgroundColor: light,
       ),
-      body: Container(
+      body: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Card(
           elevation: 5,
@@ -121,80 +179,13 @@ class _addCourseState extends State<addCourse> {
                         },
                         decoration: InputDecoration(
                           labelText: 'اسم الكورس English',
-                          prefixIcon: Icon(Icons.text_fields),
+                          prefixIcon: const Icon(Icons.text_fields),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                       ).margin9,
-                      SizedBox(height: 10),
-                      TextFormField(
-                        controller: _courseAR,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'الرجاء ادخال اسم الكورس';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'اسم الكورس',
-                          prefixIcon: Icon(Icons.text_fields),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ).margin9,
-                      SizedBox(height: 10),
-                      TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'الرجاء ادخال كود الكورس';
-                          }
-                          return null;
-                        },
-                        controller: _code,
-                        decoration: InputDecoration(
-                          labelText: 'كود الكورس',
-                          prefixIcon: Icon(Icons.numbers),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ).margin9,
-                      SizedBox(height: 10),
-                      TextFormField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'الرجاء ادخال وحدة الكورس';
-                          }
-                          return null;
-                        },
-                        controller: _unit,
-                        decoration: InputDecoration(
-                          labelText: 'وحدة الكورس',
-                          prefixIcon: Icon(Icons.numbers),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ).margin9,
-                      SizedBox(height: 10),
-                      TextFormField(
-                        controller: _success,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'الرجاء ادخال اسم الكورس';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'درجة النجاح',
-                          prefixIcon: Icon(Icons.check),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ).margin9,
+                      const SizedBox(height: 10),
                       TextFormField(
                         controller: _intructor,
                         validator: (value) {
@@ -205,7 +196,80 @@ class _addCourseState extends State<addCourse> {
                         },
                         decoration: InputDecoration(
                           labelText: 'اسم التدريسي',
-                          prefixIcon: Icon(Icons.date_range),
+                          prefixIcon: const Icon(Icons.person_outline),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ).margin9,
+                      TextFormField(
+                        controller: _courseAR,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'الرجاء ادخال اسم التدريسي';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'اسم الكورس',
+                          prefixIcon: const Icon(Icons.text_fields),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ).margin9,
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'الرجاء ادخال كود الكورس';
+                          }
+                          return null;
+                        },
+                        controller: _code,
+                        decoration: InputDecoration(
+                          labelText: 'كود الكورس',
+                          prefixIcon: const Icon(Icons.numbers),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ).margin9,
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'الرجاء ادخال وحدة الكورس';
+                          }
+                          return null;
+                        },
+                        controller: _unit,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        decoration: InputDecoration(
+                          labelText: 'وحدة الكورس',
+                          prefixIcon: const Icon(Icons.numbers),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ).margin9,
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: _success,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'الرجاء ادخال درجة النجاح الكورس';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'درجة النجاح',
+                          prefixIcon: const Icon(Icons.check),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -213,7 +277,7 @@ class _addCourseState extends State<addCourse> {
                       ).margin9,
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Container(
+                        child: SizedBox(
                           width: MediaQuery.of(context).size.width,
                           height: 40,
                           child: ButtonTheme(
@@ -222,10 +286,8 @@ class _addCourseState extends State<addCourse> {
                               hint: const Text('اختيار المرحلة الدراسية'),
                               value: sel_level,
                               onChanged: (newValue) {
-                                print(sel_level);
                                 setState(() {
                                   sel_level = newValue.toString();
-                                  print(sel_level);
                                 });
                               },
                               items: _Level.map((level) {
@@ -241,7 +303,7 @@ class _addCourseState extends State<addCourse> {
                       const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Container(
+                        child: SizedBox(
                           width: MediaQuery.of(context).size.width,
                           height: 40,
                           child: ButtonTheme(
@@ -272,7 +334,7 @@ class _addCourseState extends State<addCourse> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Container(
+                      child: SizedBox(
                         width: (MediaQuery.of(context).size.width) / 3,
                         child: TextButton(
                           child: const Padding(
@@ -307,7 +369,7 @@ class _addCourseState extends State<addCourse> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Container(
+                      child: SizedBox(
                         width: (MediaQuery.of(context).size.width) / 3,
                         child: TextButton(
                           child: const Padding(
@@ -329,14 +391,18 @@ class _addCourseState extends State<addCourse> {
                               },
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
+                              await _addCrs();
+
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => const Courses(),
                                 ),
                               );
+
+                              context.showSnackBar(snack, isError: error);
                             }
                           },
                         ).margin9,
