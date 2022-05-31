@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../addpages/attend.dart';
 import '../api.dart';
 import '../mains/students.dart';
 
@@ -269,6 +270,21 @@ class _stuEditAlertState extends State<stuEditAlert> {
                 }
               },
               child: const Text('حذف الطالب')),
+          ElevatedButton(
+              onPressed: () async {
+                SharedPreferences localStorage =
+                    await SharedPreferences.getInstance();
+
+                if (localStorage.getString("token") == null) {
+                  context.showSnackBar('لا تملك صلاحية الوصول', isError: true);
+                } else {
+                  Navigator.pop(context);
+                  showDialog(
+                      context: context,
+                      builder: (contest) => addCarry(current: widget.current));
+                }
+              },
+              child: const Text('اضافة الطالب الى مادة')),
           ElevatedButton(
               onPressed: () async {
                 SharedPreferences localStorage =

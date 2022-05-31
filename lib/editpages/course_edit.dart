@@ -3,28 +3,37 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/course.dart';
-import 'package:schoolmanagement/module/extension.dart';
-import 'package:schoolmanagement/stylefiles/customtext.dart';
-import 'package:schoolmanagement/stylefiles/style.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:schoolmanagement/components/sidemenus.dart';
+import 'package:schoolmanagement/models/instructor.dart';
+import 'package:schoolmanagement/stylefiles/style.dart';
+import 'package:schoolmanagement/stylefiles/customtext.dart';
+import 'package:schoolmanagement/module/extension.dart';
+import 'package:schoolmanagement/mains/homepage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import '../api.dart';
 import '../mains/login.dart';
 import '../mains/settingsmain.dart';
-import '../models/instructor.dart';
+import '../mains/stu_sem.dart';
+import '../models/course.dart';
 import '../translate.dart';
 
-class addCourse extends StatefulWidget {
-  const addCourse({Key? key}) : super(key: key);
+class editCourse extends StatefulWidget {
+  final Course current;
+
+  const editCourse({Key? key, required this.current}) : super(key: key);
 
   @override
-  _addCourseState createState() => _addCourseState();
+  _editCourseState createState() => _editCourseState();
 }
 
-class _addCourseState extends State<addCourse> {
+final _formKey = GlobalKey<FormState>();
+
+class _editCourseState extends State<editCourse> {
   final _courseEN = TextEditingController();
   final _courseAR = TextEditingController();
   final _code = TextEditingController();
@@ -36,7 +45,6 @@ class _addCourseState extends State<addCourse> {
     'ماجستير',
     'دكتوراة',
   ];
-
   List<String> _Year = [
     'السنة الاولى',
     'السنة الثانية',
@@ -48,18 +56,73 @@ class _addCourseState extends State<addCourse> {
     'السنة التاسعة',
     'السنة العاشرة',
   ];
-
   var snack = '';
   var error = false;
-  late String? sel_level = null;
+  Future _editCrs() async {
+    var data = {
+      'name_ar': _courseAR.text,
+      'name_en': _courseEN.text,
+      "level": translateLevelAE(sel_level),
+      "year": translateYearAE(sel_year),
+      "code": _code.text,
+      "unit": _unit.text,
+      "success": _success.text,
+      "ins_name": sel_ins
+    };
+
+    try {
+      final response = await CallApi().postData(data, '/api/courses/create');
+
+      if (response.statusCode == 409) {
+        snack = 'لا يوجد تدريسي بهذا الاسم';
+        error = true;
+      } else {
+        snack = 'تم اضافة الكورس بنجاح';
+      }
+      _courseAR.text = '';
+      _courseEN.text = '';
+      _code.text = "";
+      _unit.text = "";
+      _success.text = "50";
+      _intructor.text = "";
+    } catch (e) {
+      snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
+      error = true;
+    }
+  }
+
+  Future<List<Instructor>> fetchAlbum() async {
+    final response =
+        await http.get(Uri.parse('http://127.0.0.1:8000/api/instructors'));
+    if (response.statusCode == 200) {
+      final result = jsonDecode(response.body) as List;
+
+      return result.map((e) => Instructor.fromJson(e)).toList();
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('Failed to load');
+    }
+  }
+
+  late int id;
+  late int ins;
+  late String sel_level = 'بكالوريوس';
+  late String sel_year = 'السنة الاولى';
   late String? sel_ins = null;
-  late String? sel_year = null;
   late Future<List<Instructor>> futureAlbum;
   List<Instructor> _data = [];
   @override
   void initState() {
     super.initState();
     futureAlbum = fetchAlbum();
+    _courseEN.text = widget.current.nameEn;
+    _courseAR.text = widget.current.nameAr;
+    _code.text = widget.current.code;
+    _success.text = widget.current.success.toString();
+    id = widget.current.id;
+    sel_year = translateYearEA(widget.current.year);
+    sel_level = translateLevelEA(widget.current.level);
+    _unit.text = widget.current.unit.toString();
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -71,7 +134,7 @@ class _addCourseState extends State<addCourse> {
           children: [
             Visibility(
                 child: CustomText(
-              text: 'اضافة مادة جديد',
+              text: 'اضافة كورس جديد',
               color: lightgrey,
               size: 20,
               fontWeight: FontWeight.bold,
@@ -366,7 +429,9 @@ class _addCourseState extends State<addCourse> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const Courses(),
+                                builder: (context) => StuSem(
+                                  current: widget.current,
+                                ),
                               ),
                             );
                           },
@@ -399,7 +464,7 @@ class _addCourseState extends State<addCourse> {
                           ),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              await _addCrs();
+//                              await _addCrs();
 
                               Navigator.pushReplacement(
                                 context,
@@ -423,67 +488,4 @@ class _addCourseState extends State<addCourse> {
       ),
     );
   }
-
-  Future<List<Instructor>> fetchAlbum() async {
-    final response =
-        await http.get(Uri.parse('http://127.0.0.1:8000/api/instructors'));
-    if (response.statusCode == 200) {
-      final result = jsonDecode(response.body) as List;
-
-      return result.map((e) => Instructor.fromJson(e)).toList();
-    } else {
-      // If that call was not successful, throw an error.
-      throw Exception('Failed to load');
-    }
-  }
-
-  Future _addCrs() async {
-    var data = {
-      'name_ar': _courseAR.text,
-      'name_en': _courseEN.text,
-      "level": translateLevelAE(sel_level!),
-      "year": translateYearAE(sel_year!),
-      "code": _code.text,
-      "unit": _unit.text,
-      "success": _success.text,
-      "ins_name": sel_ins,
-    };
-
-    try {
-      final response = await CallApi().postData(data, '/api/courses/create');
-
-      if (response.statusCode == 409) {
-        snack = 'لا يوجد تدريسي بهذا الاسم';
-        error = true;
-      } else {
-        snack = 'تم اضافة الكورس بنجاح';
-      }
-      _courseAR.text = '';
-      _courseEN.text = '';
-      _code.text = "";
-      _unit.text = "";
-      _success.text = "50";
-      _intructor.text = "";
-    } catch (e) {
-      snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
-      error = true;
-    }
-  }
 }
-
-//  DropdownButton<String>(
-//                                 isExpanded: true,
-//                                 hint: const Text('اختيار التدريسي'),
-//                                 value: sel_level,
-//                                 onChanged: (newValue) {
-//                                   setState(() {
-//                                     sel_level = newValue.toString();
-//                                   });
-//                                 },
-//                                 items: _Level.map((level) {
-//                                   return DropdownMenuItem(
-//                                     child: Text(level),
-//                                     value: level,
-//                                   );
-//                                 }).toList(),
-//                               ),

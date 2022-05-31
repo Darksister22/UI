@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:js';
-import 'package:schoolmanagement/api.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/editpages/inst_edit.dart';
@@ -12,28 +10,16 @@ import 'package:schoolmanagement/models/instructor.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
-import 'package:schoolmanagement/api.dart';
-import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../addpages/ins_add.dart';
-import '../addpages/stu_add.dart';
 
-import '../editpages/stu_edit.dart';
+import '../addpages/ins_add.dart';
 import 'login.dart';
 import 'settingsmain.dart';
 
-Widget _verticalDivider = VerticalDivider(
+Widget _verticalDivider = const VerticalDivider(
   color: Colors.grey,
   thickness: 1,
 );
-
-class Instructors extends StatefulWidget {
-  static const String id = 'instructors';
-  const Instructors({Key? key}) : super(key: key);
-
-  @override
-  _InstructorsState createState() => _InstructorsState();
-}
 
 Future<List<Instructor>> fetchAlbum() async {
   final response =
@@ -48,15 +34,59 @@ Future<List<Instructor>> fetchAlbum() async {
   }
 }
 
+class Instructors extends StatefulWidget {
+  static const String id = 'instructors';
+  const Instructors({Key? key}) : super(key: key);
+
+  @override
+  _InstructorsState createState() => _InstructorsState();
+}
+
+class MyData extends DataTableSource {
+  final List<Instructor> snapshot;
+  final Function(Instructor) onEditPressed;
+  MyData(this.snapshot, this.onEditPressed);
+
+  @override
+  bool get isRowCountApproximate => false;
+  @override
+  int get rowCount => snapshot.length;
+  @override
+  int get selectedRowCount => 0;
+
+  @override
+  DataRow getRow(int index) {
+    var current = snapshot[index];
+
+    return DataRow(cells: [
+      DataCell(IconButton(
+        icon: Icon(
+          Icons.visibility_outlined,
+          color: Colors.grey[700],
+        ),
+        onPressed: () {
+          onEditPressed(current);
+        },
+      )),
+      DataCell(_verticalDivider),
+      DataCell(
+        Text(current.id.toString()),
+      ),
+      DataCell(_verticalDivider),
+      DataCell(
+        Text(current.nameAr.toString()),
+      ),
+      DataCell(_verticalDivider),
+      DataCell(
+        Text(current.nameEn.toString()),
+      ),
+    ]);
+  }
+}
+
 class _InstructorsState extends State<Instructors> {
   late Future<List<Instructor>> futureAlbum;
   List<Instructor> _data = [];
-  @override
-  void initState() {
-    super.initState();
-    futureAlbum = fetchAlbum();
-  }
-
   @override
   Widget build(BuildContext context) {
     SideBarWidget _sideBar = SideBarWidget();
@@ -266,46 +296,10 @@ class _InstructorsState extends State<Instructors> {
       ),
     );
   }
-}
-
-class MyData extends DataTableSource {
-  final List<Instructor> snapshot;
-  final Function(Instructor) onEditPressed;
-  MyData(this.snapshot, this.onEditPressed);
 
   @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get rowCount => snapshot.length;
-  @override
-  int get selectedRowCount => 0;
-
-  @override
-  DataRow getRow(int index) {
-    var current = snapshot[index];
-
-    return DataRow(cells: [
-      DataCell(IconButton(
-        icon: Icon(
-          Icons.visibility_outlined,
-          color: Colors.grey[700],
-        ),
-        onPressed: () {
-          onEditPressed(current);
-        },
-      )),
-      DataCell(_verticalDivider),
-      DataCell(
-        Text(current.id.toString()),
-      ),
-      DataCell(_verticalDivider),
-      DataCell(
-        Text(current.nameAr.toString()),
-      ),
-      DataCell(_verticalDivider),
-      DataCell(
-        Text(current.nameEn.toString()),
-      ),
-    ]);
+  void initState() {
+    super.initState();
+    futureAlbum = fetchAlbum();
   }
 }

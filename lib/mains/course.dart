@@ -156,7 +156,7 @@ class _CoursesState extends State<Courses> {
                   child: Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: Text(
-                      'اضافة كورس جديد',
+                      'اضافة مادة جديدة',
                       style: buttons,
                     ),
                   ),
@@ -200,7 +200,7 @@ class _CoursesState extends State<Courses> {
                                   child: TextFormField(
                                     controller: search,
                                     decoration: InputDecoration(
-                                        labelText: 'البحث عن كورس',
+                                        labelText: 'البحث عن مادة',
                                         labelStyle:
                                             const TextStyle(color: Colors.grey),
                                         border: OutlineInputBorder(
@@ -231,18 +231,18 @@ class _CoursesState extends State<Courses> {
                             columns: [
                               DataColumn(
                                   label: Text(
-                                'عرض الطلاب',
+                                'عرض المادة',
                                 style: header,
                               )),
                               DataColumn(label: _verticalDivider),
                               DataColumn(
                                   label: Text(
-                                'رقم الكورس',
+                                'رقم المادة',
                                 style: header,
                               )),
                               DataColumn(label: _verticalDivider),
                               DataColumn(
-                                  label: Text('اسم الكورس ', style: header)),
+                                  label: Text('اسم المادة ', style: header)),
                               DataColumn(label: _verticalDivider),
                               DataColumn(
                                   label: Text('Course Name', style: header)),

@@ -1,27 +1,78 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
+import 'package:schoolmanagement/components/sidemenus.dart';
+import 'package:schoolmanagement/components/utils.dart';
+import 'package:schoolmanagement/editpages/course_edit.dart';
 import 'package:schoolmanagement/mains/settingsmain.dart';
 import 'package:schoolmanagement/models/course.dart';
 import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:schoolmanagement/translate.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:schoolmanagement/components/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../api.dart';
-import '../mains/students.dart';
+
+import '../addpages/addCourse.dart';
 import '../stylefiles/customtext.dart';
 import 'login.dart';
-import 'package:schoolmanagement/components/sidemenus.dart';
 
 Widget _verticalDivider = const VerticalDivider(
   color: Colors.grey,
   thickness: 1,
 );
+
+class MyData extends DataTableSource {
+  final List<Student> snapshot;
+  final Function(/*Student*/) onEditPressed;
+  MyData(this.snapshot, this.onEditPressed);
+
+  // Generate some made-up data
+  //final List<Map<String, dynamic>> _data =
+  //  List.generate(100, (index) => {"id": index, "price": 11});
+
+  @override
+  bool get isRowCountApproximate => false;
+  @override
+  int get rowCount => snapshot.length;
+  @override
+  int get selectedRowCount => 0;
+
+  @override
+  DataRow getRow(int index) {
+    var current = snapshot[index];
+
+    return DataRow(cells: [
+      DataCell(IconButton(
+        icon: Icon(
+          Icons.visibility_outlined,
+          color: Colors.grey[700],
+        ),
+        onPressed: () {
+          //  onEditPressed(current);
+        },
+      )),
+      DataCell(_verticalDivider),
+      DataCell(
+        Text(current.id.toString()),
+      ),
+      DataCell(_verticalDivider),
+      DataCell(
+        Text(current.nameAr.toString()),
+      ),
+      DataCell(_verticalDivider),
+      DataCell(
+        Text(current.nameEn.toString()),
+      ),
+      DataCell(_verticalDivider),
+      DataCell(
+        Text(translateYearEA(current.year)),
+      ),
+      DataCell(_verticalDivider),
+      DataCell(
+        Text(translateLevelEA(current.level.toString())),
+      ),
+    ]);
+  }
+}
 
 class StuSem extends StatefulWidget {
   static const String id = 'studentsem';
@@ -56,12 +107,8 @@ class _StuSemState extends State<StuSem> {
   ];
 
   late List<Student> _data;
-  @override
-  void initState() {
-    super.initState();
-    _data = widget.current.student!;
-  }
-
+  late List<Student> _carries;
+  late int id;
   // static Student currents = const Student(
   TextEditingController nameAr = TextEditingController();
 
@@ -153,6 +200,49 @@ class _StuSemState extends State<StuSem> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width) / 4,
+                    child: TextButton(
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
+                          'تعديل معلومات المادة',
+                          style: buttons,
+                        ),
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            return blue;
+                            // Use the component's default.
+                          },
+                        ),
+                      ),
+                      onPressed: () async {
+                        SharedPreferences localStorage =
+                            await SharedPreferences.getInstance();
+                        if (localStorage.getString("token") == null) {
+                          context.showSnackBar(
+                              'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
+                              isError: true);
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (context) => editCourse(
+                              current: widget.current,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+              ),
               const SizedBox(width: 16),
               StatefulBuilder(builder: (context, setState) {
                 return PaginatedDataTable(
@@ -190,7 +280,7 @@ class _StuSemState extends State<StuSem> {
                   columns: [
                     DataColumn(
                         label: Text(
-                      'عرض المعلومات',
+                      'عرض الدرجات',
                       style: header,
                     )),
                     DataColumn(label: _verticalDivider),
@@ -228,7 +318,7 @@ class _StuSemState extends State<StuSem> {
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
-                                            child: Container(
+                                            child: SizedBox(
                                               width: MediaQuery.of(context)
                                                   .size
                                                   .width,
@@ -258,7 +348,7 @@ class _StuSemState extends State<StuSem> {
                                           SizedBox(height: 10),
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
-                                            child: Container(
+                                            child: SizedBox(
                                               width: MediaQuery.of(context)
                                                   .size
                                                   .width,
@@ -351,58 +441,13 @@ class _StuSemState extends State<StuSem> {
       ),
     );
   }
-}
-
-class MyData extends DataTableSource {
-  final List<Student> snapshot;
-  final Function(/*Student*/) onEditPressed;
-  MyData(this.snapshot, this.onEditPressed);
-
-  // Generate some made-up data
-  //final List<Map<String, dynamic>> _data =
-  //  List.generate(100, (index) => {"id": index, "price": 11});
 
   @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get rowCount => snapshot.length;
-  @override
-  int get selectedRowCount => 0;
-
-  @override
-  DataRow getRow(int index) {
-    var current = snapshot[index];
-
-    return DataRow(cells: [
-      DataCell(IconButton(
-        icon: Icon(
-          Icons.visibility_outlined,
-          color: Colors.grey[700],
-        ),
-        onPressed: () {
-          //  onEditPressed(current);
-        },
-      )),
-      DataCell(_verticalDivider),
-      DataCell(
-        Text(current.id.toString()),
-      ),
-      DataCell(_verticalDivider),
-      DataCell(
-        Text(current.nameAr.toString()),
-      ),
-      DataCell(_verticalDivider),
-      DataCell(
-        Text(current.nameEn.toString()),
-      ),
-      DataCell(_verticalDivider),
-      DataCell(
-        Text(translateYearEA(current.year)),
-      ),
-      DataCell(_verticalDivider),
-      DataCell(
-        Text(translateLevelEA(current.level.toString())),
-      ),
-    ]);
+  void initState() {
+    super.initState();
+    _data = widget.current.student!;
+    _carries = widget.current.carries!;
+    _data = _data + _carries;
+    id = widget.current.id;
   }
 }
