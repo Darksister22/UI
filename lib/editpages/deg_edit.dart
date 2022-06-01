@@ -14,17 +14,17 @@ import '../api.dart';
 import '../mains/students.dart';
 import '../models/course.dart';
 
-class stuEditAlert extends StatefulWidget {
+class DegEdit extends StatefulWidget {
   final Student student;
-  final Course current;
-  stuEditAlert({Key? key, required this.current, required this.student})
+  final int id;
+  DegEdit({Key? key, required this.id, required this.student})
       : super(key: key);
 
   @override
-  State<stuEditAlert> createState() => _stuEditAlertState();
+  State<DegEdit> createState() => _DegEditState();
 }
 
-class _stuEditAlertState extends State<stuEditAlert> {
+class _DegEditState extends State<DegEdit> {
   @override
   void initState() {
     super.initState();
@@ -84,98 +84,109 @@ class _stuEditAlertState extends State<stuEditAlert> {
   final sixty3 = TextEditingController();
   Widget build(BuildContext context) {
     return StatefulBuilder(builder: (context, setState) {
-      return AlertDialog(
-        title: const Text('درجات الطالب'),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: fourty,
-                      validator: (value) {
-                        if (int.parse(value!) > 40) {
-                          return 'لا يمكن ادخال درجة اكبر من 40';
-                        }
-                        return null;
-                      },
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: InputDecoration(
-                        labelText: 'درجة السعي',
-                        prefixIcon: const Icon(Icons.numbers),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+      return Container(
+        width: 200,
+        child: AlertDialog(
+          title: const Text('درجات الطالب'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: fourty,
+                        validator: (value) {
+                          if (int.parse(value!) > 40) {
+                            return 'لا يمكن ادخال درجة اكبر من 40';
+                          }
+                          return null;
+                        },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        decoration: InputDecoration(
+                          labelText: 'درجة السعي',
+                          prefixIcon: const Icon(Icons.numbers),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                      ),
-                    ).margin9,
-                    TextFormField(
-                      controller: sixty1,
-                      validator: (value) {
-                        if (int.parse(value!) > 60) {
-                          return 'لا يمكن ادخال درجة اكبر من 60';
-                        }
-                        return null;
-                      },
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: InputDecoration(
-                        labelText: 'درجة الامتحان النهائي الاول',
-                        prefixIcon: const Icon(Icons.numbers),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                      ).margin9,
+                      TextFormField(
+                        controller: sixty1,
+                        validator: (value) {
+                          if (int.parse(value!) > 60) {
+                            return 'لا يمكن ادخال درجة اكبر من 60';
+                          }
+                          return null;
+                        },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        decoration: InputDecoration(
+                          labelText: 'درجة الامتحان النهائي الاول',
+                          prefixIcon: const Icon(Icons.numbers),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                      ),
-                    ).margin9,
-                    TextFormField(
-                      controller: sixty2,
-                      validator: (value) {
-                        if (int.parse(value!) > 60) {
-                          return 'لا يمكن ادخال درجة اكبر من 60';
-                        }
-                        return null;
-                      },
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: InputDecoration(
-                        labelText: 'درجة الامتحان النهائي الثاني',
-                        prefixIcon: const Icon(Icons.numbers),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                      ).margin9,
+                      TextFormField(
+                        controller: sixty2,
+                        validator: (value) {
+                          if (int.parse(value!) > 60) {
+                            return 'لا يمكن ادخال درجة اكبر من 60';
+                          }
+                          return null;
+                        },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        decoration: InputDecoration(
+                          labelText: 'درجة الامتحان النهائي الثاني',
+                          prefixIcon: const Icon(Icons.numbers),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                      ),
-                    ).margin9,
-                    TextFormField(
-                      controller: sixty3,
-                      validator: (value) {
-                        if (int.parse(value!) > 60) {
-                          return 'لا يمكن ادخال درجة اكبر من 60';
-                        }
-                        return null;
-                      },
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: InputDecoration(
-                        labelText: 'درجة الامتحان النهائي الثالث',
-                        prefixIcon: const Icon(Icons.numbers),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                      ).margin9,
+                      TextFormField(
+                        controller: sixty3,
+                        validator: (value) {
+                          if (int.parse(value!) > 60) {
+                            return 'لا يمكن ادخال درجة اكبر من 60';
+                          }
+                          return null;
+                        },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        decoration: InputDecoration(
+                          labelText: 'درجة الامتحان النهائي الثالث',
+                          prefixIcon: const Icon(Icons.numbers),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                      ),
-                    ).margin9,
-                  ],
+                      ).margin9,
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          actions: [
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('الخروج')),
+            ElevatedButton(
+                onPressed: () async {}, child: const Text('حفظ التغييرات')),
+          ],
         ),
-        actions: [
-          ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('الخروج')),
-          ElevatedButton(
-              onPressed: () async {}, child: const Text('حفظ التغييرات')),
-        ],
       );
     });
   }

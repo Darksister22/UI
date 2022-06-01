@@ -30,25 +30,26 @@ class _addCarryState extends State<addCarry> {
   void initState() {
     super.initState();
     stu = widget.current.id;
-    futureAlbum = fetchAlbum();
 
     lvl = widget.current.level;
   }
 
-  Future<List<Course>> fetchAlbum() async {
-    var data = {
-      'level': lvl,
-    };
-
-    final response = await http
-        .post(Uri.parse('http://127.0.0.1:8000/api/courses/level'), body: data);
-    if (response.statusCode == 200) {
-      final result = jsonDecode(response.body) as List;
-
-      return result.map((e) => Course.fromJson(e)).toList();
-    } else {
-      // If that call was not successful, throw an error.
-      throw Exception('Failed to load');
+  Future<List<Course>>? fetch() async {
+    try {
+      final response = await CallApi().getData('/api/courses/level?level=$lvl');
+      print(jsonDecode(response.body)['courses']);
+      if (response.statusCode == 200) {
+        final result = jsonDecode(response.body)['courses'] as List;
+        final x = result.map((e) => Course.fromJson(e)).toList();
+        print(x);
+        return x;
+      } else {
+        // If that call was not successful, throw an error.
+        throw Exception('Failed to load');
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
     }
   }
 
@@ -107,9 +108,12 @@ class _addCarryState extends State<addCarry> {
                         width: MediaQuery.of(context).size.width,
                         height: 40,
                         child: ButtonTheme(
-                          child: FutureBuilder<List<Course>>(
-                            future: futureAlbum,
+                          child: FutureBuilder<List<Course>?>(
+                            future: fetch(),
                             builder: (context, snapshot) {
+                              print(snapshot.connectionState);
+                              print(snapshot.data);
+
                               if (snapshot.hasData) {
                                 _data = snapshot.data ?? [];
                                 List<String> list = [];

@@ -10,7 +10,7 @@ class Course {
   final String code;
   final int success;
   final int unit;
-//  final Instructor instructor;
+  final Instructor? instructor;
   final List<Student>? student;
   final List<Student>? carries;
   const Course(
@@ -23,7 +23,7 @@ class Course {
       required this.success,
       required this.unit,
       required this.student,
-      //    required this.instructor,
+      required this.instructor,
       required this.carries});
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -34,12 +34,13 @@ class Course {
         code: json['code'],
         success: json['success'],
         unit: json['unit'],
-        student:
-            (json["students"] as List).map((e) => Student.fromJson(e)).toList(),
-        carries: (json["students_carry"] as List)
-            .map((e) => Student.fromJson(e))
+        student: (json["students"] as List?)
+            ?.map((e) => Student.fromJson(e))
             .toList(),
-        // instructor:
+        carries: (json["students_carry"] as List?)
+            ?.map((e) => Student.fromJson(e))
+            .toList(),
+        instructor: (json["instructor"])?.map((e) => Instructor.fromJson(e)),
         level: json['level'],
         year: json['year']);
   }

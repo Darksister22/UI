@@ -181,7 +181,7 @@ class _addCourseState extends State<addCourse> {
                                       return DropdownButton<String>(
                                         isExpanded: true,
                                         hint: const Text('اختيار التدريسي'),
-                                        value: null,
+                                        value: sel_ins,
                                         onChanged: (newValue) {
                                           setState(() {
                                             sel_ins = newValue.toString();

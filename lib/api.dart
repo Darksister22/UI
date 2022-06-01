@@ -6,13 +6,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CallApi {
   final String _url = 'http://127.0.0.1:8000';
 
-  Future postData(Map data, String apiUrl) async {
+  Future<http.Response> postData(Map data, String apiUrl) async {
     var fullUrl = _url + apiUrl;
 
     var headers = await _setHeaders();
 
     final res = await http.post(Uri.parse(fullUrl),
-        body: jsonEncode(data), headers: headers);
+        body: json.encode(data), headers: headers);
     return res;
   }
 
@@ -29,7 +29,7 @@ class CallApi {
       return 1;
   }
 
-  getData(apiUrl) async {
+  Future<http.Response> getData(apiUrl) async {
     var fullUrl = _url + apiUrl;
     var headers = await _setHeaders();
     var response = await http.get(Uri.parse(fullUrl), headers: headers);

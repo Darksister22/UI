@@ -12,6 +12,7 @@ import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../addpages/addCourse.dart';
+import '../editpages/deg_edit.dart';
 import '../stylefiles/customtext.dart';
 import 'login.dart';
 
@@ -22,8 +23,9 @@ Widget _verticalDivider = const VerticalDivider(
 
 class MyData extends DataTableSource {
   final List<Student> snapshot;
-  final Function(/*Student*/) onEditPressed;
-  MyData(this.snapshot, this.onEditPressed);
+  final Function(Student, int id) onEditPressed;
+  final int id;
+  MyData(this.snapshot, this.id, this.onEditPressed);
 
   // Generate some made-up data
   //final List<Map<String, dynamic>> _data =
@@ -39,7 +41,6 @@ class MyData extends DataTableSource {
   @override
   DataRow getRow(int index) {
     var current = snapshot[index];
-
     return DataRow(cells: [
       DataCell(IconButton(
         icon: Icon(
@@ -47,7 +48,7 @@ class MyData extends DataTableSource {
           color: Colors.grey[700],
         ),
         onPressed: () {
-          //  onEditPressed(current);
+          onEditPressed(current, id);
         },
       )),
       DataCell(_verticalDivider),
@@ -218,7 +219,6 @@ class _StuSemState extends State<StuSem> {
                             MaterialStateProperty.resolveWith<Color>(
                           (Set<MaterialState> states) {
                             return blue;
-                            // Use the component's default.
                           },
                         ),
                       ),
@@ -299,7 +299,15 @@ class _StuSemState extends State<StuSem> {
                     DataColumn(label: Text('المرحلة الدراسية', style: header)),
                   ],
                   arrowHeadColor: blue,
-                  source: MyData(_data, () {}),
+                  source: MyData(_data, id, (_data, id) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => DegEdit(
+                        id: id,
+                        student: _data,
+                      ),
+                    );
+                  }),
                   columnSpacing: 35,
                   showCheckboxColumn: true,
                   actions: [

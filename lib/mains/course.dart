@@ -35,7 +35,7 @@ Future<List<Course>> fetchAlbum() async {
       await http.get(Uri.parse('http://127.0.0.1:8000/api/courses'));
   if (response.statusCode == 200) {
     final result = jsonDecode(response.body) as List;
-
+    print(response.body);
     return result.map((e) => Course.fromJson(e)).toList();
   } else {
     throw Exception(
