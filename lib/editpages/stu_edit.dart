@@ -67,13 +67,7 @@ class _stuEditAlertState extends State<stuEditAlert> {
 
   Future _delStu() async {
     String id = widget.current.id.toString();
-    var data = {
-      'id': id,
-      'name_ar': nameAr.text,
-      'name_en': nameEn.text,
-      "level": translateLevelAE(sel_level),
-      "year": translateYearAE(sel_year)
-    };
+    var data = {};
 
     try {
       final response =

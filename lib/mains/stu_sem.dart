@@ -3,6 +3,7 @@ import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/editpages/course_edit.dart';
+import 'package:schoolmanagement/mains/deg_course.dart';
 import 'package:schoolmanagement/mains/settingsmain.dart';
 import 'package:schoolmanagement/models/course.dart';
 import 'package:schoolmanagement/models/student.dart';
@@ -23,8 +24,8 @@ Widget _verticalDivider = const VerticalDivider(
 
 class MyData extends DataTableSource {
   final List<Student> snapshot;
-  final Function(Student, int id) onEditPressed;
-  final int id;
+  final Function(Student, Course) onEditPressed;
+  final Course id;
   MyData(this.snapshot, this.id, this.onEditPressed);
 
   // Generate some made-up data
@@ -44,7 +45,7 @@ class MyData extends DataTableSource {
     return DataRow(cells: [
       DataCell(IconButton(
         icon: Icon(
-          Icons.visibility_outlined,
+          Icons.edit_outlined,
           color: Colors.grey[700],
         ),
         onPressed: () {
@@ -205,7 +206,7 @@ class _StuSemState extends State<StuSem> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   SizedBox(
-                    width: (MediaQuery.of(context).size.width) / 4,
+                    width: (MediaQuery.of(context).size.width) / 5,
                     child: TextButton(
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
@@ -241,6 +242,36 @@ class _StuSemState extends State<StuSem> {
                     ),
                   ),
                   const SizedBox(width: 10),
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width) / 5,
+                    child: TextButton(
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Text(
+                          'عرض سعيات المادة',
+                          style: buttons,
+                        ),
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            return blue;
+                          },
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DegCourse(
+                              course: widget.current,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  )
                 ],
               ),
               const SizedBox(width: 16),
@@ -299,7 +330,7 @@ class _StuSemState extends State<StuSem> {
                     DataColumn(label: Text('المرحلة الدراسية', style: header)),
                   ],
                   arrowHeadColor: blue,
-                  source: MyData(_data, id, (_data, id) {
+                  source: MyData(_data, widget.current, (_data, id) {
                     showDialog(
                       context: context,
                       builder: (context) => DegEdit(

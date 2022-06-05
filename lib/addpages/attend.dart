@@ -23,7 +23,7 @@ class addCarry extends StatefulWidget {
 class _addCarryState extends State<addCarry> {
   late int stu;
   late String lvl;
-  late String? sel_course;
+  late String? sel_course = null;
   late Future<List<Course>> futureAlbum;
   List<Course> _data = [];
   @override
@@ -37,9 +37,9 @@ class _addCarryState extends State<addCarry> {
   Future<List<Course>>? fetch() async {
     try {
       final response = await CallApi().getData('/api/courses/level?level=$lvl');
-      print(jsonDecode(response.body)['courses']);
       if (response.statusCode == 200) {
-        final result = jsonDecode(response.body)['courses'] as List;
+        // print(response.body);
+        final result = jsonDecode(response.body) as List;
         final x = result.map((e) => Course.fromJson(e)).toList();
         print(x);
         return x;
@@ -48,7 +48,6 @@ class _addCarryState extends State<addCarry> {
         throw Exception('Failed to load');
       }
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -72,7 +71,7 @@ class _addCarryState extends State<addCarry> {
         error = true;
         snack = 'الطالب ينتمي للمادة مسبقاً';
       } else if (response.statusCode == 200) {
-        snack = 'تم اضافة المادة بنجاح';
+        snack = 'تم اضافة الطالب بنجاح';
       } else {
         error = true;
         snack = 'حدث خطأ ما يرجى اعادة المحاولة';
@@ -125,7 +124,7 @@ class _addCarryState extends State<addCarry> {
                                     return DropdownButton<String>(
                                       isExpanded: true,
                                       hint: const Text('اختيار المادة'),
-                                      value: null,
+                                      value: sel_course,
                                       onChanged: (newValue) {
                                         setState(() {
                                           sel_course = newValue.toString();
@@ -167,7 +166,7 @@ class _addCarryState extends State<addCarry> {
           ElevatedButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  //  await _addStu();
+                  await _addStu();
                   nameAr.text = '';
 
                   Navigator.pushReplacement(

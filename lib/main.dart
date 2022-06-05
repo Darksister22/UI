@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
         Settings.id: (_) => const Settings(),
         Courses.id: (_) => const Courses(),
         Instructors.id: (_) => const Instructors(),
-        Degrees.id: (_) => const Degrees(),
+        DegreeHome.id: (_) => const DegreeHome(),
         Users.id: (_) => const Users(),
         Semesters.id: (_) => const Semesters(),
         Grads.id: (_) => const Grads(),

@@ -49,7 +49,7 @@ class SideBarWidget {
             icon: Icons.library_books_outlined),
         MenuItem(
             title: 'درجات الطلبة',
-            route: Degrees.id,
+            route: DegreeHome.id,
             icon: Icons.table_view_outlined),
         MenuItem(
             title: 'عرض الطلبة المتخرجين',

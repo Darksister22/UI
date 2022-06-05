@@ -6,6 +6,7 @@ import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/homepage.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../api.dart';
 import '../module/extension.dart';
 import '../components/main_widgets.dart';
 import 'package:http/http.dart' as http;
@@ -21,15 +22,14 @@ class _LoginState extends State<Login> {
   TextEditingController emailController = TextEditingController();
   var _formKey = GlobalKey<FormState>();
   TextEditingController passwordController = TextEditingController();
+
   Future _login() async {
     var data = {
       'email': emailController.text,
       'password': passwordController.text,
     };
-
     try {
-      final response = await http
-          .post(Uri.parse('http://127.0.0.1:8000/api/users/login'), body: data);
+      final response = await CallApi().postData(data, "/api/users/login");
       if (response.statusCode == 401) {
         context.showSnackBar(
             'البريد الالكتروني او الرقم السري غير صحيح, يرجى اعادة المحاولة',

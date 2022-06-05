@@ -37,9 +37,9 @@ class _editCourseState extends State<editCourse> {
   final _courseEN = TextEditingController();
   final _courseAR = TextEditingController();
   final _code = TextEditingController();
+
   final _unit = TextEditingController();
   final _success = TextEditingController(text: '50');
-  final _intructor = TextEditingController();
   List<String> _Level = [
     'بكالوريوس',
     'ماجستير',
@@ -60,19 +60,19 @@ class _editCourseState extends State<editCourse> {
   var error = false;
   Future _editCrs() async {
     var data = {
-      'name_ar': _courseAR.text,
-      'name_en': _courseEN.text,
+      "ins_name": sel_ins.toString(),
       "level": translateLevelAE(sel_level),
       "year": translateYearAE(sel_year),
+      "name_ar": _courseAR.text,
+      "name_en": _courseEN.text,
       "code": _code.text,
-      "unit": _unit.text,
-      "success": _success.text,
-      "ins_name": sel_ins
+      "success": int.parse(_success.text),
+      "unit": int.parse(_unit.text)
     };
 
     try {
-      final response = await CallApi().postData(data, '/api/courses/create');
-
+      final response = await CallApi().postData(data, '/api/courses/update');
+      print(response.statusCode);
       if (response.statusCode == 409) {
         snack = 'لا يوجد تدريسي بهذا الاسم';
         error = true;
@@ -84,7 +84,6 @@ class _editCourseState extends State<editCourse> {
       _code.text = "";
       _unit.text = "";
       _success.text = "50";
-      _intructor.text = "";
     } catch (e) {
       snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
       error = true;
@@ -104,8 +103,23 @@ class _editCourseState extends State<editCourse> {
     }
   }
 
+  Future _delStu() async {
+    String id = widget.current.id.toString();
+    var data = {};
+
+    try {
+      final response =
+          await CallApi().postData(data, "/api/courses/destroy/$id");
+
+      snack = 'تم حذف الطالب بنجاح';
+    } catch (e) {
+      snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
+      error = true;
+    }
+  }
+
   late int id;
-  late int ins;
+
   late String sel_level = 'بكالوريوس';
   late String sel_year = 'السنة الاولى';
   late String? sel_ins = null;
@@ -121,6 +135,8 @@ class _editCourseState extends State<editCourse> {
     _success.text = widget.current.success.toString();
     id = widget.current.id;
     sel_year = translateYearEA(widget.current.year);
+    //  sel_ins = widget.current.instructor!.nameAr;
+    sel_ins = null;
     sel_level = translateLevelEA(widget.current.level);
     _unit.text = widget.current.unit.toString();
   }
@@ -244,7 +260,7 @@ class _editCourseState extends State<editCourse> {
                                       return DropdownButton<String>(
                                         isExpanded: true,
                                         hint: const Text('اختيار التدريسي'),
-                                        value: null,
+                                        value: sel_ins,
                                         onChanged: (newValue) {
                                           setState(() {
                                             sel_ins = newValue.toString();
@@ -404,7 +420,7 @@ class _editCourseState extends State<editCourse> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SizedBox(
-                        width: (MediaQuery.of(context).size.width) / 3,
+                        width: (MediaQuery.of(context).size.width) / 5,
                         child: TextButton(
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
@@ -441,7 +457,7 @@ class _editCourseState extends State<editCourse> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SizedBox(
-                        width: (MediaQuery.of(context).size.width) / 3,
+                        width: (MediaQuery.of(context).size.width) / 5,
                         child: TextButton(
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
@@ -464,7 +480,48 @@ class _editCourseState extends State<editCourse> {
                           ),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-//                              await _addCrs();
+                              await _editCrs();
+
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Courses(),
+                                ),
+                              );
+
+                              context.showSnackBar(snack, isError: error);
+                            }
+                          },
+                        ).margin9,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        width: (MediaQuery.of(context).size.width) / 5,
+                        child: TextButton(
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'حذف المادة',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                return blue;
+                                // Use the component's default.
+                              },
+                            ),
+                          ),
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              await _delStu();
 
                               Navigator.pushReplacement(
                                 context,

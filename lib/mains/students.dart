@@ -393,8 +393,11 @@ class _StudentsState extends State<Students> {
                                                     }).toList();
                                                   }
                                                 });
+                                                sel_year = null;
+                                                sel_level = null;
+                                                Navigator.pop(context);
                                               },
-                                              child: Text('اضافة'))
+                                              child: Text('العرض'))
                                         ],
                                       ),
                                     );
