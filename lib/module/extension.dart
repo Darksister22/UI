@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import '../components/main_widgets.dart';
 
 extension ContextExtension on BuildContext {
@@ -24,7 +23,7 @@ extension StringExtension on String {
 
 extension WidgetExtention on Widget {
   Widget get vMargin3 => Container(
-        margin: EdgeInsets.symmetric(vertical: 3),
+        margin: const EdgeInsets.symmetric(vertical: 3),
         child: this,
       );
   Widget get vMargin6 => Container(
@@ -36,75 +35,75 @@ extension WidgetExtention on Widget {
         child: this,
       );
   Widget get hMargin3 => Container(
-        margin: EdgeInsets.symmetric(vertical: 3),
+        margin: const EdgeInsets.symmetric(vertical: 3),
         child: this,
       );
   Widget get hMargin6 => Container(
-        margin: EdgeInsets.symmetric(vertical: 6),
+        margin: const EdgeInsets.symmetric(vertical: 6),
         child: this,
       );
   Widget get hMargin9 => Container(
-        margin: EdgeInsets.symmetric(vertical: 9),
+        margin: const EdgeInsets.symmetric(vertical: 9),
         child: this,
       );
   Widget get margin3 => Container(
-        margin: EdgeInsets.all(3),
+        margin: const EdgeInsets.all(3),
         child: this,
       );
   Widget get margin6 => Container(
-        margin: EdgeInsets.all(6),
+        margin: const EdgeInsets.all(6),
         child: this,
       );
   Widget get margin9 => Container(
-        margin: EdgeInsets.all(9),
+        margin: const EdgeInsets.all(9),
         child: this,
       );
   Widget get vpadding3 => Container(
-        margin: EdgeInsets.symmetric(
+        margin: const EdgeInsets.symmetric(
           vertical: 3,
         ),
         child: this,
       );
   Widget get vpadding6 => Container(
-        margin: EdgeInsets.symmetric(
+        margin: const EdgeInsets.symmetric(
           vertical: 6,
         ),
         child: this,
       );
   Widget get vpadding9 => Container(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           vertical: 9,
         ),
         child: this,
       );
   Widget get hpadding3 => Container(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           vertical: 3,
         ),
         child: this,
       );
   Widget get hpadding6 => Container(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           vertical: 3,
         ),
         child: this,
       );
   Widget get hpadding9 => Container(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           vertical: 9,
         ),
         child: this,
       );
   Widget get padding3 => Container(
-        padding: EdgeInsets.all(3),
+        padding: const EdgeInsets.all(3),
         child: this,
       );
   Widget get padding6 => Container(
-        padding: EdgeInsets.all(6),
+        padding: const EdgeInsets.all(6),
         child: this,
       );
   Widget get padding9 => Container(
-        padding: EdgeInsets.all(9),
+        padding: const EdgeInsets.all(9),
         child: this,
       );
   Widget get card => Card(child: this);

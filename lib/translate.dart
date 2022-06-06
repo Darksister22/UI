@@ -182,11 +182,11 @@ String translateLevelEA(String level) {
 
 String translateNumAE(String number) {
   switch (number) {
-    case 'الفصل الاول':
+    case 'الكورس الاول':
       {
         return 'first';
       }
-    case 'الفصل الثاني':
+    case 'الكورس الثاني':
       {
         return 'second';
       }
@@ -201,15 +201,57 @@ String translateNumEA(String number) {
   switch (number) {
     case 'first':
       {
-        return 'الفصل الاول';
+        return 'الكورس الاول';
       }
     case 'second':
       {
-        return 'الفصل الثاني';
+        return 'الكورس الثاني';
       }
     default:
       {
         return '';
+      }
+  }
+}
+
+String translateStsAE(String number) {
+  switch (number) {
+    case 'ناجح':
+      {
+        return 'pass';
+      }
+    case 'راسب':
+      {
+        return 'fail';
+      }
+    case 'محمل':
+      {
+        return 'carry';
+      }
+    default:
+      {
+        return 'لا يوجد';
+      }
+  }
+}
+
+String translateStsEA(String number) {
+  switch (number) {
+    case 'pass':
+      {
+        return 'ناجح';
+      }
+    case 'fail':
+      {
+        return 'راسب';
+      }
+    case 'carry':
+      {
+        return 'محمل';
+      }
+    default:
+      {
+        return 'لا يوجد';
       }
   }
 }

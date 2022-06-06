@@ -1,19 +1,17 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schoolmanagement/mains/degrees.dart';
 import 'package:schoolmanagement/mains/grads.dart';
-
 import 'package:schoolmanagement/mains/homepage.dart';
 import 'package:schoolmanagement/mains/instructors.dart';
-import 'package:schoolmanagement/mains/semester.dart';
+import 'package:schoolmanagement/mains/students.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
 
-import 'package:schoolmanagement/mains/students.dart';
-
 import '../mains/course.dart';
-import '../mains/profilesections.dart';
 
 class SideBarWidget {
   SideBarMenus(context, selectedRoute) {
@@ -44,7 +42,7 @@ class SideBarWidget {
             route: Instructors.id,
             icon: Icons.assignment_ind_outlined),
         MenuItem(
-            title: 'الفصل الدراسي الحالي',
+            title: 'الكورس الدراسي الحالي',
             route: Courses.id,
             icon: Icons.library_books_outlined),
         MenuItem(

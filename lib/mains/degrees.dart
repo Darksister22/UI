@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
-import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
-import 'package:schoolmanagement/dashboards/dashboars.dart';
 import 'package:schoolmanagement/dashboards/degdash.dart';
 import 'package:schoolmanagement/mains/login.dart';
 import 'package:schoolmanagement/mains/settingsmain.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DegreeHome extends StatefulWidget {
@@ -21,7 +18,7 @@ class DegreeHome extends StatefulWidget {
 }
 
 class _DegreeHomeState extends State<DegreeHome> {
-  SideBarWidget _sideBarWidget = SideBarWidget();
+  final SideBarWidget _sideBarWidget = SideBarWidget();
   late int res;
   @override
   Widget build(BuildContext context) {
@@ -31,8 +28,7 @@ class _DegreeHomeState extends State<DegreeHome> {
             children: [
               Visibility(
                   child: CustomText(
-                text:
-                    'نظام اللجنة الامتحانية - جامعة النهرين - قسم هندسة الحاسوب',
+                text: 'ادارة الدرجات  - نظام اللجنة الامتحانية',
                 color: lightgrey,
                 size: 20,
                 fontWeight: FontWeight.bold,
@@ -100,7 +96,7 @@ class _DegreeHomeState extends State<DegreeHome> {
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
-              children: <Widget>[
+              children: const <Widget>[
                 Visibility(child: DegDash()),
               ],
             ),

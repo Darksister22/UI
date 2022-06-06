@@ -1,18 +1,19 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
-import 'package:schoolmanagement/mains/instructors.dart';
-import 'package:schoolmanagement/mains/students.dart';
-import 'package:schoolmanagement/module/extension.dart';
-import 'package:schoolmanagement/translate.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:schoolmanagement/components/utils.dart';
+import 'package:schoolmanagement/mains/instructors.dart';
+import 'package:schoolmanagement/module/extension.dart';
+
 import '../api.dart';
 
-class addInsAlert extends StatelessWidget {
-  TextEditingController nameAr = TextEditingController();
-  TextEditingController nameEn = TextEditingController();
-  var snack = '';
-  var error = false;
+class AddInsAlert extends StatelessWidget {
+  final TextEditingController nameAr = TextEditingController();
+  final TextEditingController nameEn = TextEditingController();
+ String   snack = '';
+  bool error = false;
+
+  AddInsAlert({Key? key}) : super(key: key);
   Future _addIns() async {
     var data = {
       'name_ar': nameAr.text,
@@ -20,7 +21,7 @@ class addInsAlert extends StatelessWidget {
     };
 
     try {
-      final response =
+      
           await CallApi().postData(data, '/api/instructors/create');
 
       snack = 'تم اضافة التدريسي بنجاح';
@@ -35,6 +36,7 @@ class addInsAlert extends StatelessWidget {
 
   final _formKey = GlobalKey<FormState>();
 
+  @override
   Widget build(BuildContext context) {
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
@@ -74,7 +76,7 @@ class addInsAlert extends StatelessWidget {
                       textDirection: TextDirection.ltr,
                       decoration: InputDecoration(
                         labelText: 'اسم التدريسي english',
-                        prefixIcon: const Icon(Icons.password),
+                        prefixIcon: const Icon(Icons.person),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),

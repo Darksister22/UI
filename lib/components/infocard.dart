@@ -29,7 +29,7 @@ class InfoCard extends StatelessWidget {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-                offset: Offset(0, 6),
+                offset: const Offset(0, 6),
                 color: lightgrey.withOpacity(.1),
                 blurRadius: 12)
           ],
@@ -55,14 +55,14 @@ class InfoCard extends StatelessWidget {
                   ),
                   RichText(
                       textDirection: TextDirection.rtl,
-                      strutStyle: StrutStyle(fontSize: 18, height: 1.5),
+                      strutStyle: const StrutStyle(fontSize: 18, height: 1.5),
                       maxLines: 2,
-                      textHeightBehavior: TextHeightBehavior(
+                      textHeightBehavior: const TextHeightBehavior(
                           applyHeightToFirstAscent: true,
                           applyHeightToLastDescent: true),
                       textScaleFactor: 1.2,
                       textWidthBasis: TextWidthBasis.longestLine,
-                      locale: Locale('ar'),
+                      locale: const Locale('ar'),
                       textAlign: TextAlign.center,
                       text: TextSpan(children: [
                         TextSpan(
@@ -103,7 +103,7 @@ class InfoCard extends StatelessWidget {
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    var path = new Path();
+    var path =  Path();
     path.lineTo(
         0, size.height); //start path with this if you are making at bottom
 

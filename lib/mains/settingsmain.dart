@@ -1,13 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
-import 'package:schoolmanagement/mains/login.dart';
-import 'package:schoolmanagement/dashboards/dashboars.dart';
-
-import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:schoolmanagement/dashboards/settingsdash.dart';
+import 'package:schoolmanagement/mains/login.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
+import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings extends StatefulWidget {
@@ -19,7 +16,7 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  SideBarWidget _sideBarWidget = SideBarWidget();
+  final SideBarWidget _sideBarWidget = SideBarWidget();
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +78,7 @@ class _SettingsState extends State<Settings> {
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
-              children: <Widget>[
+              children: const <Widget>[
                 Visibility(child: SettingsDash()),
               ],
             ),

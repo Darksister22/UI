@@ -1,11 +1,12 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
 import 'package:schoolmanagement/components/infocard.dart';
 import 'package:schoolmanagement/models/counts.dart';
 import 'package:schoolmanagement/translate.dart';
+
+import '../api.dart';
 
 class OverviewCards extends StatefulWidget {
   const OverviewCards({Key? key}) : super(key: key);
@@ -15,8 +16,7 @@ class OverviewCards extends StatefulWidget {
 }
 
 Future<Counts> fetchCounts() async {
-  final response =
-      await http.get(Uri.parse('http://127.0.0.1:8000/api/homepage'));
+  final response = await CallApi().getData('/api/homepage');
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
@@ -48,7 +48,7 @@ class _OverviewCardsState extends State<OverviewCards> {
           if (snapshot.hasData) {
             return Column(
               children: [
-                Container(
+                SizedBox(
                   height: MediaQuery.of(context).size.height / 1.5,
                   width: MediaQuery.of(context).size.width,
                   child: Card(
@@ -76,7 +76,7 @@ class _OverviewCardsState extends State<OverviewCards> {
                               onTap: () {},
                               topColor: Colors.greenAccent,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             Row(
@@ -135,7 +135,7 @@ class _OverviewCardsState extends State<OverviewCards> {
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    var path = new Path();
+    var path =  Path();
     path.lineTo(
         0, size.height); //start path with this if you are making at bottom
 

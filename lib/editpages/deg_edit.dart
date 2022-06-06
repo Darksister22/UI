@@ -1,26 +1,21 @@
-import 'dart:math';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/stu_sem.dart';
-import 'package:schoolmanagement/models/degree.dart';
 import 'package:schoolmanagement/models/degreesinlge.dart';
 import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/module/extension.dart';
-import 'package:schoolmanagement/translate.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:schoolmanagement/components/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../addpages/attend.dart';
+
 import '../api.dart';
-import '../mains/students.dart';
-import '../models/course.dart';
+import '../models/courseins.dart';
 
 class DegEdit extends StatefulWidget {
   final Student student;
-  final Course id;
-  DegEdit({Key? key, required this.id, required this.student})
+  final InsCourse id;
+  const DegEdit({Key? key, required this.id, required this.student})
       : super(key: key);
 
   @override
@@ -98,9 +93,10 @@ class _DegEditState extends State<DegEdit> {
   final sixty1 = TextEditingController();
   final sixty2 = TextEditingController();
   final sixty3 = TextEditingController();
+  @override
   Widget build(BuildContext context) {
     return StatefulBuilder(builder: (context, setState) {
-      return Container(
+      return SizedBox(
         width: 200,
         child: AlertDialog(
           title: const Text('درجات الطالب'),

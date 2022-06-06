@@ -1,7 +1,7 @@
 import 'package:schoolmanagement/models/instructor.dart';
 import 'package:schoolmanagement/models/student.dart';
 
-class CourseIns {
+class InsCourse {
   final int id;
   final String level;
   final String year;
@@ -13,7 +13,7 @@ class CourseIns {
   final Instructor? instructor;
   final List<Student>? student;
   final List<Student>? carries;
-  const CourseIns(
+  const InsCourse(
       {required this.id,
       required this.level,
       required this.year,
@@ -26,8 +26,8 @@ class CourseIns {
       required this.instructor,
       required this.carries});
 
-  factory CourseIns.fromJson(Map<String, dynamic> json) {
-    return CourseIns(
+  factory InsCourse.fromJson(Map<String, dynamic> json) {
+    return InsCourse(
         id: json['id'],
         nameAr: json['name_ar'],
         nameEn: json['name_en'],

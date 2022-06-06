@@ -1,23 +1,23 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
+import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/students.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/translate.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:schoolmanagement/components/utils.dart';
+
 import '../api.dart';
 
-class addStuAlert extends StatelessWidget {
-  late String sel_level = 'بكالوريوس';
-  late String sel_year = 'السنة الاولى';
-  addStuAlert({Key? key}) : super(key: key);
-
-  final List<String> _Level = [
+class AddStuAlert extends StatelessWidget {
+  String? sellevel;
+  String? selyear;
+  final List<String> _level = [
     'بكالوريوس',
     'ماجستير',
     'دكتوراة',
   ];
-  final List<String> _Year = [
+
+  final List<String> _year = [
     'السنة الاولى',
     'السنة الثانية',
     'السنة الثالثة',
@@ -32,33 +32,10 @@ class addStuAlert extends StatelessWidget {
   TextEditingController nameEn = TextEditingController();
   var snack = '';
   var error = false;
-  Future _addStu() async {
-    var data = {
-      'name_ar': nameAr.text,
-      'name_en': nameEn.text,
-      "level": translateLevelAE(sel_level),
-      "year": translateYearAE(sel_year)
-    };
-
-    try {
-      final response = await CallApi().postData(data, '/api/students/create');
-
-      if (response.statusCode == 403) {
-        snack = 'لا تملك الصلاحية لاضافة طالب';
-        error = true;
-      } else {
-        snack = 'تم اضافة الطالب بنجاح';
-      }
-      nameAr.text = '';
-      nameEn.text = '';
-    } catch (e) {
-      snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
-      error = true;
-    }
-  }
-
   final _formKey = GlobalKey<FormState>();
+  AddStuAlert({Key? key}) : super(key: key);
 
+  @override
   Widget build(BuildContext context) {
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
@@ -98,7 +75,7 @@ class addStuAlert extends StatelessWidget {
                       textDirection: TextDirection.ltr,
                       decoration: InputDecoration(
                         labelText: 'اسم الطالب english',
-                        prefixIcon: const Icon(Icons.password),
+                        prefixIcon: const Icon(Icons.person),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -107,20 +84,20 @@ class addStuAlert extends StatelessWidget {
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Container(
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: 40,
                         child: ButtonTheme(
                           child: DropdownButton<String>(
                             isExpanded: true,
                             hint: const Text('اختيار المرحلة الدراسية'),
-                            value: sel_level,
+                            value: sellevel,
                             onChanged: (newValue) {
                               setState(() {
-                                sel_level = newValue.toString();
+                                sellevel = newValue.toString();
                               });
                             },
-                            items: _Level.map((level) {
+                            items: _level.map((level) {
                               return DropdownMenuItem(
                                 child: Text(level),
                                 value: level,
@@ -133,20 +110,20 @@ class addStuAlert extends StatelessWidget {
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Container(
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: 40,
                         child: ButtonTheme(
                           child: DropdownButtonFormField(
                             isExpanded: true,
                             hint: const Text('اختيار السنة الدراسية'),
-                            value: sel_year,
+                            value: selyear,
                             onChanged: (newValue) {
                               setState(() {
-                                sel_year = newValue.toString();
+                                selyear = newValue.toString();
                               });
                             },
-                            items: _Year.map((year) {
+                            items: _year.map((year) {
                               return DropdownMenuItem(
                                 child: Text(year),
                                 value: year,
@@ -191,4 +168,29 @@ class addStuAlert extends StatelessWidget {
   }
 
   void setState(Null Function() param0) {}
+
+  Future _addStu() async {
+    var data = {
+      'name_ar': nameAr.text,
+      'name_en': nameEn.text,
+      "level": translateLevelAE(sellevel!),
+      "year": translateYearAE(selyear!)
+    };
+
+    try {
+      final response = await CallApi().postData(data, '/api/students/create');
+
+      if (response.statusCode == 403) {
+        snack = 'لا تملك الصلاحية لاضافة طالب';
+        error = true;
+      } else {
+        snack = 'تم اضافة الطالب بنجاح';
+      }
+      nameAr.text = '';
+      nameEn.text = '';
+    } catch (e) {
+      snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
+      error = true;
+    }
+  }
 }

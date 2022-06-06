@@ -1,17 +1,10 @@
-import 'dart:convert';
-import 'package:email_validator/email_validator.dart';
-import 'package:schoolmanagement/api.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:schoolmanagement/components/utils.dart';
+import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/components/buttoncards.dart';
-import 'package:schoolmanagement/mains/semester.dart';
-
+import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/module/extension.dart';
-import 'package:http/http.dart' as http;
 import 'package:schoolmanagement/translate.dart';
-import '../mains/homepage.dart';
-import '../mains/users.dart';
 
 class SemesterEditDash extends StatefulWidget {
   const SemesterEditDash({Key? key}) : super(key: key);
@@ -22,16 +15,16 @@ class SemesterEditDash extends StatefulWidget {
 
 class _SemesterEditDashState extends State<SemesterEditDash> {
   final _formKey = GlobalKey<FormState>();
-  final List<String> _number = ['الفصل الاول', 'الفصل الثاني'];
-  String selection = 'الفصل الاول';
+  final List<String> _number = ['الكورس الاول', 'الكورس الثاني'];
+  String? selection;
   TextEditingController semyearController = TextEditingController();
 
-  late String sel_year = 'السنة الاولى';
+  late String selyear = 'السنة الاولى';
 
   Future _addSem() async {
     var data = {
       'year': semyearController.text,
-      'number': translateNumAE(selection),
+      'number': translateNumAE(selection!),
     };
 
     try {
@@ -39,15 +32,15 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
 
       if (response.statusCode == 409) {
         context.showSnackBar(
-            'لا يمكنك بدأ فصل جديد, الرجاء انهاء الفصل الحالي اولاً',
+            'لا يمكنك بدأ كورس جديد, الرجاء انهاء ألكورس الحالي اولاً',
             isError: true);
       } else if (response.statusCode == 403) {
         context.showSnackBar('لا تملك الصلاحية', isError: true);
       } else {
-        context.showSnackBar('تم بدأ الفصل بنجاح');
+        context.showSnackBar('تم بدأ الكورس بنجاح');
       }
       semyearController.text = '';
-    } catch (e, s) {
+    } catch (e) {
       context.showSnackBar('احد الحقول فارغة او غير صحيحة', isError: true);
     }
   }
@@ -59,20 +52,19 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
       final response = await CallApi().postData(data, '/api/semesters/end');
 
       if (response.statusCode == 409) {
-        context.showSnackBar('الفصل الدراسي منتهي, الرجاء بدأ فصل دراسي جديد',
+        context.showSnackBar('الكورس الدراسي منتهي, الرجاء بدأ فصل دراسي جديد',
             isError: true);
       } else {
-        context.showSnackBar('تم انهاء الفصل بنجاح');
+        context.showSnackBar('تم انهاء الكورس بنجاح');
       }
       semyearController.text = '';
-    } catch (e, s) {
+    } catch (e) {
       context.showSnackBar('حدث خطأ ما, يرجى اعادة المحاولة', isError: true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    double _width = MediaQuery.of(context).size.width;
     return SingleChildScrollView(
       child: SizedBox(
         height: MediaQuery.of(context).size.height / 1.2,
@@ -104,7 +96,7 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                         bezierCOlor: Colors.blue,
                         value: 'بدأ فصل دراسي جديد',
                         add: IconButton(
-                          icon: const Icon(Icons.add),
+                          icon: const Icon(Icons.event_available_outlined),
                           onPressed: () {
                             showDialog(
                               context: context,
@@ -121,16 +113,24 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                                             TextFormField(
                                               controller: semyearController,
                                               validator: (value) {
+                                                final yearReg =
+                                                    RegExp(r"\d{4}-\d{4}");
                                                 if (value == null ||
                                                     value.isEmpty) {
                                                   return "لا يمكن ترك الحقل فارغاً";
                                                 }
+                                                if (!yearReg.hasMatch(value)) {
+                                                  return "صيغة السنة غير صحيحة";
+                                                }
+
                                                 return null;
                                               },
                                               decoration: InputDecoration(
                                                 labelText: 'السنة الدراسية',
+                                                hintText:
+                                                    'صيغة الكتابة: 20xx-20xx',
                                                 prefixIcon: const Icon(
-                                                    Icons.email_outlined),
+                                                    Icons.date_range_outlined),
                                                 border: OutlineInputBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(10),
@@ -150,8 +150,8 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                                                   child:
                                                       DropdownButtonFormField(
                                                     isExpanded: true,
-                                                    hint:
-                                                        const Text('رقم الفصل'),
+                                                    hint: const Text(
+                                                        'رقم الكورس'),
                                                     value: selection,
                                                     onChanged: (newValue) {
                                                       setState(() {
@@ -167,7 +167,7 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                                                     }).toList(),
                                                     validator: (value) {
                                                       if (value == null) {
-                                                        return " الرجاء اختيار رقم الفصل";
+                                                        return " الرجاء اختيار رقم الكورس";
                                                       }
                                                       return null;
                                                     },
@@ -192,8 +192,7 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                                       onPressed: () async {
                                         if (_formKey.currentState!.validate()) {
                                           await _addSem();
-                                          // passwordController.text = '';
-                                          //   emailController.text = '';
+
                                           Navigator.pop(context);
                                         }
                                       },
@@ -214,17 +213,17 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                     children: [
                       ButtonCard(
                         bezierCOlor: Colors.greenAccent,
-                        value: 'انهاء الفصل الدراسي الحالي',
+                        value: 'انهاء الكورس الدراسي الحالي',
                         add: IconButton(
-                          icon: const Icon(Icons.add),
+                          icon: const Icon(Icons.event_busy_outlined),
                           onPressed: () {
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: const Text('انهاء الفصل الدراسي الحالي'),
-                                content: Container(
-                                    child: Text(
-                                        ' هل انت متأكد؟ لن تتمكن من تعديل معلومات الفصل الدراسي هذا بعد انهاءه')),
+                                title:
+                                    const Text('انهاء الكورس الدراسي الحالي'),
+                                content: const Text(
+                                    ' هل انت متأكد؟ لن تتمكن من تعديل معلومات الكورس الدراسي هذا بعد انهاءه'),
                                 actions: [
                                   ElevatedButton(
                                       onPressed: () {

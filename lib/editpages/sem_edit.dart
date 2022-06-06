@@ -1,19 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
-import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
-import 'package:schoolmanagement/dashboards/dashboars.dart';
 import 'package:schoolmanagement/dashboards/sem_edit_dash.dart';
 import 'package:schoolmanagement/mains/login.dart';
 import 'package:schoolmanagement/mains/settingsmain.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 
 class SemEditMain extends StatefulWidget {
   static const String id = 'semedit';
@@ -24,7 +18,7 @@ class SemEditMain extends StatefulWidget {
 }
 
 class _SemEditMainState extends State<SemEditMain> {
-  SideBarWidget _sideBarWidget = SideBarWidget();
+  final SideBarWidget _sideBarWidget = SideBarWidget();
   late int res;
 
   @override
@@ -35,7 +29,7 @@ class _SemEditMainState extends State<SemEditMain> {
             children: [
               Visibility(
                   child: CustomText(
-                text: 'تعديل الفصل الدراسي',
+                text: 'تعديل الكورس الدراسي',
                 color: lightgrey,
                 size: 20,
                 fontWeight: FontWeight.bold,
@@ -102,7 +96,7 @@ class _SemEditMainState extends State<SemEditMain> {
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
-              children: <Widget>[
+              children: const <Widget>[
                 Visibility(child: SemesterEditDash()),
               ],
             ),

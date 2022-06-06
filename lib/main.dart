@@ -8,13 +8,11 @@ import 'package:schoolmanagement/mains/grads.dart';
 import 'package:schoolmanagement/mains/homepage.dart';
 import 'package:schoolmanagement/mains/instructors.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
-import 'package:schoolmanagement/mains/profilesections.dart';
 
 import 'package:schoolmanagement/mains/settingsmain.dart';
 import 'package:schoolmanagement/mains/students.dart';
 
 import 'mains/login.dart';
-import 'mains/semester.dart';
 import 'mains/users.dart';
 
 void main() {
@@ -41,14 +39,12 @@ class MyApp extends StatelessWidget {
       home: const Login(),
       routes: {
         HomePage.id: (_) => const HomePage(),
-        ProfileSection.id: (_) => const ProfileSection(),
         Students.id: (_) => const Students(),
         Settings.id: (_) => const Settings(),
         Courses.id: (_) => const Courses(),
         Instructors.id: (_) => const Instructors(),
         DegreeHome.id: (_) => const DegreeHome(),
         Users.id: (_) => const Users(),
-        Semesters.id: (_) => const Semesters(),
         Grads.id: (_) => const Grads(),
         SemEditMain.id: (_) => const SemEditMain(),
       },

@@ -1,4 +1,3 @@
-import 'package:schoolmanagement/models/instructor.dart';
 import 'package:schoolmanagement/models/student.dart';
 
 import 'course.dart';
@@ -16,7 +15,7 @@ class Degree {
   final String? final3;
   final String? approx;
   final String? sts;
-  final Course? coursename;
+  final InsCourse? coursename;
   final Student? stuname;
   const Degree(
       {this.id,
@@ -48,7 +47,7 @@ class Degree {
         final3: json['final3'],
         approx: json['approx'],
         sts: json['sts'],
-        coursename: Course?.fromJson(json["courses"]),
+        coursename: InsCourse?.fromJson(json["courses"]),
         stuname: Student?.fromJson(json["student"]));
   }
 }

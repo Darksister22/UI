@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
-import 'package:http/http.dart' as http;
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/editpages/inst_edit.dart';
@@ -13,6 +12,7 @@ import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../addpages/ins_add.dart';
+import '../api.dart';
 import 'login.dart';
 import 'settingsmain.dart';
 
@@ -22,8 +22,7 @@ Widget _verticalDivider = const VerticalDivider(
 );
 
 Future<List<Instructor>> fetchAlbum() async {
-  final response =
-      await http.get(Uri.parse('http://127.0.0.1:8000/api/instructors'));
+  final response = await CallApi().getData('/api/instructors');
   if (response.statusCode == 200) {
     final result = jsonDecode(response.body) as List;
 
@@ -92,7 +91,6 @@ class _InstructorsState extends State<Instructors> {
     SideBarWidget _sideBar = SideBarWidget();
     TextEditingController search = TextEditingController();
 
-    final _formKey = GlobalKey<FormState>();
 
     return AdminScaffold(
       appBar: AppBar(
@@ -168,7 +166,7 @@ class _InstructorsState extends State<Instructors> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Container(
+              SizedBox(
                 width: (MediaQuery.of(context).size.width) / 4,
                 child: TextButton(
                   child: Padding(
@@ -196,7 +194,7 @@ class _InstructorsState extends State<Instructors> {
                     } else {
                       showDialog(
                         context: context,
-                        builder: (context) => addInsAlert(),
+                        builder: (context) => AddInsAlert(),
                       );
                     }
                   },
@@ -271,7 +269,7 @@ class _InstructorsState extends State<Instructors> {
                               showDialog(
                                 context: context,
                                 builder: (context) =>
-                                    instEditAlert(current: _data),
+                                    InstEditAlert(current: _data),
                               );
                             }),
                             columnSpacing: 95,

@@ -1,39 +1,36 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/translate.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:schoolmanagement/components/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../addpages/attend.dart';
 import '../api.dart';
 import '../mains/students.dart';
 
-class stuEditAlert extends StatefulWidget {
-  Student current;
-  stuEditAlert({Key? key, required this.current}) : super(key: key);
+class StuEditAlert extends StatefulWidget {
+ final Student current;
+  const StuEditAlert({Key? key, required this.current}) : super(key: key);
 
   @override
-  State<stuEditAlert> createState() => _stuEditAlertState();
+  State<StuEditAlert> createState() => _StuEditAlertState();
 }
 
-class _stuEditAlertState extends State<stuEditAlert> {
-  late String sel_level = 'بكالوريوس';
+class _StuEditAlertState extends State<StuEditAlert> {
+  late String sellevel = 'بكالوريوس';
 
-  late String sel_year = 'السنة الاولى';
+  late String selyear = 'السنة الاولى';
 
   bool isEnabled = false;
 
-  final List<String> _Level = [
+  final List<String> _level = [
     'بكالوريوس',
     'ماجستير',
     'دكتوراة',
   ];
 
-  final List<String> _Year = [
+  final List<String> _year = [
     'السنة الاولى',
     'السنة الثانية',
     'السنة الثالثة',
@@ -70,7 +67,7 @@ class _stuEditAlertState extends State<stuEditAlert> {
     var data = {};
 
     try {
-      final response =
+      
           await CallApi().postData(data, "/api/students/destroy/$id");
 
       snack = 'تم حذف الطالب بنجاح';
@@ -86,13 +83,13 @@ class _stuEditAlertState extends State<stuEditAlert> {
       "id": id,
       'name_ar': nameAr.text,
       'name_en': nameEn.text,
-      "level": translateLevelAE(sel_level),
-      "year": translateYearAE(sel_year),
+      "level": translateLevelAE(sellevel),
+      "year": translateYearAE(selyear),
       "note": note.text
     };
 
     try {
-      final response = await CallApi().postData(data, "/api/students/update");
+       await CallApi().postData(data, "/api/students/update");
 
       snack = 'تم تحديث معلومات الطالب بنجاح';
     } catch (e) {
@@ -103,6 +100,7 @@ class _stuEditAlertState extends State<stuEditAlert> {
 
   final _formKey = GlobalKey<FormState>();
 
+  @override
   Widget build(BuildContext context) {
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
@@ -153,7 +151,7 @@ class _stuEditAlertState extends State<stuEditAlert> {
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Container(
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: 40,
                         child: ButtonTheme(
@@ -162,13 +160,13 @@ class _stuEditAlertState extends State<stuEditAlert> {
                             child: DropdownButton<String>(
                               isExpanded: true,
                               hint: const Text('اختيار المرحلة الدراسية'),
-                              value: sel_level,
+                              value: sellevel,
                               onChanged: (newValue) {
                                 setState(() {
-                                  sel_level = newValue.toString();
+                                  sellevel = newValue.toString();
                                 });
                               },
-                              items: _Level.map((level) {
+                              items: _level.map((level) {
                                 return DropdownMenuItem(
                                   child: Text(level),
                                   value: level,
@@ -182,7 +180,7 @@ class _stuEditAlertState extends State<stuEditAlert> {
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Container(
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: 40,
                         child: ButtonTheme(
@@ -194,10 +192,10 @@ class _stuEditAlertState extends State<stuEditAlert> {
                               value: translateYearEA(widget.current.year),
                               onChanged: (newValue) {
                                 setState(() {
-                                  sel_year = newValue.toString();
+                                  selyear = newValue.toString();
                                 });
                               },
-                              items: _Year.map((year) {
+                              items: _year.map((year) {
                                 return DropdownMenuItem(
                                   child: Text(year),
                                   value: year,
@@ -275,7 +273,7 @@ class _stuEditAlertState extends State<stuEditAlert> {
                   Navigator.pop(context);
                   showDialog(
                       context: context,
-                      builder: (contest) => addCarry(current: widget.current));
+                      builder: (contest) => AddCarry(current: widget.current));
                 }
               },
               child: const Text('اضافة الطالب الى مادة')),

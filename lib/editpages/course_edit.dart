@@ -3,49 +3,43 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/course.dart';
-
-import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/models/instructor.dart';
-import 'package:schoolmanagement/stylefiles/style.dart';
-import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/module/extension.dart';
-import 'package:schoolmanagement/mains/homepage.dart';
+import 'package:schoolmanagement/stylefiles/customtext.dart';
+import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+
 import '../api.dart';
 import '../mains/login.dart';
 import '../mains/settingsmain.dart';
 import '../mains/stu_sem.dart';
-import '../models/course.dart';
+import '../models/courseins.dart';
 import '../translate.dart';
 
-class editCourse extends StatefulWidget {
-  final Course current;
+class EditCourse extends StatefulWidget {
+  final InsCourse current;
 
-  const editCourse({Key? key, required this.current}) : super(key: key);
+  const EditCourse({Key? key, required this.current}) : super(key: key);
 
   @override
-  _editCourseState createState() => _editCourseState();
+  _EditCourseState createState() => _EditCourseState();
 }
 
-final _formKey = GlobalKey<FormState>();
-
-class _editCourseState extends State<editCourse> {
+class _EditCourseState extends State<EditCourse> {
   final _courseEN = TextEditingController();
   final _courseAR = TextEditingController();
   final _code = TextEditingController();
 
   final _unit = TextEditingController();
   final _success = TextEditingController(text: '50');
-  List<String> _Level = [
+  final List<String> _level = [
     'بكالوريوس',
     'ماجستير',
     'دكتوراة',
   ];
-  List<String> _Year = [
+  final List<String> _year = [
     'السنة الاولى',
     'السنة الثانية',
     'السنة الثالثة',
@@ -58,32 +52,23 @@ class _editCourseState extends State<editCourse> {
   ];
   var snack = '';
   var error = false;
+
   Future _editCrs() async {
     var data = {
-      "ins_name": sel_ins.toString(),
-      "level": translateLevelAE(sel_level),
-      "year": translateYearAE(sel_year),
       "name_ar": _courseAR.text,
       "name_en": _courseEN.text,
-      "code": _code.text,
-      "success": int.parse(_success.text),
-      "unit": int.parse(_unit.text)
+      'level': translateLevelAE(sellevel),
+      'code': _code.text,
+      'unit': _unit.text,
+      'year': translateYearAE(selyear),
+      'ins_name': selins.toString(),
+      'success': _success.text
     };
 
     try {
-      final response = await CallApi().postData(data, '/api/courses/update');
-      print(response.statusCode);
-      if (response.statusCode == 409) {
-        snack = 'لا يوجد تدريسي بهذا الاسم';
-        error = true;
-      } else {
-        snack = 'تم اضافة الكورس بنجاح';
-      }
-      _courseAR.text = '';
-      _courseEN.text = '';
-      _code.text = "";
-      _unit.text = "";
-      _success.text = "50";
+      await CallApi().postData(data, "/api/courses/update");
+
+      snack = 'تم تحديث معلومات الطالب بنجاح';
     } catch (e) {
       snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
       error = true;
@@ -91,8 +76,8 @@ class _editCourseState extends State<editCourse> {
   }
 
   Future<List<Instructor>> fetchAlbum() async {
-    final response =
-        await http.get(Uri.parse('http://127.0.0.1:8000/api/instructors'));
+    final response = await CallApi().getData('/api/instructors');
+
     if (response.statusCode == 200) {
       final result = jsonDecode(response.body) as List;
 
@@ -108,10 +93,10 @@ class _editCourseState extends State<editCourse> {
     var data = {};
 
     try {
-      final response =
+     
           await CallApi().postData(data, "/api/courses/destroy/$id");
 
-      snack = 'تم حذف الطالب بنجاح';
+      snack = 'تم حذف المادة بنجاح';
     } catch (e) {
       snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
       error = true;
@@ -120,9 +105,9 @@ class _editCourseState extends State<editCourse> {
 
   late int id;
 
-  late String sel_level = 'بكالوريوس';
-  late String sel_year = 'السنة الاولى';
-  late String? sel_ins = null;
+  late String sellevel = 'بكالوريوس';
+  late String selyear = 'السنة الاولى';
+   String? selins ;
   late Future<List<Instructor>> futureAlbum;
   List<Instructor> _data = [];
   @override
@@ -134,10 +119,9 @@ class _editCourseState extends State<editCourse> {
     _code.text = widget.current.code;
     _success.text = widget.current.success.toString();
     id = widget.current.id;
-    sel_year = translateYearEA(widget.current.year);
-    //  sel_ins = widget.current.instructor!.nameAr;
-    sel_ins = null;
-    sel_level = translateLevelEA(widget.current.level);
+    selins = widget.current.instructor!.nameAr;
+    selyear = translateYearEA(widget.current.year);
+    sellevel = translateLevelEA(widget.current.level);
     _unit.text = widget.current.unit.toString();
   }
 
@@ -260,10 +244,10 @@ class _editCourseState extends State<editCourse> {
                                       return DropdownButton<String>(
                                         isExpanded: true,
                                         hint: const Text('اختيار التدريسي'),
-                                        value: sel_ins,
+                                        value: selins,
                                         onChanged: (newValue) {
                                           setState(() {
-                                            sel_ins = newValue.toString();
+                                            selins = newValue.toString();
                                           });
                                         },
                                         items: list.map((ins) {
@@ -369,13 +353,13 @@ class _editCourseState extends State<editCourse> {
                             child: DropdownButton<String>(
                               isExpanded: true,
                               hint: const Text('اختيار المرحلة الدراسية'),
-                              value: sel_level,
+                              value: sellevel,
                               onChanged: (newValue) {
                                 setState(() {
-                                  sel_level = newValue.toString();
+                                  sellevel = newValue.toString();
                                 });
                               },
-                              items: _Level.map((level) {
+                              items: _level.map((level) {
                                 return DropdownMenuItem(
                                   child: Text(level),
                                   value: level,
@@ -395,13 +379,13 @@ class _editCourseState extends State<editCourse> {
                             child: DropdownButtonFormField(
                               isExpanded: true,
                               hint: const Text('اختيار السنة الدراسية'),
-                              value: sel_year,
+                              value: selyear,
                               onChanged: (newValue) {
                                 setState(() {
-                                  sel_year = newValue.toString();
+                                  selyear = newValue.toString();
                                 });
                               },
-                              items: _Year.map((year) {
+                              items: _year.map((year) {
                                 return DropdownMenuItem(
                                   child: Text(year),
                                   value: year,
@@ -462,7 +446,7 @@ class _editCourseState extends State<editCourse> {
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              'اضافة',
+                              'حذف المادة',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -480,7 +464,7 @@ class _editCourseState extends State<editCourse> {
                           ),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              await _editCrs();
+                              await _delStu();
 
                               Navigator.pushReplacement(
                                 context,
@@ -503,7 +487,7 @@ class _editCourseState extends State<editCourse> {
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              'حذف المادة',
+                              'اضافة',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -521,7 +505,7 @@ class _editCourseState extends State<editCourse> {
                           ),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              await _delStu();
+                              await _editCrs();
 
                               Navigator.pushReplacement(
                                 context,

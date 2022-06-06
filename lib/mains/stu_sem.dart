@@ -5,14 +5,13 @@ import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/editpages/course_edit.dart';
 import 'package:schoolmanagement/mains/deg_course.dart';
 import 'package:schoolmanagement/mains/settingsmain.dart';
-import 'package:schoolmanagement/models/course.dart';
+import 'package:schoolmanagement/models/courseins.dart';
 import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../addpages/addCourse.dart';
 import '../editpages/deg_edit.dart';
 import '../stylefiles/customtext.dart';
 import 'login.dart';
@@ -24,8 +23,8 @@ Widget _verticalDivider = const VerticalDivider(
 
 class MyData extends DataTableSource {
   final List<Student> snapshot;
-  final Function(Student, Course) onEditPressed;
-  final Course id;
+  final Function(Student, InsCourse) onEditPressed;
+  final InsCourse id;
   MyData(this.snapshot, this.id, this.onEditPressed);
 
   // Generate some made-up data
@@ -78,25 +77,25 @@ class MyData extends DataTableSource {
 
 class StuSem extends StatefulWidget {
   static const String id = 'studentsem';
-  Course current;
-  StuSem({Key? key, required this.current}) : super(key: key);
+  final InsCourse current;
+  const StuSem({Key? key, required this.current}) : super(key: key);
 
   @override
   State<StuSem> createState() => _StuSemState();
 }
 
 class _StuSemState extends State<StuSem> {
-  String? sel_level;
+  String? sellevel;
 
-  String? sel_year;
+  String? selyear;
 
-  final List<String> _Level = [
+  final List<String> _level = [
     'بكالوريوس',
     'ماجستير',
     'دكتوراة',
   ];
 
-  final List<String> _Year = [
+  final List<String> _year = [
     'السنة الاولى',
     'السنة الثانية',
     'السنة الثالثة',
@@ -125,6 +124,7 @@ class _StuSemState extends State<StuSem> {
 
   final _formKey = GlobalKey<FormState>();
 
+  @override
   Widget build(BuildContext context) {
     SideBarWidget _sideBar = SideBarWidget();
     TextEditingController search = TextEditingController();
@@ -134,7 +134,7 @@ class _StuSemState extends State<StuSem> {
           children: [
             Visibility(
                 child: CustomText(
-              text: 'تفاصيل الطلبة - نظام اللجنة الامتحانية',
+              text: 'تفاصيل المادة - نظام اللجنة الامتحانية',
               color: lightgrey,
               size: 20,
               fontWeight: FontWeight.bold,
@@ -233,7 +233,7 @@ class _StuSemState extends State<StuSem> {
                         } else {
                           showDialog(
                             context: context,
-                            builder: (context) => editCourse(
+                            builder: (context) => EditCourse(
                               current: widget.current,
                             ),
                           );
@@ -347,7 +347,7 @@ class _StuSemState extends State<StuSem> {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: Text('عرض المعلومات حسب...'),
+                              title: const Text('عرض المعلومات حسب...'),
                               content: SingleChildScrollView(
                                 child: Column(
                                   children: [
@@ -365,18 +365,18 @@ class _StuSemState extends State<StuSem> {
                                               child: ButtonTheme(
                                                 child: DropdownButtonFormField(
                                                   isExpanded: true,
-                                                  hint: Text(
+                                                  hint: const Text(
                                                       'اختيار المرحلة الدراسية'),
-                                                  value: sel_level,
+                                                  value: sellevel,
                                                   onChanged: (newValue) {
                                                     setState(() {
-                                                      sel_level =
+                                                      sellevel =
                                                           newValue.toString();
                                                     });
                                                   },
-                                                  items: _Level.map((level) {
+                                                  items: _level.map((level) {
                                                     return DropdownMenuItem(
-                                                      child: new Text(level),
+                                                      child: Text(level),
                                                       value: level,
                                                     );
                                                   }).toList(),
@@ -384,7 +384,7 @@ class _StuSemState extends State<StuSem> {
                                               ),
                                             ),
                                           ),
-                                          SizedBox(height: 10),
+                                          const SizedBox(height: 10),
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: SizedBox(
@@ -395,18 +395,18 @@ class _StuSemState extends State<StuSem> {
                                               child: ButtonTheme(
                                                 child: DropdownButtonFormField(
                                                   isExpanded: true,
-                                                  hint: Text(
+                                                  hint: const Text(
                                                       'اختيار السنة الدراسية'),
-                                                  value: sel_year,
+                                                  value: selyear,
                                                   onChanged: (newValue) {
                                                     setState(() {
-                                                      sel_year =
+                                                      selyear =
                                                           newValue.toString();
                                                     });
                                                   },
-                                                  items: _Year.map((year) {
+                                                  items: _year.map((year) {
                                                     return DropdownMenuItem(
-                                                      child: new Text(year),
+                                                      child: Text(year),
                                                       value: year,
                                                     );
                                                   }).toList(),
@@ -427,42 +427,42 @@ class _StuSemState extends State<StuSem> {
                                       // sel_level = null;
                                       // Navigator.pop(context);
                                     },
-                                    child: Text('الغاء')),
+                                    child: const Text('الغاء')),
                                 ElevatedButton(
                                     onPressed: () {
                                       setState(() {
-                                        if (sel_level == null &&
-                                            sel_year == null) {
+                                        if (sellevel == null &&
+                                            selyear == null) {
                                           Navigator.pop(context);
                                           return;
-                                        } else if (sel_year == null &&
-                                            sel_level != null) {
+                                        } else if (selyear == null &&
+                                            sellevel != null) {
                                           _data = _data.where((s) {
                                             return s.level.contains(
-                                                translateLevelAE(sel_level!));
+                                                translateLevelAE(sellevel!));
                                           }).toList();
-                                        } else if (sel_level == null &&
-                                            sel_year != null) {
+                                        } else if (sellevel == null &&
+                                            selyear != null) {
                                           _data = _data.where((s) {
                                             return s.year.contains(
-                                                translateYearAE(sel_year!));
+                                                translateYearAE(selyear!));
                                           }).toList();
                                         } else {
                                           _data = _data.where((s) {
                                             return s.year.contains(
                                                     translateYearAE(
-                                                        sel_year!)) &&
+                                                        selyear!)) &&
                                                 s.level.contains(
                                                     translateLevelAE(
-                                                        sel_level!));
+                                                        sellevel!));
                                           }).toList();
                                         }
                                       });
-                                      sel_year = null;
-                                      sel_level = null;
+                                      selyear = null;
+                                      sellevel = null;
                                       Navigator.pop(context);
                                     },
-                                    child: Text('اضافة'))
+                                    child: const Text('البحث'))
                               ],
                             ),
                           );

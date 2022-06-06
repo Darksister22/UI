@@ -1,27 +1,21 @@
 import 'dart:convert';
-import 'dart:js';
-import 'package:schoolmanagement/api.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
-import 'package:http/http.dart' as http;
-
+import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
-import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/editpages/usr_edit.dart';
-import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/models/users.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
-import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../addpages/stu_add.dart';
-import '../editpages/stu_edit.dart';
+
 import 'login.dart';
 import 'settingsmain.dart';
 
-Widget _verticalDivider = VerticalDivider(
+Widget _verticalDivider = const VerticalDivider(
   color: Colors.grey,
   thickness: 1,
 );
@@ -35,8 +29,7 @@ class Users extends StatefulWidget {
 }
 
 Future<List<User>> fetchAlbum() async {
-  final response =
-      await http.get(Uri.parse('http://127.0.0.1:8000/api/users/get'));
+  final response = await CallApi().getData('/api/users/get');
   if (response.statusCode == 200) {
     final result = jsonDecode(response.body) as List;
 
@@ -59,13 +52,9 @@ class _UsersState extends State<Users> {
   @override
   Widget build(BuildContext context) {
     SideBarWidget _sideBar = SideBarWidget();
-    TextEditingController emailController = TextEditingController();
     TextEditingController search = TextEditingController();
-    TextEditingController nameController = TextEditingController();
     late String selection = 'عضو - قراءة و تعديل';
     final List<String> _auth = ['عضو - قراءة و تعديل', 'رئيس - جميع الصلاحيات'];
-    String? sel_level;
-    String? sel_year;
     final _formKey = GlobalKey<FormState>();
 
     return AdminScaffold(
@@ -206,7 +195,7 @@ class _UsersState extends State<Users> {
                               showDialog(
                                 context: context,
                                 builder: (context) =>
-                                    userEditAlert(current: _data),
+                                    UserEditAlert(current: _data),
                               );
                             }),
                             columnSpacing: 45,
@@ -217,7 +206,7 @@ class _UsersState extends State<Users> {
                                     showDialog(
                                       context: context,
                                       builder: (context) => AlertDialog(
-                                        title: Text('عرض المعلومات حسب...'),
+                                        title: const Text('عرض المعلومات حسب...'),
                                         content: SingleChildScrollView(
                                           child: Column(
                                             children: [
@@ -229,7 +218,7 @@ class _UsersState extends State<Users> {
                                                       padding:
                                                           const EdgeInsets.all(
                                                               8.0),
-                                                      child: Container(
+                                                      child: SizedBox(
                                                         width: MediaQuery.of(
                                                                 context)
                                                             .size
@@ -272,7 +261,7 @@ class _UsersState extends State<Users> {
                                               onPressed: () {
                                                 Navigator.pop(context);
                                               },
-                                              child: Text('الغاء')),
+                                              child: const Text('الغاء')),
                                           ElevatedButton(
                                               onPressed: () {
                                                 setState(() {
@@ -285,7 +274,7 @@ class _UsersState extends State<Users> {
                                                 });
                                                 Navigator.pop(context);
                                               },
-                                              child: Text('البحث'))
+                                              child: const Text('البحث'))
                                         ],
                                       ),
                                     );

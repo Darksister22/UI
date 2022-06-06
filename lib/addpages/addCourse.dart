@@ -1,9 +1,10 @@
+// ignore_for_file: file_names
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
-import 'package:http/http.dart' as http;
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/course.dart';
 import 'package:schoolmanagement/module/extension.dart';
@@ -17,27 +18,27 @@ import '../mains/settingsmain.dart';
 import '../models/instructor.dart';
 import '../translate.dart';
 
-class addCourse extends StatefulWidget {
-  const addCourse({Key? key}) : super(key: key);
+class AddCourse extends StatefulWidget {
+  const AddCourse({Key? key}) : super(key: key);
 
   @override
-  _addCourseState createState() => _addCourseState();
+  _AddCourseState createState() => _AddCourseState();
 }
 
-class _addCourseState extends State<addCourse> {
+class _AddCourseState extends State<AddCourse> {
   final _courseEN = TextEditingController();
   final _courseAR = TextEditingController();
   final _code = TextEditingController();
   final _unit = TextEditingController();
   final _success = TextEditingController(text: '50');
   final _intructor = TextEditingController();
-  List<String> _Level = [
+  final List<String> _level = [
     'بكالوريوس',
     'ماجستير',
     'دكتوراة',
   ];
 
-  List<String> _Year = [
+  final List<String> _year = [
     'السنة الاولى',
     'السنة الثانية',
     'السنة الثالثة',
@@ -51,9 +52,9 @@ class _addCourseState extends State<addCourse> {
 
   var snack = '';
   var error = false;
-  late String? sel_level = null;
-  late String? sel_ins = null;
-  late String? sel_year = null;
+  String? sellevel;
+  String? selins;
+  String? selyear;
   late Future<List<Instructor>> futureAlbum;
   List<Instructor> _data = [];
   @override
@@ -181,10 +182,10 @@ class _addCourseState extends State<addCourse> {
                                       return DropdownButton<String>(
                                         isExpanded: true,
                                         hint: const Text('اختيار التدريسي'),
-                                        value: sel_ins,
+                                        value: selins,
                                         onChanged: (newValue) {
                                           setState(() {
-                                            sel_ins = newValue.toString();
+                                            selins = newValue.toString();
                                           });
                                         },
                                         items: list.map((ins) {
@@ -290,13 +291,13 @@ class _addCourseState extends State<addCourse> {
                             child: DropdownButton<String>(
                               isExpanded: true,
                               hint: const Text('اختيار المرحلة الدراسية'),
-                              value: sel_level,
+                              value: sellevel,
                               onChanged: (newValue) {
                                 setState(() {
-                                  sel_level = newValue.toString();
+                                  sellevel = newValue.toString();
                                 });
                               },
-                              items: _Level.map((level) {
+                              items: _level.map((level) {
                                 return DropdownMenuItem(
                                   child: Text(level),
                                   value: level,
@@ -316,13 +317,13 @@ class _addCourseState extends State<addCourse> {
                             child: DropdownButtonFormField(
                               isExpanded: true,
                               hint: const Text('اختيار السنة الدراسية'),
-                              value: sel_year,
+                              value: selyear,
                               onChanged: (newValue) {
                                 setState(() {
-                                  sel_year = newValue.toString();
+                                  selyear = newValue.toString();
                                 });
                               },
-                              items: _Year.map((year) {
+                              items: _year.map((year) {
                                 return DropdownMenuItem(
                                   child: Text(year),
                                   value: year,
@@ -425,8 +426,8 @@ class _addCourseState extends State<addCourse> {
   }
 
   Future<List<Instructor>> fetchAlbum() async {
-    final response =
-        await http.get(Uri.parse('http://127.0.0.1:8000/api/instructors'));
+    final response = await CallApi().getData('/api/instructors');
+
     if (response.statusCode == 200) {
       final result = jsonDecode(response.body) as List;
 
@@ -441,12 +442,12 @@ class _addCourseState extends State<addCourse> {
     var data = {
       'name_ar': _courseAR.text,
       'name_en': _courseEN.text,
-      "level": translateLevelAE(sel_level!),
-      "year": translateYearAE(sel_year!),
+      "level": translateLevelAE(sellevel!),
+      "year": translateYearAE(selyear!),
       "code": _code.text,
       "unit": _unit.text,
       "success": _success.text,
-      "ins_name": sel_ins,
+      "ins_name": selins,
     };
 
     try {

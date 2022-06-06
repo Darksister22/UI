@@ -1,19 +1,17 @@
 import 'dart:convert';
-import 'dart:js';
-import 'package:schoolmanagement/api.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
-import 'package:http/http.dart' as http;
-
+import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
-import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../addpages/stu_add.dart';
 import '../editpages/stu_edit.dart';
 import 'login.dart';
@@ -33,8 +31,7 @@ class Grads extends StatefulWidget {
 }
 
 Future<List<Student>> fetchAlbum() async {
-  final response =
-      await http.get(Uri.parse('http://127.0.0.1:8000/api/students'));
+  final response = await CallApi().getData('/api/students');
   if (response.statusCode == 200) {
     final result = jsonDecode(response.body) as List;
 
@@ -58,14 +55,14 @@ class _GradsState extends State<Grads> {
   Widget build(BuildContext context) {
     SideBarWidget _sideBar = SideBarWidget();
     TextEditingController search = TextEditingController();
-    String? sel_level;
-    String? sel_year;
-    List<String> _Level = [
+    String? selLevel;
+    String? selYear;
+    List<String> _level = [
       'بكالوريوس',
       'ماجستير',
       'دكتوراة',
     ];
-    List<String> _Year = [
+    List<String> _year = [
       'السنة الاولى',
       'السنة الثانية',
       'السنة الثالثة',
@@ -152,7 +149,7 @@ class _GradsState extends State<Grads> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Container(
+              SizedBox(
                 width: (MediaQuery.of(context).size.width) / 4,
                 child: TextButton(
                   child: Padding(
@@ -173,7 +170,7 @@ class _GradsState extends State<Grads> {
                   onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (context) => addStuAlert(),
+                      builder: (context) => AddStuAlert(),
                     );
                   },
                 ),
@@ -253,7 +250,7 @@ class _GradsState extends State<Grads> {
                               showDialog(
                                 context: context,
                                 builder: (context) =>
-                                    stuEditAlert(current: _data),
+                                    StuEditAlert(current: _data),
                               );
                             }),
                             columnSpacing: 35,
@@ -264,7 +261,7 @@ class _GradsState extends State<Grads> {
                                     showDialog(
                                       context: context,
                                       builder: (context) => AlertDialog(
-                                        title: Text('عرض المعلومات حسب...'),
+                                        title: const Text('عرض المعلومات حسب...'),
                                         content: SingleChildScrollView(
                                           child: Column(
                                             children: [
@@ -276,7 +273,7 @@ class _GradsState extends State<Grads> {
                                                       padding:
                                                           const EdgeInsets.all(
                                                               8.0),
-                                                      child: Container(
+                                                      child: SizedBox(
                                                         width: MediaQuery.of(
                                                                 context)
                                                             .size
@@ -286,20 +283,20 @@ class _GradsState extends State<Grads> {
                                                           child:
                                                               DropdownButtonFormField(
                                                             isExpanded: true,
-                                                            hint: Text(
+                                                            hint: const Text(
                                                                 'اختيار المرحلة الدراسية'),
-                                                            value: sel_level,
+                                                            value: selLevel,
                                                             onChanged:
                                                                 (newValue) {
                                                               setState(() {
-                                                                sel_level = newValue
+                                                                selLevel = newValue
                                                                     .toString();
                                                               });
                                                             },
-                                                            items: _Level.map(
+                                                            items: _level.map(
                                                                 (level) {
                                                               return DropdownMenuItem(
-                                                                child: new Text(
+                                                                child: Text(
                                                                     level),
                                                                 value: level,
                                                               );
@@ -308,12 +305,12 @@ class _GradsState extends State<Grads> {
                                                         ),
                                                       ),
                                                     ),
-                                                    SizedBox(height: 10),
+                                                    const SizedBox(height: 10),
                                                     Padding(
                                                       padding:
                                                           const EdgeInsets.all(
                                                               8.0),
-                                                      child: Container(
+                                                      child: SizedBox(
                                                         width: MediaQuery.of(
                                                                 context)
                                                             .size
@@ -323,20 +320,20 @@ class _GradsState extends State<Grads> {
                                                           child:
                                                               DropdownButtonFormField(
                                                             isExpanded: true,
-                                                            hint: Text(
+                                                            hint: const Text(
                                                                 'اختيار السنة الدراسية'),
-                                                            value: sel_year,
+                                                            value: selYear,
                                                             onChanged:
                                                                 (newValue) {
                                                               setState(() {
-                                                                sel_year = newValue
+                                                                selYear = newValue
                                                                     .toString();
                                                               });
                                                             },
-                                                            items: _Year.map(
+                                                            items: _year.map(
                                                                 (year) {
                                                               return DropdownMenuItem(
-                                                                child: new Text(
+                                                                child: Text(
                                                                     year),
                                                                 value: year,
                                                               );
@@ -356,45 +353,45 @@ class _GradsState extends State<Grads> {
                                               onPressed: () {
                                                 Navigator.pop(context);
                                               },
-                                              child: Text('الغاء')),
+                                              child: const Text('الغاء')),
                                           ElevatedButton(
                                               onPressed: () {
                                                 setState(() {
-                                                  if (sel_level == null &&
-                                                      sel_year == null) {
+                                                  if (selLevel == null &&
+                                                      selYear == null) {
                                                     Navigator.pop(context);
                                                     return;
-                                                  } else if (sel_year == null &&
-                                                      sel_level != null) {
+                                                  } else if (selYear == null &&
+                                                      selLevel != null) {
                                                     _data = snapshot.data!
                                                         .where((s) {
                                                       return s.level.contains(
                                                           translateLevelAE(
-                                                              sel_level!));
+                                                              selLevel!));
                                                     }).toList();
-                                                  } else if (sel_level ==
+                                                  } else if (selLevel ==
                                                           null &&
-                                                      sel_year != null) {
+                                                      selYear != null) {
                                                     _data = snapshot.data!
                                                         .where((s) {
                                                       return s.year.contains(
                                                           translateYearAE(
-                                                              sel_year!));
+                                                              selYear!));
                                                     }).toList();
                                                   } else {
                                                     _data = snapshot.data!
                                                         .where((s) {
                                                       return s.year.contains(
                                                               translateYearAE(
-                                                                  sel_year!)) &&
+                                                                  selYear!)) &&
                                                           s.level.contains(
                                                               translateLevelAE(
-                                                                  sel_level!));
+                                                                  selLevel!));
                                                     }).toList();
                                                   }
                                                 });
                                               },
-                                              child: Text('اضافة'))
+                                              child: const Text('اضافة'))
                                         ],
                                       ),
                                     );

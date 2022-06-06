@@ -1,27 +1,24 @@
-import 'dart:math';
+// ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/instructors.dart';
 import 'package:schoolmanagement/models/instructor.dart';
-import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/module/extension.dart';
-import 'package:schoolmanagement/translate.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:schoolmanagement/components/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../api.dart';
 import '../mains/students.dart';
 
-class instEditAlert extends StatefulWidget {
+class InstEditAlert extends StatefulWidget {
   Instructor current;
-  instEditAlert({Key? key, required this.current}) : super(key: key);
+  InstEditAlert({Key? key, required this.current}) : super(key: key);
 
   @override
-  State<instEditAlert> createState() => _instEditAlertState();
+  State<InstEditAlert> createState() => _InstEditAlertState();
 }
 
-class _instEditAlertState extends State<instEditAlert> {
+class _InstEditAlertState extends State<InstEditAlert> {
   bool isEnabled = false;
 
   @override
@@ -48,7 +45,7 @@ class _instEditAlertState extends State<instEditAlert> {
     };
 
     try {
-      final response =
+      
           await CallApi().postData(data, "/api/instructors/destroy/$id");
 
       snack = 'تم حذف التدريسي بنجاح';
@@ -67,7 +64,7 @@ class _instEditAlertState extends State<instEditAlert> {
     };
 
     try {
-      final response =
+      
           await CallApi().postData(data, "/api/instructors/update");
 
       snack = 'تم تحديث معلومات التدريسي بنجاح';
@@ -79,6 +76,7 @@ class _instEditAlertState extends State<instEditAlert> {
 
   final _formKey = GlobalKey<FormState>();
 
+  @override
   Widget build(BuildContext context) {
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(

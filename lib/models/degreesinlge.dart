@@ -1,7 +1,4 @@
-import 'package:schoolmanagement/models/instructor.dart';
-import 'package:schoolmanagement/models/student.dart';
 
-import 'course.dart';
 
 class DegreeSingle {
   final int? id;

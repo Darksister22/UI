@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
@@ -101,7 +103,7 @@ class TextCard extends StatelessWidget {
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    var path = new Path();
+    var path =  Path();
     path.lineTo(
         0, size.height); //start path with this if you are making at bottom
 

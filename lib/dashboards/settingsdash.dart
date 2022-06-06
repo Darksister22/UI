@@ -1,17 +1,13 @@
-import 'dart:convert';
 import 'package:email_validator/email_validator.dart';
-import 'package:schoolmanagement/api.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:schoolmanagement/components/utils.dart';
+import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/components/buttoncards.dart';
-import 'package:schoolmanagement/mains/semester.dart';
-
+import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/module/extension.dart';
-import 'package:http/http.dart' as http;
 import 'package:schoolmanagement/translate.dart';
+
 import '../editpages/sem_edit.dart';
-import '../mains/homepage.dart';
 import '../mains/users.dart';
 
 class SettingsDash extends StatefulWidget {
@@ -28,14 +24,14 @@ class _SettingsDashState extends State<SettingsDash> {
   TextEditingController nameController = TextEditingController();
   TextEditingController sourceController = TextEditingController();
   TextEditingController amtController = TextEditingController();
-  late String selection = 'عضو - قراءة و تعديل';
+  String? selection;
   final _formKey = GlobalKey<FormState>();
 
   Future _addUsr() async {
     var data = {
       'email': emailController.text,
       'password': passwordController.text,
-      'role': translateRoleAE(selection),
+      'role': translateRoleAE(selection!),
       'name': nameController.text,
     };
 
@@ -50,7 +46,7 @@ class _SettingsDashState extends State<SettingsDash> {
       }
       emailController.text = '';
       passwordController.text = '';
-    } catch (e, s) {
+    } catch (e) {
       context.showSnackBar('احد الحقول فارغة او غير صحيحة', isError: true);
     }
   }
@@ -71,7 +67,7 @@ class _SettingsDashState extends State<SettingsDash> {
       }
       emailController.text = '';
       passwordController.text = '';
-    } catch (e, s) {
+    } catch (e) {
       context.showSnackBar('احد الحقول فارغة او غير صحيحة', isError: true);
     }
   }
@@ -93,7 +89,7 @@ class _SettingsDashState extends State<SettingsDash> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "تعديل معلومات النظام",
+                    "اعدادات النظام - نظام اللجنة الامتحانية",
                     style: GoogleFonts.poppins(
                       fontSize: 25,
                       fontWeight: FontWeight.w600,
@@ -149,10 +145,11 @@ class _SettingsDashState extends State<SettingsDash> {
                                               }
                                               return null;
                                             },
+                                            obscureText: true,
                                             decoration: InputDecoration(
                                               labelText: ' اسم المستخدم',
-                                              prefixIcon: const Icon(
-                                                  Icons.email_outlined),
+                                              prefixIcon: const Icon(Icons
+                                                  .account_circle_outlined),
                                               border: OutlineInputBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
@@ -273,9 +270,9 @@ class _SettingsDashState extends State<SettingsDash> {
                     children: [
                       ButtonCard(
                         bezierCOlor: Colors.orange,
-                        value: 'تعديل الفصل الدراسي',
+                        value: 'تعديل الكورس الدراسي',
                         add: IconButton(
-                          icon: const Icon(Icons.add),
+                          icon: const Icon(Icons.collections_bookmark_outlined),
                           onPressed: () {
                             Navigator.pushReplacement(
                               context,
@@ -300,7 +297,7 @@ class _SettingsDashState extends State<SettingsDash> {
                               context: context,
                               builder: (context) => AlertDialog(
                                 title: const Text('اضافة درجات مساعدة'),
-                                content: Container(
+                                content: SizedBox(
                                   height: 212,
                                   child: Column(
                                     children: [
@@ -320,7 +317,7 @@ class _SettingsDashState extends State<SettingsDash> {
                                               decoration: InputDecoration(
                                                 labelText: 'مصدر الدرجة',
                                                 prefixIcon: const Icon(
-                                                    Icons.email_outlined),
+                                                    Icons.source_outlined),
                                                 border: OutlineInputBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(10),
@@ -340,7 +337,7 @@ class _SettingsDashState extends State<SettingsDash> {
                                               decoration: InputDecoration(
                                                 labelText: 'مقدار الدرجة',
                                                 prefixIcon: const Icon(
-                                                    Icons.email_outlined),
+                                                    Icons.numbers_outlined),
                                                 border: OutlineInputBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(10),

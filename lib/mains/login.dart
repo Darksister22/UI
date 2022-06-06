@@ -1,15 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/homepage.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../api.dart';
 import '../module/extension.dart';
-import '../components/main_widgets.dart';
-import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -20,7 +18,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   TextEditingController emailController = TextEditingController();
-  var _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   TextEditingController passwordController = TextEditingController();
 
   Future _login() async {
@@ -60,7 +58,7 @@ class _LoginState extends State<Login> {
     // ignore: prefer_const_constructors
     return Scaffold(
       body: SafeArea(
-        child: Container(
+        child: SizedBox(
           width: context.width * 0.3 < 250 ? 250 : context.width * 0.3,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -85,7 +83,7 @@ class _LoginState extends State<Login> {
                       },
                       decoration: InputDecoration(
                         labelText: 'اسم المستخدم',
-                        labelStyle: TextStyle(color: Colors.grey),
+                        labelStyle: const TextStyle(color: Colors.grey),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -103,7 +101,7 @@ class _LoginState extends State<Login> {
                       },
                       decoration: InputDecoration(
                         labelText: 'كلمة السر',
-                        labelStyle: TextStyle(color: Colors.grey),
+                        labelStyle: const TextStyle(color: Colors.grey),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -128,8 +126,9 @@ class _LoginState extends State<Login> {
                               backgroundColor:
                                   MaterialStateProperty.resolveWith<Color>(
                                 (Set<MaterialState> states) {
-                                  if (states.contains(MaterialState.pressed))
+                                  if (states.contains(MaterialState.pressed)) {
                                     return blue;
+                                  }
                                   return blue;
                                   // Use the component's default.
                                 },
@@ -158,8 +157,9 @@ class _LoginState extends State<Login> {
                               backgroundColor:
                                   MaterialStateProperty.resolveWith<Color>(
                                 (Set<MaterialState> states) {
-                                  if (states.contains(MaterialState.pressed))
+                                  if (states.contains(MaterialState.pressed)) {
                                     return blue;
+                                  }
                                   return blue;
                                   // Use the component's default.
                                 },

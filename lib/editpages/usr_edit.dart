@@ -1,27 +1,22 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/users.dart';
-import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/translate.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:schoolmanagement/components/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../api.dart';
-import '../mains/students.dart';
 import '../models/users.dart';
 
-class userEditAlert extends StatefulWidget {
-  User current;
-  userEditAlert({Key? key, required this.current}) : super(key: key);
+class UserEditAlert extends StatefulWidget {
+  final User current;
+  const UserEditAlert({Key? key, required this.current}) : super(key: key);
 
   @override
-  State<userEditAlert> createState() => _userEditAlertState();
+  State<UserEditAlert> createState() => _UserEditAlertState();
 }
 
-class _userEditAlertState extends State<userEditAlert> {
+class _UserEditAlertState extends State<UserEditAlert> {
   final List<String> _auth = ['عضو - قراءة و تعديل', 'رئيس - جميع الصلاحيات'];
 
   bool isEnabled = false;
@@ -50,7 +45,7 @@ class _userEditAlertState extends State<userEditAlert> {
     };
 
     try {
-      final response = await CallApi().postData(data, "/api/users/destroy/$id");
+      await CallApi().postData(data, "/api/users/destroy/$id");
 
       snack = 'تم حذف المستخدم بنجاح';
     } catch (e) {
@@ -84,7 +79,7 @@ class _userEditAlertState extends State<userEditAlert> {
   }
 
   final _formKey = GlobalKey<FormState>();
-
+@override
   Widget build(BuildContext context) {
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
@@ -135,7 +130,7 @@ class _userEditAlertState extends State<userEditAlert> {
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Container(
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: 40,
                         child: ButtonTheme(

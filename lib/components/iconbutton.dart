@@ -14,7 +14,7 @@ class IconColumn extends StatelessWidget {
         IconButton(onPressed: () {}, icon: icon),
         Text(
           title,
-          style: TextStyle(fontSize: 15),
+          style: const TextStyle(fontSize: 15),
         )
       ],
     );

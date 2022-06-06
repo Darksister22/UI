@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names, unnecessary_this, unrelated_type_equality_checks
+
 import 'package:flutter/material.dart';
 import '../module/extension.dart';
 enum ButtonType{Save, New, Delete, Cancel, Other}
@@ -45,7 +47,7 @@ class Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 40,
       child: ElevatedButton(
       

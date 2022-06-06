@@ -22,7 +22,6 @@ class ButtonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _height = MediaQuery.of(context).size.height;
     return Expanded(
       child: Container(
         height: 136,
@@ -30,7 +29,7 @@ class ButtonCard extends StatelessWidget {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-                offset: Offset(0, 6),
+                offset: const Offset(0, 6),
                 color: lightgrey.withOpacity(.1),
                 blurRadius: 12)
           ],
@@ -52,7 +51,7 @@ class ButtonCard extends StatelessWidget {
                       )
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
                   Container(
@@ -60,13 +59,13 @@ class ButtonCard extends StatelessWidget {
                   ),
                   RichText(
                       textDirection: TextDirection.ltr,
-                      strutStyle: StrutStyle(fontSize: 18, height: 1.5),
-                      textHeightBehavior: TextHeightBehavior(
+                      strutStyle: const StrutStyle(fontSize: 18, height: 1.5),
+                      textHeightBehavior: const TextHeightBehavior(
                           applyHeightToFirstAscent: true,
                           applyHeightToLastDescent: true),
                       textScaleFactor: 1,
                       textWidthBasis: TextWidthBasis.longestLine,
-                      locale: Locale('ar'),
+                      locale: const Locale('ar'),
                       textAlign: TextAlign.center,
                       text: TextSpan(children: [
                         TextSpan(

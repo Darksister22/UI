@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
-import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/dashboards/dashboars.dart';
@@ -8,7 +7,6 @@ import 'package:schoolmanagement/mains/login.dart';
 import 'package:schoolmanagement/mains/settingsmain.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,7 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  SideBarWidget _sideBarWidget = SideBarWidget();
+  final SideBarWidget _sideBarWidget = SideBarWidget();
   late int res;
   @override
   Widget build(BuildContext context) {
@@ -99,7 +97,7 @@ class _HomePageState extends State<HomePage> {
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
-              children: <Widget>[
+              children: const <Widget>[
                 Visibility(child: OverviewCards()),
               ],
             ),

@@ -2,30 +2,27 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:schoolmanagement/components/utils.dart';
-import 'package:schoolmanagement/mains/stu_sem.dart';
 import 'package:schoolmanagement/mains/students.dart';
 import 'package:schoolmanagement/models/student.dart';
-import 'package:schoolmanagement/module/extension.dart';
-import 'package:schoolmanagement/translate.dart';
+
 import '../api.dart';
-import 'package:http/http.dart' as http;
 import '../models/course.dart';
 
-class addCarry extends StatefulWidget {
-  Student current;
+class AddCarry extends StatefulWidget {
+  final Student current;
 
-  addCarry({Key? key, required this.current}) : super(key: key);
+  const AddCarry({Key? key, required this.current}) : super(key: key);
 
   @override
-  State<addCarry> createState() => _addCarryState();
+  State<AddCarry> createState() => _AddCarryState();
 }
 
-class _addCarryState extends State<addCarry> {
+class _AddCarryState extends State<AddCarry> {
   late int stu;
   late String lvl;
-  late String? sel_course = null;
-  late Future<List<Course>> futureAlbum;
-  List<Course> _data = [];
+  late String? selcourse;
+  late Future<List<InsCourse>> futureAlbum;
+  List<InsCourse> _data = [];
   @override
   void initState() {
     super.initState();
@@ -34,14 +31,13 @@ class _addCarryState extends State<addCarry> {
     lvl = widget.current.level;
   }
 
-  Future<List<Course>>? fetch() async {
+  Future<List<InsCourse>>? fetch() async {
     try {
       final response = await CallApi().getData('/api/courses/level?level=$lvl');
       if (response.statusCode == 200) {
         // print(response.body);
         final result = jsonDecode(response.body) as List;
-        final x = result.map((e) => Course.fromJson(e)).toList();
-        print(x);
+        final x = result.map((e) => InsCourse.fromJson(e)).toList();
         return x;
       } else {
         // If that call was not successful, throw an error.
@@ -54,7 +50,7 @@ class _addCarryState extends State<addCarry> {
 
   Future _addStu() async {
     var data = {
-      'name_en': sel_course,
+      'name_en': selcourse,
       "student_id": stu,
     };
 
@@ -90,6 +86,7 @@ class _addCarryState extends State<addCarry> {
 
   final _formKey = GlobalKey<FormState>();
 
+  @override
   Widget build(BuildContext context) {
     return StatefulBuilder(builder: (context, setState) {
       return AlertDialog(
@@ -107,11 +104,9 @@ class _addCarryState extends State<addCarry> {
                         width: MediaQuery.of(context).size.width,
                         height: 40,
                         child: ButtonTheme(
-                          child: FutureBuilder<List<Course>?>(
+                          child: FutureBuilder<List<InsCourse>?>(
                             future: fetch(),
                             builder: (context, snapshot) {
-                              print(snapshot.connectionState);
-                              print(snapshot.data);
 
                               if (snapshot.hasData) {
                                 _data = snapshot.data ?? [];
@@ -124,10 +119,10 @@ class _addCarryState extends State<addCarry> {
                                     return DropdownButton<String>(
                                       isExpanded: true,
                                       hint: const Text('اختيار المادة'),
-                                      value: sel_course,
+                                      value: selcourse,
                                       onChanged: (newValue) {
                                         setState(() {
-                                          sel_course = newValue.toString();
+                                          selcourse = newValue.toString();
                                         });
                                       },
                                       items: list.map((ins) {

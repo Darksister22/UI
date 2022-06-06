@@ -2,11 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
-import 'package:http/http.dart' as http;
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
-import 'package:schoolmanagement/editpages/inst_edit.dart';
-import 'package:schoolmanagement/models/course.dart';
+import 'package:schoolmanagement/mains/stu_sem.dart';
+import 'package:schoolmanagement/models/courseins.dart';
 import 'package:schoolmanagement/models/degree.dart';
 import 'package:schoolmanagement/models/instructor.dart';
 import 'package:schoolmanagement/module/extension.dart';
@@ -14,7 +13,6 @@ import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../addpages/ins_add.dart';
 import '../api.dart';
 import 'login.dart';
 import 'settingsmain.dart';
@@ -26,7 +24,7 @@ Widget _verticalDivider = const VerticalDivider(
 
 class DegCourse extends StatefulWidget {
   static const String id = 'deg_course';
-  final Course course;
+  final InsCourse course;
   const DegCourse({Key? key, required this.course}) : super(key: key);
   @override
   _DegCourseState createState() => _DegCourseState();
@@ -172,7 +170,7 @@ class _DegCourseState extends State<DegCourse> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Container(
+              SizedBox(
                 width: (MediaQuery.of(context).size.width) / 4,
                 child: TextButton(
                   child: Padding(
@@ -194,8 +192,8 @@ class _DegCourseState extends State<DegCourse> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DegCourse(
-                          course: widget.course,
+                        builder: (context) => StuSem(
+                          current: widget.course,
                         ),
                       ),
                     );

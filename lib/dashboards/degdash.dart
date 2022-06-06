@@ -1,18 +1,10 @@
-import 'dart:convert';
-import 'package:email_validator/email_validator.dart';
-import 'package:schoolmanagement/api.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/components/buttoncards.dart';
+import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/deg_cur.dart';
-import 'package:schoolmanagement/mains/semester.dart';
 
-import 'package:schoolmanagement/module/extension.dart';
-import 'package:http/http.dart' as http;
-import 'package:schoolmanagement/translate.dart';
-import '../mains/homepage.dart';
-import '../mains/users.dart';
+import '../api.dart';
 
 class DegDash extends StatefulWidget {
   const DegDash({Key? key}) : super(key: key);
@@ -22,9 +14,21 @@ class DegDash extends StatefulWidget {
 }
 
 class _DegDashState extends State<DegDash> {
+  Future _caclDeg() async {
+    var data = {};
+
+    try {
+      final response = await CallApi().postData(data, '/api/degrees/cacl');
+      if (response.statusCode == 200) {
+        context.showSnackBar('تم حساب درجات الكورس بنجاح');
+      }
+    } catch (e) {
+      context.showSnackBar('حدث خطأ ما, يرجى اعادة المحاولة', isError: true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    double _width = MediaQuery.of(context).size.width;
     return SingleChildScrollView(
       child: SizedBox(
         height: MediaQuery.of(context).size.height / 1.2,
@@ -55,8 +59,17 @@ class _DegDashState extends State<DegDash> {
                         bezierCOlor: Colors.lightBlue,
                         value: 'حساب درجات الكورس الحالي',
                         add: IconButton(
-                          icon: const Icon(Icons.person_outline_outlined),
-                          onPressed: () {},
+                          icon: const Icon(Icons.calculate_outlined),
+                          onPressed: () async {
+                            context.showSnackBar('الرجاء الانتظار...');
+                            await _caclDeg();
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const DegCur(),
+                              ),
+                            );
+                          },
                         ),
                         topColor: Colors.lightBlue,
                       ),
