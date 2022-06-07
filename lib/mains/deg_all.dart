@@ -21,20 +21,21 @@ Widget _verticalDivider = const VerticalDivider(
   thickness: 1,
 );
 
-class DegCur extends StatefulWidget {
+class DegAll extends StatefulWidget {
   static const String id = 'degrees';
-  const DegCur({Key? key}) : super(key: key);
+  
+  const DegAll({Key? key}) : super(key: key);
 
   @override
-  _DegCurState createState() => _DegCurState();
+  _DegAllState createState() => _DegAllState();
 }
 
 Future<List<Degree>> fetchAlbum() async {
-  final response = await CallApi().getData('/api/degrees');
+  final response = await CallApi().getData('/api/degrees/getall');
+
   if (response.statusCode == 200) {
     final result = jsonDecode(response.body) as List;
-
-    return result.map((e) => Degree?.fromJson(e)).toList();
+    return result.map((e) => Degree.fromJson(e)).toList();
   } else {
     throw Exception('Failed to load');
   }
@@ -43,23 +44,25 @@ Future<List<Degree>> fetchAlbum() async {
 }
 
 Future<List<Course>> fetchCourse() async {
-  final response = await CallApi().getData('/api/courses');
+  final response = await CallApi().getData('/api/courses/all');
+
   if (response.statusCode == 200) {
     final result = jsonDecode(response.body) as List;
     return result.map((e) => Course.fromJson(e)).toList();
   } else {
-    throw ('لا يوجد كورس دراسي حالي, الرجاء عرض الدرجات من الكورسات السابقة');
+    throw Exception(
+        'ان الكورس الدراسي قد انتهى و لا يمكن تعديل معلوماته, ابدأ فصل دراسي لاضافة كورسات جديدة');
   }
 }
 
-class _DegCurState extends State<DegCur> {
+class _DegAllState extends State<DegAll> {
   late Future<List<Degree>> futureAlbum;
   List<Course> _course = [];
   List<Degree> _data = [];
   @override
   void initState() {
     super.initState();
-    // futureAlbum = fetchAlbum();
+    futureAlbum = fetchAlbum();
   }
 
   @override
@@ -155,16 +158,19 @@ class _DegCurState extends State<DegCur> {
         ),
         backgroundColor: light,
       ),
-      sideBar: _sideBar.SideBarMenus(context, DegCur.id),
+      sideBar: _sideBar.SideBarMenus(context, DegAll.id),
       body: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
         child: SingleChildScrollView(
           child: FutureBuilder<List<Degree>>(
-              future: fetchAlbum(),
+              future: futureAlbum,
               builder: (context, snapshot) {
                 {
                   if (snapshot.hasData) {
-                    _data = snapshot.data ?? [];
+                    _data = _data = snapshot.data!.where((s) {
+                      return s.coursename.sem!.isEnded == 1;
+                    }).toList();
+
                     return StatefulBuilder(builder: (context, setState) {
                       return PaginatedDataTable(
                         header: Row(
@@ -185,7 +191,7 @@ class _DegCurState extends State<DegCur> {
                                       onPressed: () {
                                         setState(() {
                                           if (search.text.isEmpty) {
-                                            _data = snapshot.data ?? [];
+                                            _data = snapshot.data!;
                                             return;
                                           }
                                           _data = snapshot.data!.where((s) {
@@ -216,6 +222,9 @@ class _DegCurState extends State<DegCur> {
                           )),
                           DataColumn(label: _verticalDivider),
                           DataColumn(
+                              label: Text('الكورس الدراسي', style: header)),
+                          DataColumn(label: _verticalDivider),
+                          DataColumn(
                               label: Text('درجة الدور الاول', style: header)),
                           DataColumn(label: _verticalDivider),
                           DataColumn(
@@ -236,7 +245,7 @@ class _DegCurState extends State<DegCur> {
                           //       stuEditAlert(current: _data),
                           // );
                         }),
-                        columnSpacing: 30,
+                        columnSpacing: 25,
                         showCheckboxColumn: true,
                         actions: [
                           IconButton(
@@ -550,6 +559,10 @@ class MyData extends DataTableSource {
       DataCell(_verticalDivider),
       DataCell(
         Text(current.coursename.nameEn),
+      ),
+      DataCell(_verticalDivider),
+      DataCell(
+        Text(translateNumEA(current.coursename.sem!.number)),
       ),
       DataCell(_verticalDivider),
       DataCell(

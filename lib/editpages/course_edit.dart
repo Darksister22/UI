@@ -15,11 +15,11 @@ import '../api.dart';
 import '../mains/login.dart';
 import '../mains/settingsmain.dart';
 import '../mains/stu_sem.dart';
-import '../models/courseins.dart';
+import '../models/course.dart';
 import '../translate.dart';
 
 class EditCourse extends StatefulWidget {
-  final InsCourse current;
+  final Course current;
 
   const EditCourse({Key? key, required this.current}) : super(key: key);
 
@@ -93,8 +93,7 @@ class _EditCourseState extends State<EditCourse> {
     var data = {};
 
     try {
-     
-          await CallApi().postData(data, "/api/courses/destroy/$id");
+      await CallApi().postData(data, "/api/courses/destroy/$id");
 
       snack = 'تم حذف المادة بنجاح';
     } catch (e) {
@@ -107,7 +106,7 @@ class _EditCourseState extends State<EditCourse> {
 
   late String sellevel = 'بكالوريوس';
   late String selyear = 'السنة الاولى';
-   String? selins ;
+  String? selins;
   late Future<List<Instructor>> futureAlbum;
   List<Instructor> _data = [];
   @override

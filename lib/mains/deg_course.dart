@@ -5,7 +5,6 @@ import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/stu_sem.dart';
-import 'package:schoolmanagement/models/courseins.dart';
 import 'package:schoolmanagement/models/degree.dart';
 import 'package:schoolmanagement/models/instructor.dart';
 import 'package:schoolmanagement/module/extension.dart';
@@ -14,6 +13,7 @@ import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api.dart';
+import '../models/course.dart';
 import 'login.dart';
 import 'settingsmain.dart';
 
@@ -24,7 +24,7 @@ Widget _verticalDivider = const VerticalDivider(
 
 class DegCourse extends StatefulWidget {
   static const String id = 'deg_course';
-  final InsCourse course;
+  final Course course;
   const DegCourse({Key? key, required this.course}) : super(key: key);
   @override
   _DegCourseState createState() => _DegCourseState();
@@ -54,7 +54,7 @@ class MyData extends DataTableSource {
 
     return DataRow(cells: [
       DataCell(
-        Text(current.stuname!.nameAr.toString()),
+        Text(current.stuname.nameAr.toString()),
       ),
       DataCell(_verticalDivider),
       DataCell(
@@ -170,36 +170,6 @@ class _DegCourseState extends State<DegCourse> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              SizedBox(
-                width: (MediaQuery.of(context).size.width) / 4,
-                child: TextButton(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      'العودة',
-                      style: buttons,
-                    ),
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                        return blue;
-                        // Use the component's default.
-                      },
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => StuSem(
-                          current: widget.course,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
               const SizedBox(width: 16),
               FutureBuilder<List<Degree>>(
                   future: fetch(),
@@ -233,7 +203,7 @@ class _DegCourseState extends State<DegCourse> {
                                                 return;
                                               }
                                               _data = snapshot.data!.where((s) {
-                                                return s.stuname!.nameAr
+                                                return s.stuname.nameAr
                                                     .toString()
                                                     .contains(search.text);
                                               }).toList();
@@ -242,6 +212,38 @@ class _DegCourseState extends State<DegCourse> {
                                           },
                                         )),
                                   ).margin9,
+                                ),
+                                SizedBox(
+                                  width:
+                                      (MediaQuery.of(context).size.width) / 4,
+                                  child: TextButton(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Text(
+                                        'العودة',
+                                        style: buttons,
+                                      ),
+                                    ),
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty
+                                          .resolveWith<Color>(
+                                        (Set<MaterialState> states) {
+                                          return blue;
+                                          // Use the component's default.
+                                        },
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => StuSem(
+                                            current: widget.course,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
                               ],
                             ),

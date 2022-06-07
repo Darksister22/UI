@@ -14,24 +14,25 @@ class Degree {
   final String? final2;
   final String? final3;
   final String? approx;
-  final String? sts;
-  final InsCourse? coursename;
-  final Student? stuname;
-  const Degree(
-      {this.id,
-      this.student,
-      this.course,
-      this.fourty,
-      this.sixty1,
-      this.sixty2,
-      this.sixty3,
-      this.final1,
-      this.final2,
-      this.final3,
-      this.approx,
-      this.sts,
-      this.coursename,
-      this.stuname});
+  final String sts;
+  final Course coursename;
+  final Student stuname;
+  const Degree({
+    this.id,
+    this.student,
+    this.course,
+    this.fourty,
+    this.sixty1,
+    this.sixty2,
+    this.sixty3,
+    this.final1,
+    this.final2,
+    this.final3,
+    this.approx,
+    required this.sts,
+    required this.coursename,
+    required this.stuname,
+  });
 
   factory Degree.fromJson(Map<String, dynamic> json) {
     return Degree(
@@ -46,8 +47,8 @@ class Degree {
         final2: json['final2'],
         final3: json['final3'],
         approx: json['approx'],
-        sts: json['sts'],
-        coursename: InsCourse?.fromJson(json["courses"]),
-        stuname: Student?.fromJson(json["student"]));
+        sts: json['sts'] ?? "",
+        coursename: Course.fromJson(json["courses"]),
+        stuname: Student.fromJson(json["student"]));
   }
 }

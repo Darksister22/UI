@@ -150,40 +150,6 @@ class _StudentsState extends State<Students> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              SizedBox(
-                width: (MediaQuery.of(context).size.width) / 4,
-                child: TextButton(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      'اضافة طالب جديد',
-                      style: buttons,
-                    ),
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                        return blue;
-                        // Use the component's default.
-                      },
-                    ),
-                  ),
-                  onPressed: () async {
-                    SharedPreferences localStorage =
-                        await SharedPreferences.getInstance();
-                    if (localStorage.getString("token") == null) {
-                      context.showSnackBar(
-                          'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
-                          isError: true);
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AddStuAlert(),
-                      );
-                    }
-                  },
-                ),
-              ),
               const SizedBox(width: 16),
               FutureBuilder<List<Student>>(
                   future: futureAlbum,
@@ -266,152 +232,187 @@ class _StudentsState extends State<Students> {
                             showCheckboxColumn: true,
                             actions: [
                               IconButton(
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text('عرض المعلومات حسب...'),
-                                        content: SingleChildScrollView(
-                                          child: Column(
-                                            children: [
-                                              Form(
-                                                key: _formKey,
-                                                child: Column(
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: SizedBox(
-                                                        width: MediaQuery.of(
-                                                                context)
-                                                            .size
-                                                            .width,
-                                                        height: 40,
-                                                        child: ButtonTheme(
-                                                          child:
-                                                              DropdownButtonFormField(
-                                                            isExpanded: true,
-                                                            hint: const Text(
-                                                                'اختيار المرحلة الدراسية'),
-                                                            value: selLevel,
-                                                            onChanged:
-                                                                (newValue) {
-                                                              setState(() {
-                                                                selLevel = newValue
-                                                                    .toString();
-                                                              });
-                                                            },
-                                                            items: _level.map(
-                                                                (level) {
-                                                              return DropdownMenuItem(
-                                                                child: Text(
-                                                                    level),
-                                                                value: level,
-                                                              );
-                                                            }).toList(),
-                                                          ),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('عرض المعلومات حسب...'),
+                                      content: SingleChildScrollView(
+                                        child: Column(
+                                          children: [
+                                            Form(
+                                              key: _formKey,
+                                              child: Column(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      height: 40,
+                                                      child: ButtonTheme(
+                                                        child:
+                                                            DropdownButtonFormField(
+                                                          isExpanded: true,
+                                                          hint: const Text(
+                                                              'اختيار المرحلة الدراسية'),
+                                                          value: selLevel,
+                                                          onChanged:
+                                                              (newValue) {
+                                                            setState(() {
+                                                              selLevel = newValue
+                                                                  .toString();
+                                                            });
+                                                          },
+                                                          items: _level
+                                                              .map((level) {
+                                                            return DropdownMenuItem(
+                                                              child:
+                                                                  Text(level),
+                                                              value: level,
+                                                            );
+                                                          }).toList(),
                                                         ),
                                                       ),
                                                     ),
-                                                    const SizedBox(height: 10),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: SizedBox(
-                                                        width: MediaQuery.of(
-                                                                context)
-                                                            .size
-                                                            .width,
-                                                        height: 40,
-                                                        child: ButtonTheme(
-                                                          child:
-                                                              DropdownButtonFormField(
-                                                            isExpanded: true,
-                                                            hint: const Text(
-                                                                'اختيار السنة الدراسية'),
-                                                            value: selYear,
-                                                            onChanged:
-                                                                (newValue) {
-                                                              setState(() {
-                                                                selYear = newValue
-                                                                    .toString();
-                                                              });
-                                                            },
-                                                            items: _year.map(
-                                                                (year) {
-                                                              return DropdownMenuItem(
-                                                                child: Text(
-                                                                    year),
-                                                                value: year,
-                                                              );
-                                                            }).toList(),
-                                                          ),
+                                                  ),
+                                                  const SizedBox(height: 10),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      height: 40,
+                                                      child: ButtonTheme(
+                                                        child:
+                                                            DropdownButtonFormField(
+                                                          isExpanded: true,
+                                                          hint: const Text(
+                                                              'اختيار السنة الدراسية'),
+                                                          value: selYear,
+                                                          onChanged:
+                                                              (newValue) {
+                                                            setState(() {
+                                                              selYear = newValue
+                                                                  .toString();
+                                                            });
+                                                          },
+                                                          items:
+                                                              _year.map((year) {
+                                                            return DropdownMenuItem(
+                                                              child: Text(year),
+                                                              value: year,
+                                                            );
+                                                          }).toList(),
                                                         ),
                                                       ),
                                                     ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
-                                        actions: [
-                                          ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: const Text('الغاء')),
-                                          ElevatedButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  if (selLevel == null &&
-                                                      selYear == null) {
-                                                    Navigator.pop(context);
-                                                    return;
-                                                  } else if (selYear == null &&
-                                                      selLevel != null) {
-                                                    _data = snapshot.data!
-                                                        .where((s) {
-                                                      return s.level.contains(
-                                                          translateLevelAE(
-                                                              selLevel!));
-                                                    }).toList();
-                                                  } else if (selLevel ==
-                                                          null &&
-                                                      selYear != null) {
-                                                    _data = snapshot.data!
-                                                        .where((s) {
-                                                      return s.year.contains(
-                                                          translateYearAE(
-                                                              selYear!));
-                                                    }).toList();
-                                                  } else {
-                                                    _data = snapshot.data!
-                                                        .where((s) {
-                                                      return s.year.contains(
-                                                              translateYearAE(
-                                                                  selYear!)) &&
-                                                          s.level.contains(
-                                                              translateLevelAE(
-                                                                  selLevel!));
-                                                    }).toList();
-                                                  }
-                                                });
-                                                selYear = null;
-                                                selLevel = null;
-                                                Navigator.pop(context);
-                                              },
-                                              child: const Text('العرض'))
-                                        ],
                                       ),
-                                    );
+                                      actions: [
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('الغاء')),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                if (selLevel == null &&
+                                                    selYear == null) {
+                                                  Navigator.pop(context);
+                                                  return;
+                                                } else if (selYear == null &&
+                                                    selLevel != null) {
+                                                  _data =
+                                                      snapshot.data!.where((s) {
+                                                    return s.level.contains(
+                                                        translateLevelAE(
+                                                            selLevel!));
+                                                  }).toList();
+                                                } else if (selLevel == null &&
+                                                    selYear != null) {
+                                                  _data =
+                                                      snapshot.data!.where((s) {
+                                                    return s.year.contains(
+                                                        translateYearAE(
+                                                            selYear!));
+                                                  }).toList();
+                                                } else {
+                                                  _data =
+                                                      snapshot.data!.where((s) {
+                                                    return s.year.contains(
+                                                            translateYearAE(
+                                                                selYear!)) &&
+                                                        s.level.contains(
+                                                            translateLevelAE(
+                                                                selLevel!));
+                                                  }).toList();
+                                                }
+                                              });
+                                              selYear = null;
+                                              selLevel = null;
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('العرض'))
+                                      ],
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.filter_alt_outlined,
+                                  size: 30,
+                                ),
+                              ),
+                              SizedBox(
+                                width: (MediaQuery.of(context).size.width) / 4,
+                                child: TextButton(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text(
+                                      'اضافة طالب جديد',
+                                      style: buttons,
+                                    ),
+                                  ),
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty
+                                        .resolveWith<Color>(
+                                      (Set<MaterialState> states) {
+                                        return blue;
+                                        // Use the component's default.
+                                      },
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    SharedPreferences localStorage =
+                                        await SharedPreferences.getInstance();
+                                    if (localStorage.getString("token") ==
+                                        null) {
+                                      context.showSnackBar(
+                                          'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
+                                          isError: true);
+                                    } else {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AddStuAlert(),
+                                      );
+                                    }
                                   },
-                                  icon: const Icon(
-                                    Icons.filter_alt_outlined,
-                                    size: 30,
-                                  ))
+                                ),
+                              ),
                             ],
                           );
                         });

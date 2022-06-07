@@ -10,11 +10,11 @@ import 'package:schoolmanagement/module/extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api.dart';
-import '../models/courseins.dart';
+import '../models/course.dart';
 
 class DegEdit extends StatefulWidget {
   final Student student;
-  final InsCourse id;
+  final Course id;
   const DegEdit({Key? key, required this.id, required this.student})
       : super(key: key);
 

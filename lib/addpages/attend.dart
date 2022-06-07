@@ -20,9 +20,9 @@ class AddCarry extends StatefulWidget {
 class _AddCarryState extends State<AddCarry> {
   late int stu;
   late String lvl;
-  late String? selcourse;
-  late Future<List<InsCourse>> futureAlbum;
-  List<InsCourse> _data = [];
+  String? selcourse;
+  late Future<List<Course>> futureAlbum;
+  List<Course> _data = [];
   @override
   void initState() {
     super.initState();
@@ -31,13 +31,12 @@ class _AddCarryState extends State<AddCarry> {
     lvl = widget.current.level;
   }
 
-  Future<List<InsCourse>>? fetch() async {
+  Future<List<Course>>? fetch() async {
     try {
       final response = await CallApi().getData('/api/courses/level?level=$lvl');
       if (response.statusCode == 200) {
-        // print(response.body);
         final result = jsonDecode(response.body) as List;
-        final x = result.map((e) => InsCourse.fromJson(e)).toList();
+        final x = result.map((e) => Course.fromJson(e)).toList();
         return x;
       } else {
         // If that call was not successful, throw an error.
@@ -104,10 +103,9 @@ class _AddCarryState extends State<AddCarry> {
                         width: MediaQuery.of(context).size.width,
                         height: 40,
                         child: ButtonTheme(
-                          child: FutureBuilder<List<InsCourse>?>(
+                          child: FutureBuilder<List<Course>?>(
                             future: fetch(),
                             builder: (context, snapshot) {
-
                               if (snapshot.hasData) {
                                 _data = snapshot.data ?? [];
                                 List<String> list = [];

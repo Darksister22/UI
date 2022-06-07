@@ -6,7 +6,6 @@ import 'package:schoolmanagement/addpages/addCourse.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/stu_sem.dart';
-import 'package:schoolmanagement/models/courseins.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
@@ -14,6 +13,7 @@ import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api.dart';
+import '../models/course.dart';
 import 'login.dart';
 import 'settingsmain.dart';
 
@@ -30,20 +30,20 @@ class Courses extends StatefulWidget {
   _CoursesState createState() => _CoursesState();
 }
 
-Future<List<InsCourse>> fetchAlbum() async {
+Future<List<Course>> fetchAlbum() async {
   final response = await CallApi().getData('/api/courses');
 
   if (response.statusCode == 200) {
     final result = jsonDecode(response.body) as List;
-    return result.map((e) => InsCourse.fromJson(e)).toList();
+    return result.map((e) => Course.fromJson(e)).toList();
   } else {
     throw ('ان الكورس الدراسي قد انتهى و لا يمكن تعديل معلوماته, ابدأ كورس دراسي جديد لاضافة مواد جديدة');
   }
 }
 
 class _CoursesState extends State<Courses> {
-  late Future<List<InsCourse>> futureAlbum;
-  List<InsCourse> _data = [];
+  late Future<List<Course>> futureAlbum;
+  List<Course> _data = [];
   @override
   void initState() {
     super.initState();
@@ -146,7 +146,7 @@ class _CoursesState extends State<Courses> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           const SizedBox(width: 16),
-          FutureBuilder<List<InsCourse>>(
+          FutureBuilder<List<Course>>(
               future: futureAlbum,
               builder: (context, snapshot) {
                 {
@@ -265,11 +265,11 @@ class _CoursesState extends State<Courses> {
                                                                   .toString();
                                                             });
                                                           },
-                                                          items: _level.map(
-                                                              (level) {
+                                                          items: _level
+                                                              .map((level) {
                                                             return DropdownMenuItem(
-                                                              child:  Text(
-                                                                  level),
+                                                              child:
+                                                                  Text(level),
                                                               value: level,
                                                             );
                                                           }).toList(),
@@ -305,8 +305,7 @@ class _CoursesState extends State<Courses> {
                                                           items:
                                                               _year.map((year) {
                                                             return DropdownMenuItem(
-                                                              child:  Text(
-                                                                  year),
+                                                              child: Text(year),
                                                               value: year,
                                                             );
                                                           }).toList(),
@@ -416,7 +415,7 @@ class _CoursesState extends State<Courses> {
                       ),
                     );
                     //  })
-                    
+
                   } else if (snapshot.hasError) {
                     return Text('${snapshot.error}');
                   }
@@ -436,8 +435,8 @@ class _CoursesState extends State<Courses> {
 }
 
 class MyData extends DataTableSource {
-  final List<InsCourse> snapshot;
-  final Function(InsCourse) onEditPressed;
+  final List<Course> snapshot;
+  final Function(Course) onEditPressed;
   MyData(this.snapshot, this.onEditPressed);
 
   // Generate some made-up data

@@ -91,7 +91,6 @@ class _InstructorsState extends State<Instructors> {
     SideBarWidget _sideBar = SideBarWidget();
     TextEditingController search = TextEditingController();
 
-
     return AdminScaffold(
       appBar: AppBar(
         title: Row(
@@ -166,40 +165,6 @@ class _InstructorsState extends State<Instructors> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              SizedBox(
-                width: (MediaQuery.of(context).size.width) / 4,
-                child: TextButton(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      'اضافة تدريسي جديد',
-                      style: buttons,
-                    ),
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                        return blue;
-                        // Use the component's default.
-                      },
-                    ),
-                  ),
-                  onPressed: () async {
-                    SharedPreferences localStorage =
-                        await SharedPreferences.getInstance();
-                    if (localStorage.getString("token") == null) {
-                      context.showSnackBar(
-                          'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
-                          isError: true);
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AddInsAlert(),
-                      );
-                    }
-                  },
-                ),
-              ),
               const SizedBox(width: 16),
               FutureBuilder<List<Instructor>>(
                   future: futureAlbum,
@@ -241,6 +206,43 @@ class _InstructorsState extends State<Instructors> {
                                           },
                                         )),
                                   ).margin9,
+                                ),
+                                SizedBox(
+                                  width:
+                                      (MediaQuery.of(context).size.width) / 4,
+                                  child: TextButton(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Text(
+                                        'اضافة تدريسي جديد',
+                                        style: buttons,
+                                      ),
+                                    ),
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty
+                                          .resolveWith<Color>(
+                                        (Set<MaterialState> states) {
+                                          return blue;
+                                          // Use the component's default.
+                                        },
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      SharedPreferences localStorage =
+                                          await SharedPreferences.getInstance();
+                                      if (localStorage.getString("token") ==
+                                          null) {
+                                        context.showSnackBar(
+                                            'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
+                                            isError: true);
+                                      } else {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AddInsAlert(),
+                                        );
+                                      }
+                                    },
+                                  ),
                                 ),
                               ],
                             ),

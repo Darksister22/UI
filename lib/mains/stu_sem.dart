@@ -5,7 +5,6 @@ import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/editpages/course_edit.dart';
 import 'package:schoolmanagement/mains/deg_course.dart';
 import 'package:schoolmanagement/mains/settingsmain.dart';
-import 'package:schoolmanagement/models/courseins.dart';
 import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
@@ -13,6 +12,7 @@ import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../editpages/deg_edit.dart';
+import '../models/course.dart';
 import '../stylefiles/customtext.dart';
 import 'login.dart';
 
@@ -23,8 +23,8 @@ Widget _verticalDivider = const VerticalDivider(
 
 class MyData extends DataTableSource {
   final List<Student> snapshot;
-  final Function(Student, InsCourse) onEditPressed;
-  final InsCourse id;
+  final Function(Student, Course) onEditPressed;
+  final Course id;
   MyData(this.snapshot, this.id, this.onEditPressed);
 
   // Generate some made-up data
@@ -77,7 +77,7 @@ class MyData extends DataTableSource {
 
 class StuSem extends StatefulWidget {
   static const String id = 'studentsem';
-  final InsCourse current;
+  final Course current;
   const StuSem({Key? key, required this.current}) : super(key: key);
 
   @override
@@ -202,78 +202,6 @@ class _StuSemState extends State<StuSem> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SizedBox(
-                    width: (MediaQuery.of(context).size.width) / 5,
-                    child: TextButton(
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Text(
-                          'تعديل معلومات المادة',
-                          style: buttons,
-                        ),
-                      ),
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.resolveWith<Color>(
-                          (Set<MaterialState> states) {
-                            return blue;
-                          },
-                        ),
-                      ),
-                      onPressed: () async {
-                        SharedPreferences localStorage =
-                            await SharedPreferences.getInstance();
-                        if (localStorage.getString("token") == null) {
-                          context.showSnackBar(
-                              'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
-                              isError: true);
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (context) => EditCourse(
-                              current: widget.current,
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: (MediaQuery.of(context).size.width) / 5,
-                    child: TextButton(
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Text(
-                          'عرض سعيات المادة',
-                          style: buttons,
-                        ),
-                      ),
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.resolveWith<Color>(
-                          (Set<MaterialState> states) {
-                            return blue;
-                          },
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DegCourse(
-                              course: widget.current,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  )
-                ],
-              ),
               const SizedBox(width: 16),
               StatefulBuilder(builder: (context, setState) {
                 return PaginatedDataTable(
@@ -343,134 +271,198 @@ class _StuSemState extends State<StuSem> {
                   showCheckboxColumn: true,
                   actions: [
                     IconButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('عرض المعلومات حسب...'),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    Form(
-                                      key: _formKey,
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: SizedBox(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
-                                              height: 40,
-                                              child: ButtonTheme(
-                                                child: DropdownButtonFormField(
-                                                  isExpanded: true,
-                                                  hint: const Text(
-                                                      'اختيار المرحلة الدراسية'),
-                                                  value: sellevel,
-                                                  onChanged: (newValue) {
-                                                    setState(() {
-                                                      sellevel =
-                                                          newValue.toString();
-                                                    });
-                                                  },
-                                                  items: _level.map((level) {
-                                                    return DropdownMenuItem(
-                                                      child: Text(level),
-                                                      value: level,
-                                                    );
-                                                  }).toList(),
-                                                ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('عرض المعلومات حسب...'),
+                            content: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: SizedBox(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: 40,
+                                            child: ButtonTheme(
+                                              child: DropdownButtonFormField(
+                                                isExpanded: true,
+                                                hint: const Text(
+                                                    'اختيار المرحلة الدراسية'),
+                                                value: sellevel,
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    sellevel =
+                                                        newValue.toString();
+                                                  });
+                                                },
+                                                items: _level.map((level) {
+                                                  return DropdownMenuItem(
+                                                    child: Text(level),
+                                                    value: level,
+                                                  );
+                                                }).toList(),
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(height: 10),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: SizedBox(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
-                                              height: 40,
-                                              child: ButtonTheme(
-                                                child: DropdownButtonFormField(
-                                                  isExpanded: true,
-                                                  hint: const Text(
-                                                      'اختيار السنة الدراسية'),
-                                                  value: selyear,
-                                                  onChanged: (newValue) {
-                                                    setState(() {
-                                                      selyear =
-                                                          newValue.toString();
-                                                    });
-                                                  },
-                                                  items: _year.map((year) {
-                                                    return DropdownMenuItem(
-                                                      child: Text(year),
-                                                      value: year,
-                                                    );
-                                                  }).toList(),
-                                                ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: SizedBox(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: 40,
+                                            child: ButtonTheme(
+                                              child: DropdownButtonFormField(
+                                                isExpanded: true,
+                                                hint: const Text(
+                                                    'اختيار السنة الدراسية'),
+                                                value: selyear,
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    selyear =
+                                                        newValue.toString();
+                                                  });
+                                                },
+                                                items: _year.map((year) {
+                                                  return DropdownMenuItem(
+                                                    child: Text(year),
+                                                    value: year,
+                                                  );
+                                                }).toList(),
                                               ),
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                              actions: [
-                                ElevatedButton(
-                                    onPressed: () {
-                                      // sel_year = null;
-                                      // sel_level = null;
-                                      // Navigator.pop(context);
-                                    },
-                                    child: const Text('الغاء')),
-                                ElevatedButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        if (sellevel == null &&
-                                            selyear == null) {
-                                          Navigator.pop(context);
-                                          return;
-                                        } else if (selyear == null &&
-                                            sellevel != null) {
-                                          _data = _data.where((s) {
-                                            return s.level.contains(
-                                                translateLevelAE(sellevel!));
-                                          }).toList();
-                                        } else if (sellevel == null &&
-                                            selyear != null) {
-                                          _data = _data.where((s) {
-                                            return s.year.contains(
-                                                translateYearAE(selyear!));
-                                          }).toList();
-                                        } else {
-                                          _data = _data.where((s) {
-                                            return s.year.contains(
-                                                    translateYearAE(
-                                                        selyear!)) &&
-                                                s.level.contains(
-                                                    translateLevelAE(
-                                                        sellevel!));
-                                          }).toList();
-                                        }
-                                      });
-                                      selyear = null;
-                                      sellevel = null;
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('البحث'))
-                              ],
                             ),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.filter_alt_outlined,
-                          size: 30,
-                        ))
+                            actions: [
+                              ElevatedButton(
+                                  onPressed: () {
+                                    // sel_year = null;
+                                    // sel_level = null;
+                                    // Navigator.pop(context);
+                                  },
+                                  child: const Text('الغاء')),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      if (sellevel == null && selyear == null) {
+                                        Navigator.pop(context);
+                                        return;
+                                      } else if (selyear == null &&
+                                          sellevel != null) {
+                                        _data = _data.where((s) {
+                                          return s.level.contains(
+                                              translateLevelAE(sellevel!));
+                                        }).toList();
+                                      } else if (sellevel == null &&
+                                          selyear != null) {
+                                        _data = _data.where((s) {
+                                          return s.year.contains(
+                                              translateYearAE(selyear!));
+                                        }).toList();
+                                      } else {
+                                        _data = _data.where((s) {
+                                          return s.year.contains(
+                                                  translateYearAE(selyear!)) &&
+                                              s.level.contains(
+                                                  translateLevelAE(sellevel!));
+                                        }).toList();
+                                      }
+                                    });
+                                    selyear = null;
+                                    sellevel = null;
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('البحث'))
+                            ],
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.filter_alt_outlined,
+                        size: 30,
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        SizedBox(
+                          width: (MediaQuery.of(context).size.width) / 5,
+                          child: TextButton(
+                            child: Text(
+                              'تعديل معلومات المادة',
+                              style: buttons,
+                            ),
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  return blue;
+                                },
+                              ),
+                            ),
+                            onPressed: () async {
+                              SharedPreferences localStorage =
+                                  await SharedPreferences.getInstance();
+                              if (localStorage.getString("token") == null) {
+                                context.showSnackBar(
+                                    'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
+                                    isError: true);
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => EditCourse(
+                                    current: widget.current,
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        SizedBox(
+                          width: (MediaQuery.of(context).size.width) / 5,
+                          child: TextButton(
+                            child: Text(
+                              'عرض سعيات المادة',
+                              style: buttons,
+                            ),
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  return blue;
+                                },
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DegCourse(
+                                    course: widget.current,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      ],
+                    ),
                   ],
                 );
               })

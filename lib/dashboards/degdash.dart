@@ -5,6 +5,7 @@ import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/deg_cur.dart';
 
 import '../api.dart';
+import '../mains/deg_all.dart';
 
 class DegDash extends StatefulWidget {
   const DegDash({Key? key}) : super(key: key);
@@ -14,13 +15,14 @@ class DegDash extends StatefulWidget {
 }
 
 class _DegDashState extends State<DegDash> {
+  bool isLoading = true;
   Future _caclDeg() async {
     var data = {};
 
     try {
       final response = await CallApi().postData(data, '/api/degrees/cacl');
       if (response.statusCode == 200) {
-        context.showSnackBar('تم حساب درجات الكورس بنجاح');
+        isLoading = false;
       }
     } catch (e) {
       context.showSnackBar('حدث خطأ ما, يرجى اعادة المحاولة', isError: true);
@@ -57,19 +59,10 @@ class _DegDashState extends State<DegDash> {
                     children: [
                       ButtonCard(
                         bezierCOlor: Colors.lightBlue,
-                        value: 'حساب درجات الكورس الحالي',
+                        value: 'عبور الطلاب',
                         add: IconButton(
                           icon: const Icon(Icons.calculate_outlined),
-                          onPressed: () async {
-                            context.showSnackBar('الرجاء الانتظار...');
-                            await _caclDeg();
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const DegCur(),
-                              ),
-                            );
-                          },
+                          onPressed: () async {},
                         ),
                         topColor: Colors.lightBlue,
                       ),
@@ -85,13 +78,16 @@ class _DegDashState extends State<DegDash> {
                         value: 'عرض درجات الكورس الحالي',
                         add: IconButton(
                           icon: const Icon(Icons.person_outline_outlined),
-                          onPressed: () {
+                          onPressed: () async {
+                            await _caclDeg();
+
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const DegCur(),
                               ),
                             );
+                            context.showSnackBar('تم حساب درجات الكورس بنجاح');
                           },
                         ),
                         topColor: Colors.greenAccent,
@@ -104,7 +100,14 @@ class _DegDashState extends State<DegDash> {
                         value: 'عرض درجات السنوات السابقة',
                         add: IconButton(
                           icon: const Icon(Icons.person_outline_outlined),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const DegAll(),
+                              ),
+                            );
+                          },
                         ),
                         topColor: Colors.orangeAccent,
                       ),
