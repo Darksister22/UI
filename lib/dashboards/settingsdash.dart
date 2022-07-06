@@ -90,7 +90,7 @@ class _SettingsDashState extends State<SettingsDash> {
                 children: [
                   Text(
                     "اعدادات النظام - نظام اللجنة الامتحانية",
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.ibmPlexSansArabic(
                       fontSize: 25,
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
@@ -145,7 +145,6 @@ class _SettingsDashState extends State<SettingsDash> {
                                               }
                                               return null;
                                             },
-                                            obscureText: true,
                                             decoration: InputDecoration(
                                               labelText: ' اسم المستخدم',
                                               prefixIcon: const Icon(Icons
@@ -159,6 +158,7 @@ class _SettingsDashState extends State<SettingsDash> {
                                           const SizedBox(height: 10),
                                           TextFormField(
                                             controller: passwordController,
+                                            obscureText: true,
                                             validator: (value) {
                                               if (value == null ||
                                                   value.isEmpty) {

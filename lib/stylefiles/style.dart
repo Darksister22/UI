@@ -19,9 +19,9 @@ Map<int, Color> color = {
 MaterialColor myColor = MaterialColor(0xFF2C5D9E, color);
 TextStyle hint =
     TextStyle(fontSize: 20, fontWeight: FontWeight.w300, color: dark);
-TextStyle buttons =
-    const TextStyle(fontSize: 20, fontWeight: FontWeight.w300, color: Colors.white);
+TextStyle buttons = const TextStyle(
+    fontSize: 20, fontWeight: FontWeight.w300, color: Colors.white);
 TextStyle divider =
     TextStyle(fontSize: 20, fontWeight: FontWeight.w300, color: dark);
 TextStyle header = TextStyle(
-    fontSize: 25, fontWeight: FontWeight.w800, color: Colors.grey[600]);
+    fontSize: 20, fontWeight: FontWeight.w700, color: Colors.grey[600]);

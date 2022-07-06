@@ -1,5 +1,3 @@
-
-
 class Student {
   final int id;
   final String nameAr;
@@ -14,6 +12,7 @@ class Student {
   final String? avg6;
   final String? avg7;
   final String? avg8;
+  final int isEnded;
   final String? avg9;
   final String? avg10;
   final String? note;
@@ -35,26 +34,27 @@ class Student {
     required this.avg9,
     required this.avg10,
     required this.note,
+    required this.isEnded,
   });
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
-      id: json['id'],
-      nameAr: json['name_ar'],
-      nameEn: json['name_en'],
-      level: json['level'],
-      year: json['year'],
-      avg1: json['stu_avg1'],
-      avg2: json['stu_avg2'],
-      avg3: json['stu_avg3'],
-      avg4: json['stu_avg4'],
-      avg5: json['stu_avg5'],
-      avg6: json['stu_avg6'],
-      avg7: json['stu_avg7'],
-      avg8: json['stu_avg8'],
-      avg9: json['stu_avg9'],
-      avg10: json['stu_avg10'],
-      note: json['note'],
-    );
+        id: json['id'],
+        nameAr: json['name_ar'],
+        nameEn: json['name_en'],
+        level: json['level'],
+        year: json['year'],
+        avg1: json['avg1'],
+        avg2: json['avg2'],
+        avg3: json['avg3'],
+        avg4: json['avg4'],
+        avg5: json['avg5'],
+        avg6: json['avg6'],
+        avg7: json['avg7'],
+        avg8: json['avg8'],
+        avg9: json['avg9'],
+        avg10: json['avg10'],
+        note: json['note'],
+        isEnded: json['isEnded']);
   }
 }
 

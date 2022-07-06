@@ -37,17 +37,13 @@ class _AddCourseState extends State<AddCourse> {
     'ماجستير',
     'دكتوراة',
   ];
-
+  bool isSwitched = true;
   final List<String> _year = [
     'السنة الاولى',
     'السنة الثانية',
     'السنة الثالثة',
     'السنة الرابعة',
     'السنة الخامسة',
-    'السنة السادسة',
-    'السنة الثامنة',
-    'السنة التاسعة',
-    'السنة العاشرة',
   ];
 
   var snack = '';
@@ -72,7 +68,7 @@ class _AddCourseState extends State<AddCourse> {
           children: [
             Visibility(
                 child: CustomText(
-              text: 'اضافة مادة جديد',
+              text: 'اضافة مادة جديدة',
               color: lightgrey,
               size: 20,
               fontWeight: FontWeight.bold,
@@ -147,6 +143,7 @@ class _AddCourseState extends State<AddCourse> {
                     children: [
                       TextFormField(
                         controller: _courseEN,
+                        textDirection: TextDirection.ltr,
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'الرجاء ادخال اسم المادة';
@@ -179,8 +176,14 @@ class _AddCourseState extends State<AddCourse> {
                                   }
                                   return StatefulBuilder(
                                     builder: (BuildContext context, setState) {
-                                      return DropdownButton<String>(
+                                      return DropdownButtonFormField<String>(
                                         isExpanded: true,
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return " الرجاء  اختيار التدريسي ";
+                                          }
+                                          return null;
+                                        },
                                         hint: const Text('اختيار التدريسي'),
                                         value: selins,
                                         onChanged: (newValue) {
@@ -225,6 +228,22 @@ class _AddCourseState extends State<AddCourse> {
                           ),
                         ),
                       ).margin9,
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: isSwitched,
+                              onChanged: (value) {
+                                setState(() {
+                                  isSwitched = value!;
+                                });
+                              }),
+                          Text(
+                            'المادة تشمل عند احتساب المعدل',
+                            style: header,
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 10),
                       TextFormField(
                         validator: (value) {
@@ -447,6 +466,7 @@ class _AddCourseState extends State<AddCourse> {
       "code": _code.text,
       "unit": _unit.text,
       "success": _success.text,
+      "isCounts": isSwitched,
       "ins_name": selins,
     };
 
@@ -471,20 +491,3 @@ class _AddCourseState extends State<AddCourse> {
     }
   }
 }
-
-//  DropdownButton<String>(
-//                                 isExpanded: true,
-//                                 hint: const Text('اختيار التدريسي'),
-//                                 value: sel_level,
-//                                 onChanged: (newValue) {
-//                                   setState(() {
-//                                     sel_level = newValue.toString();
-//                                   });
-//                                 },
-//                                 items: _Level.map((level) {
-//                                   return DropdownMenuItem(
-//                                     child: Text(level),
-//                                     value: level,
-//                                   );
-//                                 }).toList(),
-//                               ),

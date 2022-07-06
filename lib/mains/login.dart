@@ -77,12 +77,12 @@ class _LoginState extends State<Login> {
                       textDirection: TextDirection.ltr,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'الرجاء ادخال اسم مستخدم';
+                          return 'الرجاء ادخال البريد الالكتروني';
                         }
                         return null;
                       },
                       decoration: InputDecoration(
-                        labelText: 'اسم المستخدم',
+                        labelText: 'البريد الالكتروني',
                         labelStyle: const TextStyle(color: Colors.grey),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),

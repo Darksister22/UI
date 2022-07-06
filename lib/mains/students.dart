@@ -35,7 +35,6 @@ Future<List<Student>> fetchAlbum() async {
 
   if (response.statusCode == 200) {
     final result = jsonDecode(response.body) as List;
-
     return result.map((e) => Student.fromJson(e)).toList();
   } else {
     // If that call was not successful, throw an error.
@@ -69,10 +68,6 @@ class _StudentsState extends State<Students> {
       'السنة الثالثة',
       'السنة الرابعة',
       'السنة الخامسة',
-      'السنة السادسة',
-      'السنة الثامنة',
-      'السنة التاسعة',
-      'السنة العاشرة',
     ];
     final _formKey = GlobalKey<FormState>();
 
@@ -219,6 +214,7 @@ class _StudentsState extends State<Students> {
                               DataColumn(
                                   label:
                                       Text('المرحلة الدراسية', style: header)),
+                              DataColumn(label: _verticalDivider),
                             ],
                             arrowHeadColor: blue,
                             source: MyData(_data, (_data) {
@@ -228,7 +224,8 @@ class _StudentsState extends State<Students> {
                                     StuEditAlert(current: _data),
                               );
                             }),
-                            columnSpacing: 35,
+                            columnSpacing:
+                                MediaQuery.of(context).size.width / 30,
                             showCheckboxColumn: true,
                             actions: [
                               IconButton(
@@ -378,7 +375,7 @@ class _StudentsState extends State<Students> {
                                 ),
                               ),
                               SizedBox(
-                                width: (MediaQuery.of(context).size.width) / 4,
+                                width: (MediaQuery.of(context).size.width) / 5,
                                 child: TextButton(
                                   child: Padding(
                                     padding: const EdgeInsets.all(4.0),
@@ -481,6 +478,7 @@ class MyData extends DataTableSource {
       DataCell(
         Text(translateLevelEA(current.level.toString())),
       ),
+      DataCell(_verticalDivider),
     ]);
   }
 }

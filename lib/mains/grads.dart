@@ -5,15 +5,13 @@ import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
-import 'package:schoolmanagement/models/student.dart';
+import 'package:schoolmanagement/models/grads.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../addpages/stu_add.dart';
-import '../editpages/stu_edit.dart';
+import '../editpages/grad_edit.dart';
 import 'login.dart';
 import 'settingsmain.dart';
 
@@ -30,12 +28,12 @@ class Grads extends StatefulWidget {
   _GradsState createState() => _GradsState();
 }
 
-Future<List<Student>> fetchAlbum() async {
-  final response = await CallApi().getData('/api/students');
+Future<List<Grad>> fetchAlbum() async {
+  final response = await CallApi().getData('/api/grads/show');
   if (response.statusCode == 200) {
     final result = jsonDecode(response.body) as List;
 
-    return result.map((e) => Student.fromJson(e)).toList();
+    return result.map((e) => Grad.fromJson(e)).toList();
   } else {
     // If that call was not successful, throw an error.
     throw Exception('Failed to load');
@@ -43,8 +41,8 @@ Future<List<Student>> fetchAlbum() async {
 }
 
 class _GradsState extends State<Grads> {
-  late Future<List<Student>> futureAlbum;
-  List<Student> _data = [];
+  late Future<List<Grad>> futureAlbum;
+  List<Grad> _data = [];
   @override
   void initState() {
     super.initState();
@@ -68,10 +66,6 @@ class _GradsState extends State<Grads> {
       'السنة الثالثة',
       'السنة الرابعة',
       'السنة الخامسة',
-      'السنة السادسة',
-      'السنة الثامنة',
-      'السنة التاسعة',
-      'السنة العاشرة',
     ];
     final _formKey = GlobalKey<FormState>();
 
@@ -149,34 +143,8 @@ class _GradsState extends State<Grads> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              SizedBox(
-                width: (MediaQuery.of(context).size.width) / 4,
-                child: TextButton(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      'اضافة طالب جديد',
-                      style: buttons,
-                    ),
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                        return blue;
-                        // Use the component's default.
-                      },
-                    ),
-                  ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AddStuAlert(),
-                    );
-                  },
-                ),
-              ),
               const SizedBox(width: 16),
-              FutureBuilder<List<Student>>(
+              FutureBuilder<List<Grad>>(
                   future: futureAlbum,
                   builder: (context, snapshot) {
                     {
@@ -244,16 +212,18 @@ class _GradsState extends State<Grads> {
                               DataColumn(
                                   label:
                                       Text('المرحلة الدراسية', style: header)),
+                              DataColumn(label: _verticalDivider),
                             ],
                             arrowHeadColor: blue,
                             source: MyData(_data, (_data) {
                               showDialog(
                                 context: context,
                                 builder: (context) =>
-                                    StuEditAlert(current: _data),
+                                    GradEditAlert(current: _data),
                               );
                             }),
-                            columnSpacing: 35,
+                            columnSpacing:
+                                MediaQuery.of(context).size.width / 30,
                             showCheckboxColumn: true,
                             actions: [
                               IconButton(
@@ -261,7 +231,8 @@ class _GradsState extends State<Grads> {
                                     showDialog(
                                       context: context,
                                       builder: (context) => AlertDialog(
-                                        title: const Text('عرض المعلومات حسب...'),
+                                        title:
+                                            const Text('عرض المعلومات حسب...'),
                                         content: SingleChildScrollView(
                                           child: Column(
                                             children: [
@@ -293,11 +264,11 @@ class _GradsState extends State<Grads> {
                                                                     .toString();
                                                               });
                                                             },
-                                                            items: _level.map(
-                                                                (level) {
+                                                            items: _level
+                                                                .map((level) {
                                                               return DropdownMenuItem(
-                                                                child: Text(
-                                                                    level),
+                                                                child:
+                                                                    Text(level),
                                                                 value: level,
                                                               );
                                                             }).toList(),
@@ -330,11 +301,11 @@ class _GradsState extends State<Grads> {
                                                                     .toString();
                                                               });
                                                             },
-                                                            items: _year.map(
-                                                                (year) {
+                                                            items: _year
+                                                                .map((year) {
                                                               return DropdownMenuItem(
-                                                                child: Text(
-                                                                    year),
+                                                                child:
+                                                                    Text(year),
                                                                 value: year,
                                                               );
                                                             }).toList(),
@@ -369,8 +340,7 @@ class _GradsState extends State<Grads> {
                                                           translateLevelAE(
                                                               selLevel!));
                                                     }).toList();
-                                                  } else if (selLevel ==
-                                                          null &&
+                                                  } else if (selLevel == null &&
                                                       selYear != null) {
                                                     _data = snapshot.data!
                                                         .where((s) {
@@ -419,8 +389,8 @@ class _GradsState extends State<Grads> {
 }
 
 class MyData extends DataTableSource {
-  final List<Student> snapshot;
-  final Function(Student) onEditPressed;
+  final List<Grad> snapshot;
+  final Function(Grad) onEditPressed;
   MyData(this.snapshot, this.onEditPressed);
 
   // Generate some made-up data
@@ -468,6 +438,7 @@ class MyData extends DataTableSource {
       DataCell(
         Text(translateLevelEA(current.level.toString())),
       ),
+      DataCell(_verticalDivider),
     ]);
   }
 }

@@ -79,6 +79,7 @@ class MyData extends DataTableSource {
       DataCell(
         Text(current.nameEn.toString()),
       ),
+      DataCell(_verticalDivider),
     ]);
   }
 }
@@ -265,6 +266,7 @@ class _InstructorsState extends State<Instructors> {
                               DataColumn(
                                   label:
                                       Text('Instructor Name', style: header)),
+                              DataColumn(label: _verticalDivider),
                             ],
                             arrowHeadColor: blue,
                             source: MyData(_data, (_data) {

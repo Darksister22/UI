@@ -8,7 +8,6 @@ import 'package:schoolmanagement/module/extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api.dart';
-import '../mains/students.dart';
 
 class InstEditAlert extends StatefulWidget {
   Instructor current;
@@ -45,10 +44,14 @@ class _InstEditAlertState extends State<InstEditAlert> {
     };
 
     try {
-      
+      final response =
           await CallApi().postData(data, "/api/instructors/destroy/$id");
-
-      snack = 'تم حذف التدريسي بنجاح';
+      if (response.statusCode == 409) {
+        snack = 'لا يمكن حذف تدريسي لديه مواد حالية';
+        error = true;
+      } else {
+        snack = 'تم حذف التدريسي بنجاح';
+      }
     } catch (e) {
       snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
       error = true;
@@ -64,8 +67,7 @@ class _InstEditAlertState extends State<InstEditAlert> {
     };
 
     try {
-      
-          await CallApi().postData(data, "/api/instructors/update");
+      await CallApi().postData(data, "/api/instructors/update");
 
       snack = 'تم تحديث معلومات التدريسي بنجاح';
     } catch (e) {
@@ -164,7 +166,7 @@ class _InstEditAlertState extends State<InstEditAlert> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const Students(),
+                      builder: (context) => const Instructors(),
                     ),
                   );
                 }

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
-import 'package:schoolmanagement/mains/stu_sem.dart';
 import 'package:schoolmanagement/models/degree.dart';
 import 'package:schoolmanagement/models/instructor.dart';
 import 'package:schoolmanagement/module/extension.dart';
@@ -21,9 +20,10 @@ Widget _verticalDivider = const VerticalDivider(
   color: Colors.grey,
   thickness: 1,
 );
+late String year;
 
 class DegCourse extends StatefulWidget {
-  static const String id = 'deg_course';
+  static const String id = 'courses';
   final Course course;
   const DegCourse({Key? key, required this.course}) : super(key: key);
   @override
@@ -45,6 +45,9 @@ class MyData extends DataTableSource {
   DataRow getRow(int index) {
     var current = snapshot[index];
     String check(String col) {
+      if (current.isOld == 1) {
+        return "مستوفي";
+      }
       if (col == "null") {
         return "لا يوجد";
       } else {
@@ -52,14 +55,22 @@ class MyData extends DataTableSource {
       }
     }
 
+    String carry() {
+      if (current.stuname.year != year) {
+        return (current.stuname.nameAr + " (محمل)");
+      }
+      return current.stuname.nameAr;
+    }
+
     return DataRow(cells: [
       DataCell(
-        Text(current.stuname.nameAr.toString()),
+        Text(carry()),
       ),
       DataCell(_verticalDivider),
       DataCell(
-        Text(check(current.fourty.toString())),
+        Text(check(current.fourty!)),
       ),
+      DataCell(_verticalDivider),
     ]);
   }
 }
@@ -72,6 +83,7 @@ class _DegCourseState extends State<DegCourse> {
   void initState() {
     super.initState();
     id = widget.course.id;
+    year = widget.course.year;
   }
 
   Future<List<Degree>>? fetch() async {
@@ -95,6 +107,9 @@ class _DegCourseState extends State<DegCourse> {
   Widget build(BuildContext context) {
     SideBarWidget _sideBar = SideBarWidget();
     TextEditingController search = TextEditingController();
+    Future _export() async {
+      await CallApi().postData({}, "/api/export");
+    }
 
     return AdminScaffold(
       appBar: AppBar(
@@ -213,40 +228,15 @@ class _DegCourseState extends State<DegCourse> {
                                         )),
                                   ).margin9,
                                 ),
-                                SizedBox(
-                                  width:
-                                      (MediaQuery.of(context).size.width) / 4,
-                                  child: TextButton(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Text(
-                                        'العودة',
-                                        style: buttons,
-                                      ),
-                                    ),
-                                    style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty
-                                          .resolveWith<Color>(
-                                        (Set<MaterialState> states) {
-                                          return blue;
-                                          // Use the component's default.
-                                        },
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => StuSem(
-                                            current: widget.course,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
                               ],
                             ),
+                            actions: [
+                              IconButton(
+                                  onPressed: () async {
+                                    await _export();
+                                  },
+                                  icon: const Icon(Icons.download))
+                            ],
                             columns: [
                               DataColumn(
                                   label: Text(
@@ -256,10 +246,12 @@ class _DegCourseState extends State<DegCourse> {
                               DataColumn(label: _verticalDivider),
                               DataColumn(
                                   label: Text('درجة السعي', style: header)),
+                              DataColumn(label: _verticalDivider),
                             ],
                             arrowHeadColor: blue,
                             source: MyData(_data),
-                            columnSpacing: 95,
+                            columnSpacing:
+                                MediaQuery.of(context).size.width / 4,
                             showCheckboxColumn: true,
                           );
                         });

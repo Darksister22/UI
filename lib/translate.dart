@@ -20,26 +20,6 @@ String translateYearEA(String year) {
       {
         return 'السنة الخامسة';
       }
-    case 'sixth':
-      {
-        return 'السنة السادسة';
-      }
-    case 'seventh':
-      {
-        return 'السنة السابعة';
-      }
-    case 'eighth':
-      {
-        return 'السنة الثامنة';
-      }
-    case 'ninth':
-      {
-        return 'السنة التاسعة';
-      }
-    case 'tenth':
-      {
-        return 'السنة العاشرة';
-      }
     default:
       {
         return '';
@@ -68,26 +48,6 @@ String translateYearAE(String year) {
     case 'السنة الخامسة':
       {
         return 'fifth';
-      }
-    case 'السنة السادسة':
-      {
-        return 'sixth';
-      }
-    case 'السنة السابعة':
-      {
-        return 'seventh';
-      }
-    case 'السنة الثامنة':
-      {
-        return 'eighth';
-      }
-    case 'السنة التاسعة':
-      {
-        return 'ninth';
-      }
-    case 'السنة العاشرة':
-      {
-        return 'tenth';
       }
     default:
       {

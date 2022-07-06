@@ -70,8 +70,8 @@ class ButtonCard extends StatelessWidget {
                       text: TextSpan(children: [
                         TextSpan(
                             text: "$value\n",
-                            style: GoogleFonts.lato(
-                                fontSize: 25,
+                            style: GoogleFonts.ibmPlexSansArabic(
+                                fontSize: 20,
                                 color: isActive ? blue : dark,
                                 fontWeight: FontWeight.bold))
                       ])),

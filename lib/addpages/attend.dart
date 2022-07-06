@@ -114,7 +114,17 @@ class _AddCarryState extends State<AddCarry> {
                                 }
                                 return StatefulBuilder(
                                   builder: (BuildContext context, setState) {
-                                    return DropdownButton<String>(
+                                    return DropdownButtonFormField<String>(
+                                      validator: (value) {
+                                        if (value == null) {
+                                          context.showSnackBar(
+                                              "الرجاء اختيار مادة دراسية",
+                                              isError: true);
+                                          Navigator.pop(context);
+                                          return "الرجاء اختيار مادة دراسية";
+                                        }
+                                        return null;
+                                      },
                                       isExpanded: true,
                                       hint: const Text('اختيار المادة'),
                                       value: selcourse,

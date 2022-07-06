@@ -7,6 +7,7 @@ import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
+import 'package:schoolmanagement/editpages/degg_year.dart';
 import 'package:schoolmanagement/models/course.dart';
 import 'package:schoolmanagement/models/degree.dart';
 import 'package:schoolmanagement/module/extension.dart';
@@ -23,20 +24,17 @@ Widget _verticalDivider = const VerticalDivider(
   thickness: 1,
 );
 
-class DegAll extends StatefulWidget {
+class DegYear extends StatefulWidget {
   static const String id = 'degrees';
-  final String semes;
-  const DegAll({Key? key, required this.semes}) : super(key: key);
+  const DegYear({Key? key}) : super(key: key);
 
   @override
-  _DegAllState createState() => _DegAllState();
+  _DegYearState createState() => _DegYearState();
 }
 
-class _DegAllState extends State<DegAll> {
+class _DegYearState extends State<DegYear> {
   Future<List<Degree>> fetchAlbum() async {
-    var sem = widget.semes;
-
-    final response = await CallApi().getData('/api/degrees/getall?year=$sem');
+    final response = await CallApi().getData('/api/degrees/getyear');
 
     if (response.statusCode == 200) {
       final result = jsonDecode(response.body) as List;
@@ -49,7 +47,7 @@ class _DegAllState extends State<DegAll> {
   }
 
   Future<List<Course>> fetchCourse() async {
-    var sem = widget.semes;
+    var sem = "2018-2019";
     final response = await CallApi().getData('/api/courses/all?year=$sem');
     if (response.statusCode == 200) {
       final result = jsonDecode(response.body) as List;
@@ -160,7 +158,7 @@ class _DegAllState extends State<DegAll> {
         ),
         backgroundColor: light,
       ),
-      sideBar: _sideBar.SideBarMenus(context, DegAll.id),
+      sideBar: _sideBar.SideBarMenus(context, DegYear.id),
       body: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
         child: SingleChildScrollView(
@@ -237,18 +235,26 @@ class _DegAllState extends State<DegAll> {
                           DataColumn(label: _verticalDivider),
                           DataColumn(label: Text('الحالة', style: header)),
                           DataColumn(label: _verticalDivider),
+                          DataColumn(
+                              label: Text(
+                            'تعديل الدرجة',
+                            style: header,
+                          )),
+                          DataColumn(label: _verticalDivider),
                         ],
                         arrowHeadColor: blue,
                         source: MyData(_data, (_data) {
-                          // showDialog(
-                          //   context: context,
-                          //   builder: (context) =>
-                          //       stuEditAlert(current: _data),
-                          // );
+                          showDialog(
+                            context: context,
+                            builder: (context) => DegYearStu(student: _data),
+                          );
                         }),
                         columnSpacing: MediaQuery.of(context).size.width / 30,
                         showCheckboxColumn: true,
                         actions: [
+                          IconButton(
+                              onPressed: () async {},
+                              icon: const Icon(Icons.download)),
                           IconButton(
                             onPressed: () {
                               showDialog(
@@ -697,6 +703,16 @@ class MyData extends DataTableSource {
               color: Colors.white),
         ),
       ),
+      DataCell(_verticalDivider),
+      DataCell(IconButton(
+        icon: Icon(
+          Icons.edit_outlined,
+          color: Colors.grey[700],
+        ),
+        onPressed: () {
+          onEditPressed(current);
+        },
+      )),
       DataCell(_verticalDivider),
     ]);
   }

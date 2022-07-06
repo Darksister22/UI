@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:schoolmanagement/components/buttoncards.dart';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/mains/deg_cur.dart';
+import 'package:schoolmanagement/mains/deg_year.dart';
+import 'package:schoolmanagement/models/semseter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api.dart';
 import '../mains/deg_all.dart';
@@ -16,6 +21,12 @@ class DegDash extends StatefulWidget {
 
 class _DegDashState extends State<DegDash> {
   bool isLoading = true;
+  String? sellevel;
+
+  String? selYear;
+
+  List<Semester> _data = [];
+
   Future _caclDeg() async {
     var data = {};
 
@@ -26,6 +37,20 @@ class _DegDashState extends State<DegDash> {
       }
     } catch (e) {
       context.showSnackBar('حدث خطأ ما, يرجى اعادة المحاولة', isError: true);
+    }
+  }
+
+  final _formKey = GlobalKey<FormState>();
+
+  Future<List<Semester>> fetchAlbum() async {
+    final response = await CallApi().getData('/api/semesters/get');
+    if (response.statusCode == 200) {
+      final result = jsonDecode(response.body) as List;
+
+      return result.map((e) => Semester.fromJson(e)).toList();
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('Failed to load');
     }
   }
 
@@ -45,28 +70,12 @@ class _DegDashState extends State<DegDash> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "الفصول الدراسية",
-                    style: GoogleFonts.poppins(
+                    "درجات الطلبة",
+                    style: GoogleFonts.ibmPlexSansArabic(
                       fontSize: 25,
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      ButtonCard(
-                        bezierCOlor: Colors.lightBlue,
-                        value: 'عبور الطلاب',
-                        add: IconButton(
-                          icon: const Icon(Icons.calculate_outlined),
-                          onPressed: () async {},
-                        ),
-                        topColor: Colors.lightBlue,
-                      ),
-                    ],
                   ),
                   const SizedBox(
                     height: 10,
@@ -79,7 +88,12 @@ class _DegDashState extends State<DegDash> {
                         add: IconButton(
                           icon: const Icon(Icons.person_outline_outlined),
                           onPressed: () async {
-                            await _caclDeg();
+                            SharedPreferences localStorage =
+                                await SharedPreferences.getInstance();
+
+                            if (localStorage.getString("token") != null) {
+                              await _caclDeg();
+                            }
 
                             Navigator.pushReplacement(
                               context,
@@ -87,7 +101,6 @@ class _DegDashState extends State<DegDash> {
                                 builder: (context) => const DegCur(),
                               ),
                             );
-                            context.showSnackBar('تم حساب درجات الكورس بنجاح');
                           },
                         ),
                         topColor: Colors.greenAccent,
@@ -96,15 +109,122 @@ class _DegDashState extends State<DegDash> {
                         width: 16,
                       ),
                       ButtonCard(
+                        bezierCOlor: Colors.blueAccent,
+                        value: 'عرض درجات السنة الحالية ',
+                        add: IconButton(
+                          icon: const Icon(Icons.person_outline_outlined),
+                          onPressed: () async {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const DegYear(),
+                              ),
+                            );
+                          },
+                        ),
+                        topColor: Colors.blueAccent,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      ButtonCard(
                         bezierCOlor: Colors.orangeAccent,
                         value: 'عرض درجات السنوات السابقة',
                         add: IconButton(
                           icon: const Icon(Icons.person_outline_outlined),
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const DegAll(),
+                          onPressed: () async {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title:
+                                    const Text("الرجاء اختيار السنة الدراسية"),
+                                content: Form(
+                                  key: _formKey,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 40,
+                                      child: ButtonTheme(
+                                        child: FutureBuilder<List<Semester>>(
+                                          future: fetchAlbum(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData) {
+                                              _data = snapshot.data ?? [];
+                                              List<String> list = [];
+                                              for (var i = 0;
+                                                  i < _data.length;
+                                                  i++) {
+                                                list.add(_data[i].year);
+                                              }
+                                              return StatefulBuilder(
+                                                builder: (BuildContext context,
+                                                    setState) {
+                                                  return DropdownButtonFormField<
+                                                      String>(
+                                                    isExpanded: true,
+                                                    validator: (value) {
+                                                      if (value == null) {
+                                                        context.showSnackBar(
+                                                            "الرجاء اختيار سنة دراسية",
+                                                            isError: true);
+                                                        Navigator.pop(context);
+                                                        return "الرجاء اختيار سنة دراسية";
+                                                      }
+                                                      return null;
+                                                    },
+                                                    hint: const Text(
+                                                        'السنة الدراسية'),
+                                                    value: selYear,
+                                                    onChanged: (newValue) {
+                                                      setState(() {
+                                                        selYear =
+                                                            newValue.toString();
+                                                      });
+                                                    },
+                                                    items: list.map((ins) {
+                                                      return DropdownMenuItem(
+                                                        child: Text(ins),
+                                                        value: ins,
+                                                      );
+                                                    }).toList(),
+                                                  );
+                                                },
+                                              );
+                                            }
+                                            return Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: const [
+                                                CircularProgressIndicator(),
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        if (_formKey.currentState!.validate()) {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => DegAll(
+                                                semes: selYear!,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      child: const Text('الذهاب'))
+                                ],
                               ),
                             );
                           },
@@ -112,9 +232,6 @@ class _DegDashState extends State<DegDash> {
                         topColor: Colors.orangeAccent,
                       ),
                     ],
-                  ),
-                  const SizedBox(
-                    height: 10,
                   ),
                 ],
               ),

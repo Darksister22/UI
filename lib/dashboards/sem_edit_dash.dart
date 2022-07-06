@@ -5,6 +5,7 @@ import 'package:schoolmanagement/components/buttoncards.dart';
 import 'package:schoolmanagement/components/utils.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/translate.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SemesterEditDash extends StatefulWidget {
   const SemesterEditDash({Key? key}) : super(key: key);
@@ -16,10 +17,48 @@ class SemesterEditDash extends StatefulWidget {
 class _SemesterEditDashState extends State<SemesterEditDash> {
   final _formKey = GlobalKey<FormState>();
   final List<String> _number = ['الكورس الاول', 'الكورس الثاني'];
-  String? selection;
+  String? selection = "الكورس الاول";
   TextEditingController semyearController = TextEditingController();
-
+  TextEditingController passavg = TextEditingController();
+  String? sellevel;
+  final List<String> _level = [
+    'بكالوريوس',
+    'ماجستير',
+    'دكتوراة',
+  ];
+  String? year;
+  final List<String> _year = [
+    'السنة الاولى',
+    'السنة الثانية',
+    'السنة الثالثة',
+    'السنة الرابعة',
+    'السنة الخامسة',
+  ];
   late String selyear = 'السنة الاولى';
+  Future _stuGrad() async {
+    var data = {
+      "grad_year": translateYearAE(year.toString()),
+      "level": translateLevelAE(sellevel.toString()),
+      "passavg": passavg.text,
+    };
+    try {
+      final response = await CallApi().postData(data, '/api/degrees/pass');
+      if (response.statusCode == 409) {
+        context.showSnackBar('الكورس الدراسي منتهي و لا يمكن عبور الطلبة منه',
+            isError: true);
+      } else if (response.statusCode == 410) {
+        context.showSnackBar('لا يمكن عبور الطلبة من الكورس الاول',
+            isError: true);
+      } else if (response.statusCode == 411) {
+        context.showSnackBar('تم عبور الطلبة لهذه المرحلة مسبقاً',
+            isError: true);
+      } else {
+        context.showSnackBar("تم عبور الطلبة بنجاح");
+      }
+    } catch (e) {
+      context.showSnackBar('حدث خطأ ما, يرجى اعادة المحاولة', isError: true);
+    }
+  }
 
   Future _addSem() async {
     var data = {
@@ -29,13 +68,15 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
 
     try {
       final response = await CallApi().postData(data, '/api/semesters/create');
-
       if (response.statusCode == 409) {
         context.showSnackBar(
             'لا يمكنك بدأ كورس جديد, الرجاء انهاء ألكورس الحالي اولاً',
             isError: true);
       } else if (response.statusCode == 403) {
         context.showSnackBar('لا تملك الصلاحية', isError: true);
+      } else if (response.statusCode == 410) {
+        context.showSnackBar('لا يوجد كورس اول لهذه السنة الدراسية',
+            isError: true);
       } else {
         context.showSnackBar('تم بدأ الكورس بنجاح');
       }
@@ -52,7 +93,7 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
       final response = await CallApi().postData(data, '/api/semesters/end');
 
       if (response.statusCode == 409) {
-        context.showSnackBar('الكورس الدراسي منتهي, الرجاء بدأ فصل دراسي جديد',
+        context.showSnackBar('الكورس الدراسي منتهي, الرجاء بدأ كورس دراسي جديد',
             isError: true);
       } else {
         context.showSnackBar('تم انهاء الكورس بنجاح');
@@ -79,8 +120,8 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "الفصول الدراسية",
-                    style: GoogleFonts.poppins(
+                    "الكورسات الدراسية",
+                    style: GoogleFonts.ibmPlexSansArabic(
                       fontSize: 25,
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
@@ -94,14 +135,14 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                     children: [
                       ButtonCard(
                         bezierCOlor: Colors.blue,
-                        value: 'بدأ فصل دراسي جديد',
+                        value: 'بدأ كورس دراسي جديد',
                         add: IconButton(
                           icon: const Icon(Icons.event_available_outlined),
                           onPressed: () {
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: const Text('بدأ فصل دراسي جديد'),
+                                title: const Text('بدأ كورس دراسي جديد'),
                                 content: SizedBox(
                                   height: 212,
                                   child: Column(
@@ -192,7 +233,6 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                                       onPressed: () async {
                                         if (_formKey.currentState!.validate()) {
                                           await _addSem();
-
                                           Navigator.pop(context);
                                         }
                                       },
@@ -247,6 +287,169 @@ class _SemesterEditDashState extends State<SemesterEditDash> {
                   ),
                   const SizedBox(
                     height: 10,
+                  ),
+                  Row(
+                    children: [
+                      ButtonCard(
+                        bezierCOlor: Colors.lightBlue,
+                        value: 'عبور الطلبة الى السنة الدراسية القادمة',
+                        add: IconButton(
+                          icon: const Icon(Icons.calculate_outlined),
+                          onPressed: () async {
+                            SharedPreferences localStorage =
+                                await SharedPreferences.getInstance();
+
+                            if (localStorage.getString("token") != null) {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text(
+                                      "عبور الطلبة الى السنة الدراسية التالية"),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        Form(
+                                          key: _formKey,
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: SizedBox(
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  height: 40,
+                                                  child: ButtonTheme(
+                                                    child:
+                                                        DropdownButtonFormField(
+                                                      validator: (value) {
+                                                        if (value == null) {
+                                                          context.showSnackBar(
+                                                              "الرجاء اختيار مرحلة دراسية",
+                                                              isError: true);
+                                                          Navigator.pop(
+                                                              context);
+                                                          return "الرجاء اختيار مرحلة دراسية";
+                                                        }
+                                                        return null;
+                                                      },
+                                                      isExpanded: true,
+                                                      hint: const Text(
+                                                          'اختيار المرحلة الدراسية'),
+                                                      value: sellevel,
+                                                      onChanged: (newValue) {
+                                                        setState(() {
+                                                          sellevel = newValue
+                                                              .toString();
+                                                        });
+                                                      },
+                                                      items:
+                                                          _level.map((level) {
+                                                        return DropdownMenuItem(
+                                                          child: Text(level),
+                                                          value: level,
+                                                        );
+                                                      }).toList(),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: SizedBox(
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  height: 40,
+                                                  child: ButtonTheme(
+                                                    child:
+                                                        DropdownButtonFormField(
+                                                      isExpanded: true,
+                                                      validator: (value) {
+                                                        if (value == null) {
+                                                          context.showSnackBar(
+                                                              "الرجاء اختيار سنة التخرج",
+                                                              isError: true);
+                                                          Navigator.pop(
+                                                              context);
+                                                          return "الرجاء اختيار سنة التخرج";
+                                                        }
+                                                        return null;
+                                                      },
+                                                      hint: const Text(
+                                                          'اختيار سنة التخرج '),
+                                                      value: year,
+                                                      onChanged: (newValue) {
+                                                        setState(() {
+                                                          year = newValue
+                                                              .toString();
+                                                        });
+                                                      },
+                                                      items: _year.map((year) {
+                                                        return DropdownMenuItem(
+                                                          child: Text(year),
+                                                          value: year,
+                                                        );
+                                                      }).toList(),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              TextFormField(
+                                                controller: passavg,
+                                                textDirection:
+                                                    TextDirection.ltr,
+                                                validator: (value) {
+                                                  return null;
+                                                },
+                                                decoration: InputDecoration(
+                                                  labelText:
+                                                      'معدل العبور (اختياري)',
+                                                  prefixIcon: const Icon(
+                                                      Icons.text_fields),
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                ),
+                                              ).margin9,
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: [
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('الغاء')),
+                                    ElevatedButton(
+                                        onPressed: () async {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            await _stuGrad();
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                        child: const Text('الذهاب'))
+                                  ],
+                                ),
+                              );
+                            } else {
+                              context.showSnackBar('لا تملك الصلاحية',
+                                  isError: true);
+                            }
+                          },
+                        ),
+                        topColor: Colors.lightBlue,
+                      ),
+                    ],
                   ),
                 ],
               ),

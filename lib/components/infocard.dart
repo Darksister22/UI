@@ -67,14 +67,14 @@ class InfoCard extends StatelessWidget {
                       text: TextSpan(children: [
                         TextSpan(
                             text: "$title\n",
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.ibmPlexSansArabic(
                               fontSize: 14,
                               color: Colors.black,
                               fontWeight: FontWeight.w600,
                             )),
                         TextSpan(
                             text: "$value\n",
-                            style: GoogleFonts.lato(
+                            style: GoogleFonts.ibmPlexSansArabic(
                                 fontSize: 40, color: isActive ? blue : dark))
                       ])),
                 ],

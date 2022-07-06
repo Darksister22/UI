@@ -20,6 +20,7 @@ Widget _verticalDivider = const VerticalDivider(
   color: Colors.grey,
   thickness: 1,
 );
+late String year;
 
 class MyData extends DataTableSource {
   final List<Student> snapshot;
@@ -41,6 +42,13 @@ class MyData extends DataTableSource {
   @override
   DataRow getRow(int index) {
     var current = snapshot[index];
+    String carry() {
+      if (current.year != year) {
+        return current.nameAr + " (محمل)";
+      }
+      return current.nameAr;
+    }
+
     return DataRow(cells: [
       DataCell(IconButton(
         icon: Icon(
@@ -57,7 +65,7 @@ class MyData extends DataTableSource {
       ),
       DataCell(_verticalDivider),
       DataCell(
-        Text(current.nameAr.toString()),
+        Text(carry()),
       ),
       DataCell(_verticalDivider),
       DataCell(
@@ -71,6 +79,7 @@ class MyData extends DataTableSource {
       DataCell(
         Text(translateLevelEA(current.level.toString())),
       ),
+      DataCell(_verticalDivider),
     ]);
   }
 }
@@ -101,10 +110,6 @@ class _StuSemState extends State<StuSem> {
     'السنة الثالثة',
     'السنة الرابعة',
     'السنة الخامسة',
-    'السنة السادسة',
-    'السنة الثامنة',
-    'السنة التاسعة',
-    'السنة العاشرة',
   ];
 
   late List<Student> _data;
@@ -256,6 +261,7 @@ class _StuSemState extends State<StuSem> {
                     DataColumn(label: Text('السنة الدراسية', style: header)),
                     DataColumn(label: _verticalDivider),
                     DataColumn(label: Text('المرحلة الدراسية', style: header)),
+                    DataColumn(label: _verticalDivider),
                   ],
                   arrowHeadColor: blue,
                   source: MyData(_data, widget.current, (_data, id) {
@@ -267,9 +273,12 @@ class _StuSemState extends State<StuSem> {
                       ),
                     );
                   }),
-                  columnSpacing: 35,
+                  columnSpacing: MediaQuery.of(context).size.width / 30,
                   showCheckboxColumn: true,
                   actions: [
+                    IconButton(
+                        onPressed: () async {},
+                        icon: const Icon(Icons.download)),
                     IconButton(
                       onPressed: () {
                         showDialog(
@@ -480,5 +489,6 @@ class _StuSemState extends State<StuSem> {
     _carries = widget.current.carries!;
     _data = _data + _carries;
     id = widget.current.id;
+    year = widget.current.year;
   }
 }

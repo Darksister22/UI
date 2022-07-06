@@ -19,7 +19,7 @@ class SideBarWidget {
       activeBackgroundColor: CupertinoColors.systemBlue,
       activeIconColor: Colors.white,
       iconColor: blue,
-      textStyle: GoogleFonts.poppins(
+      textStyle: GoogleFonts.ibmPlexSansArabic(
         color: Colors.grey[700],
         fontSize: 13,
       ),
@@ -51,6 +51,10 @@ class SideBarWidget {
             icon: Icons.table_view_outlined),
         MenuItem(
             title: 'عرض الطلبة المتخرجين',
+            route: Grads.id,
+            icon: Icons.school_outlined),
+        MenuItem(
+            title: 'ادارة الملفات',
             route: Grads.id,
             icon: Icons.school_outlined),
       ],

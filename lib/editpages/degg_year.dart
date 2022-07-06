@@ -3,30 +3,70 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:schoolmanagement/components/utils.dart';
-import 'package:schoolmanagement/mains/stu_sem.dart';
+import 'package:schoolmanagement/editpages/addhelp.dart';
+import 'package:schoolmanagement/mains/deg_year.dart';
+import 'package:schoolmanagement/models/degree.dart';
 import 'package:schoolmanagement/models/degreesinlge.dart';
-import 'package:schoolmanagement/models/student.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api.dart';
-import '../models/course.dart';
 
-class DegEdit extends StatefulWidget {
-  final Student student;
-  final Course id;
-  const DegEdit({Key? key, required this.id, required this.student})
-      : super(key: key);
+class DegYearStu extends StatefulWidget {
+  final Degree student;
+  const DegYearStu({Key? key, required this.student}) : super(key: key);
 
   @override
-  State<DegEdit> createState() => _DegEditState();
+  State<DegYearStu> createState() => _DegYearStuState();
 }
 
-class _DegEditState extends State<DegEdit> {
+class _DegYearStuState extends State<DegYearStu> {
+  Future _editStu() async {
+    var data = {
+      "course_id": widget.student.coursename.id,
+      'student_id': widget.student.stuname.id,
+      "sixty2": sixty2.text,
+      "sixty3": sixty3.text,
+    };
+
+    try {
+      final response = await CallApi().postData(data, "/api/degrees/create");
+      if (response.statusCode == 200) {
+        snack = 'تم تحديث معلومات الطالب بنجاح';
+      }
+    } catch (e) {
+      snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
+      error = true;
+    }
+  }
+
+  Future _caclDeg() async {
+    var data = {};
+
+    try {
+      final response = await CallApi().postData(data, '/api/degrees/cacl');
+      if (response.statusCode == 200) {}
+    } catch (e) {
+      context.showSnackBar('حدث خطأ ما, يرجى اعادة المحاولة', isError: true);
+    }
+  }
+
+  Future _caclDeg1() async {
+    var data = {};
+
+    try {
+      final response = await CallApi().postData(data, '/api/degrees/cacl1');
+
+      if (response.statusCode == 200) {}
+    } catch (e) {
+      context.showSnackBar('حدث خطأ ما, يرجى اعادة المحاولة', isError: true);
+    }
+  }
+
   Future<DegreeSingle> fetchAlbum() async {
     var data = {
-      "course_id": widget.id.id,
-      'student_id': widget.student.id,
+      "course_id": widget.student.coursename.id,
+      'student_id': widget.student.stuname.id,
     };
     DegreeSingle deg = const DegreeSingle(
       id: null,
@@ -67,28 +107,8 @@ class _DegEditState extends State<DegEdit> {
   bool isEnabled = false;
   var error = false;
 
-  Future _editStu() async {
-    var data = {
-      "course_id": widget.id.id,
-      'student_id': widget.student.id,
-      'fourty': fourty.text,
-      "sixty1": sixty1.text,
-    };
-
-    try {
-      final response = await CallApi().postData(data, "/api/degrees/create");
-      if (response.statusCode == 200) {
-        snack = 'تم تحديث معلومات الطالب بنجاح';
-      }
-    } catch (e) {
-      snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
-      error = true;
-    }
-  }
-
   final _formKey = GlobalKey<FormState>();
   final fourty = TextEditingController();
-  final sixty1 = TextEditingController();
   final sixty2 = TextEditingController();
   final sixty3 = TextEditingController();
   @override
@@ -105,11 +125,8 @@ class _DegEditState extends State<DegEdit> {
                 if (snapshot.data!.fourty != null) {
                   fourty.text = snapshot.data!.fourty.toString();
                 }
-                if (snapshot.data!.sixty1 != null) {
-                  sixty1.text = snapshot.data!.sixty1.toString();
-                }
                 if (snapshot.data!.sixty2 != null) {
-                  sixty2.text = snapshot.data!.sixty1.toString();
+                  sixty2.text = snapshot.data!.sixty2.toString();
                 }
 
                 if (snapshot.data!.sixty3 != null) {
@@ -124,12 +141,12 @@ class _DegEditState extends State<DegEdit> {
                         child: Column(
                           children: [
                             TextFormField(
-                              controller: fourty,
+                              controller: sixty2,
                               enabled: isEnabled,
                               validator: (value) {
                                 if ((value!.isNotEmpty)) {
-                                  if (double.parse(value) > 40) {
-                                    return 'لا يمكن ادخال درجة اكبر من 40';
+                                  if (double.parse(value) > 60) {
+                                    return 'لا يمكن ادخال درجة اكبر من 60';
                                   }
                                 }
                                 return null;
@@ -138,7 +155,7 @@ class _DegEditState extends State<DegEdit> {
                                 FilteringTextInputFormatter.digitsOnly
                               ],
                               decoration: InputDecoration(
-                                labelText: 'درجة السعي',
+                                labelText: 'درجة الامتحان النهائي الثاني',
                                 prefixIcon: const Icon(Icons.numbers),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
@@ -146,12 +163,12 @@ class _DegEditState extends State<DegEdit> {
                               ),
                             ).margin9,
                             TextFormField(
-                              controller: sixty1,
+                              controller: sixty3,
                               enabled: isEnabled,
                               validator: (value) {
                                 if ((value!.isNotEmpty)) {
-                                  if (double.parse(value) > 100) {
-                                    return 'لا يمكن ادخال درجة اكبر من 100';
+                                  if (double.parse(value) > 60) {
+                                    return 'لا يمكن ادخال درجة اكبر من 60';
                                   }
                                 }
                                 return null;
@@ -160,7 +177,7 @@ class _DegEditState extends State<DegEdit> {
                                 FilteringTextInputFormatter.digitsOnly
                               ],
                               decoration: InputDecoration(
-                                labelText: 'درجة الامتحان النهائي الاول',
+                                labelText: 'درجة الامتحان النهائي الثالث',
                                 prefixIcon: const Icon(Icons.numbers),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
@@ -212,20 +229,40 @@ class _DegEditState extends State<DegEdit> {
                   } else {
                     if (_formKey.currentState!.validate()) {
                       await _editStu();
-
-                      context.showSnackBar(snack, isError: error);
+                      await _caclDeg();
+                      await _caclDeg1();
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => StuSem(
-                            current: widget.id,
-                          ),
+                          builder: (context) => const DegYear(),
                         ),
                       );
                     }
                   }
                 },
                 child: const Text('حفظ التغييرات')),
+            ElevatedButton(
+                onPressed: () async {
+                  SharedPreferences localStorage =
+                      await SharedPreferences.getInstance();
+
+                  if (localStorage.getString("token") == null ||
+                      localStorage.getString("role") == "admin") {
+                    context.showSnackBar('لا تملك صلاحية الوصول',
+                        isError: true);
+                  } else {
+                    if (_formKey.currentState!.validate()) {
+                      Navigator.pop(context);
+                      showDialog(
+                        context: context,
+                        builder: (context) => AddHelp(
+                          current: widget.student,
+                        ),
+                      );
+                    }
+                  }
+                },
+                child: const Text('درجات المساعدة'))
           ],
         ),
       );

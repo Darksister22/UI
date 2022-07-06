@@ -5,6 +5,7 @@ import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:schoolmanagement/addpages/addCourse.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
+
 import 'package:schoolmanagement/mains/stu_sem.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
@@ -67,10 +68,6 @@ class _CoursesState extends State<Courses> {
       'السنة الثالثة',
       'السنة الرابعة',
       'السنة الخامسة',
-      'السنة السادسة',
-      'السنة الثامنة',
-      'السنة التاسعة',
-      'السنة العاشرة',
     ];
     final _formKey = GlobalKey<FormState>();
 
@@ -142,93 +139,95 @@ class _CoursesState extends State<Courses> {
         backgroundColor: light,
       ),
       sideBar: _sideBar.SideBarMenus(context, Courses.id),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          const SizedBox(width: 16),
-          FutureBuilder<List<Course>>(
-              future: futureAlbum,
-              builder: (context, snapshot) {
-                {
-                  if (snapshot.hasData) {
-                    _data = snapshot.data ?? [];
-
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: (MediaQuery.of(context).size.width) / 1.2,
-                        child: PaginatedDataTable(
-                          header: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  controller: search,
-                                  decoration: InputDecoration(
-                                      labelText: 'البحث عن مادة',
-                                      labelStyle:
-                                          const TextStyle(color: Colors.grey),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      suffixIcon: IconButton(
-                                        icon: const Icon(Icons.search_outlined),
-                                        onPressed: () {
-                                          setState(() {
-                                            if (search.text.isEmpty) {
-                                              _data = snapshot.data!;
-                                              return;
-                                            }
-                                            _data = snapshot.data!.where((s) {
-                                              return s.nameAr
-                                                  .contains(search.text);
-                                            }).toList();
-                                          });
-                                          search.text = '';
-                                        },
-                                      )),
-                                ).margin9,
-                              ),
+      body: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const SizedBox(width: 16),
+              FutureBuilder<List<Course>>(
+                  future: futureAlbum,
+                  builder: (context, snapshot) {
+                    {
+                      if (snapshot.hasData) {
+                        _data = snapshot.data ?? [];
+                        return StatefulBuilder(builder: (context, setState) {
+                          return PaginatedDataTable(
+                            header: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: search,
+                                    decoration: InputDecoration(
+                                        labelText: 'البحث عن مادة',
+                                        labelStyle:
+                                            const TextStyle(color: Colors.grey),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        suffixIcon: IconButton(
+                                          icon:
+                                              const Icon(Icons.search_outlined),
+                                          onPressed: () {
+                                            setState(() {
+                                              if (search.text.isEmpty) {
+                                                _data = snapshot.data!;
+                                                return;
+                                              }
+                                              _data = snapshot.data!.where((s) {
+                                                return s.nameEn
+                                                    .contains(search.text);
+                                              }).toList();
+                                            });
+                                            search.text = '';
+                                          },
+                                        )),
+                                  ).margin9,
+                                ),
+                              ],
+                            ),
+                            columns: [
+                              DataColumn(
+                                  label: Text(
+                                'عرض المعلومات',
+                                style: header,
+                              )),
+                              DataColumn(label: _verticalDivider),
+                              DataColumn(
+                                  label: Text(
+                                'رقم المادة',
+                                style: header,
+                              )),
+                              DataColumn(label: _verticalDivider),
+                              DataColumn(
+                                  label: Text('Course Name', style: header)),
+                              DataColumn(label: _verticalDivider),
+                              DataColumn(
+                                  label: Text('اسم المادة', style: header)),
+                              DataColumn(label: _verticalDivider),
+                              DataColumn(
+                                  label: Text('السنة الدراسية', style: header)),
+                              DataColumn(label: _verticalDivider),
+                              DataColumn(
+                                  label:
+                                      Text('المرحلة الدراسية', style: header)),
+                              DataColumn(label: _verticalDivider),
                             ],
-                          ),
-                          columns: [
-                            DataColumn(
-                                label: Text(
-                              'عرض المادة',
-                              style: header,
-                            )),
-                            DataColumn(label: _verticalDivider),
-                            DataColumn(
-                                label: Text(
-                              'رقم المادة',
-                              style: header,
-                            )),
-                            DataColumn(label: _verticalDivider),
-                            DataColumn(
-                                label: Text('اسم المادة ', style: header)),
-                            DataColumn(label: _verticalDivider),
-                            DataColumn(
-                                label: Text('Course Name', style: header)),
-                            DataColumn(label: _verticalDivider),
-                            DataColumn(
-                                label: Text('السنة الدراسية', style: header)),
-                            DataColumn(label: _verticalDivider),
-                            DataColumn(
-                                label: Text('المرحلة الدراسية', style: header)),
-                          ],
-                          arrowHeadColor: blue,
-                          source: MyData(_data, (_data) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
+                            arrowHeadColor: blue,
+                            source: MyData(_data, (_data) {
+                              showDialog(
+                                context: context,
                                 builder: (context) => StuSem(current: _data),
-                              ),
-                            );
-                          }),
-                          columnSpacing: 35,
-                          showCheckboxColumn: true,
-                          actions: [
-                            IconButton(
+                              );
+                            }),
+                            columnSpacing:
+                                MediaQuery.of(context).size.width / 30,
+                            showCheckboxColumn: true,
+                            actions: [
+                              IconButton(
                                 onPressed: () {
                                   showDialog(
                                     context: context,
@@ -322,8 +321,6 @@ class _CoursesState extends State<Courses> {
                                       actions: [
                                         ElevatedButton(
                                             onPressed: () {
-                                              selyear = null;
-                                              sellevel = null;
                                               Navigator.pop(context);
                                             },
                                             child: const Text('الغاء')),
@@ -334,14 +331,6 @@ class _CoursesState extends State<Courses> {
                                                     selyear == null) {
                                                   Navigator.pop(context);
                                                   return;
-                                                } else if (selyear == null &&
-                                                    sellevel != null) {
-                                                  _data =
-                                                      snapshot.data!.where((s) {
-                                                    return s.level.contains(
-                                                        translateLevelAE(
-                                                            sellevel!));
-                                                  }).toList();
                                                 } else if (sellevel == null &&
                                                     selyear != null) {
                                                   _data =
@@ -349,6 +338,14 @@ class _CoursesState extends State<Courses> {
                                                     return s.year.contains(
                                                         translateYearAE(
                                                             selyear!));
+                                                  }).toList();
+                                                } else if (selyear == null &&
+                                                    sellevel != null) {
+                                                  _data =
+                                                      snapshot.data!.where((s) {
+                                                    return s.level.contains(
+                                                        translateLevelAE(
+                                                            sellevel!));
                                                   }).toList();
                                                 } else {
                                                   _data =
@@ -374,62 +371,58 @@ class _CoursesState extends State<Courses> {
                                 icon: const Icon(
                                   Icons.filter_alt_outlined,
                                   size: 30,
-                                )),
-                            SizedBox(
-                              width: (MediaQuery.of(context).size.width) / 4,
-                              child: TextButton(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Text(
-                                    'اضافة مادة جديدة',
-                                    style: buttons,
-                                  ),
                                 ),
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.resolveWith<Color>(
-                                    (Set<MaterialState> states) {
-                                      return blue;
-                                      // Use the component's default.
-                                    },
-                                  ),
-                                ),
-                                onPressed: () async {
-                                  SharedPreferences localStorage =
-                                      await SharedPreferences.getInstance();
-                                  if (localStorage.getString("token") == null) {
-                                    context.showSnackBar(
-                                        'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
-                                        isError: true);
-                                  } else {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => const AddCourse(),
-                                    );
-                                  }
-                                },
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                    //  })
+                              SizedBox(
+                                width: (MediaQuery.of(context).size.width) / 4,
+                                child: TextButton(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text(
+                                      'اضافة مادة جديدة',
+                                      style: buttons,
+                                    ),
+                                  ),
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty
+                                        .resolveWith<Color>(
+                                      (Set<MaterialState> states) {
+                                        return blue;
+                                        // Use the component's default.
+                                      },
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    SharedPreferences localStorage =
+                                        await SharedPreferences.getInstance();
+                                    if (localStorage.getString("token") ==
+                                        null) {
+                                      context.showSnackBar(
+                                          'لا تملك صلاحية الوصول, الرجاء تسجيل الدخول',
+                                          isError: true);
+                                    } else {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => const AddCourse(),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        });
+                      } else if (snapshot.hasError) {
+                        return Text('${snapshot.error}');
+                      }
 
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  }
-
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      CircularProgressIndicator(),
-                    ],
-                  );
-                }
-              }),
-        ],
-      ).margin9,
+                      return const CircularProgressIndicator();
+                    }
+                  }),
+            ],
+          ),
+        ).margin9,
+      ),
     );
   }
 }
@@ -453,7 +446,6 @@ class MyData extends DataTableSource {
   @override
   DataRow getRow(int index) {
     var current = snapshot[index];
-
     return DataRow(cells: [
       DataCell(IconButton(
         icon: Icon(
@@ -470,11 +462,11 @@ class MyData extends DataTableSource {
       ),
       DataCell(_verticalDivider),
       DataCell(
-        Text(current.nameAr.toString()),
+        Text(current.nameEn.toString()),
       ),
       DataCell(_verticalDivider),
       DataCell(
-        Text(current.nameEn.toString()),
+        Text(current.nameAr.toString()),
       ),
       DataCell(_verticalDivider),
       DataCell(
@@ -484,6 +476,7 @@ class MyData extends DataTableSource {
       DataCell(
         Text(translateLevelEA(current.level.toString())),
       ),
+      DataCell(_verticalDivider),
     ]);
   }
 }

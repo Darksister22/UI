@@ -16,7 +16,6 @@ import '../mains/login.dart';
 import '../mains/settingsmain.dart';
 import '../mains/stu_sem.dart';
 import '../models/course.dart';
-import '../translate.dart';
 
 class EditCourse extends StatefulWidget {
   final Course current;
@@ -34,33 +33,17 @@ class _EditCourseState extends State<EditCourse> {
 
   final _unit = TextEditingController();
   final _success = TextEditingController(text: '50');
-  final List<String> _level = [
-    'بكالوريوس',
-    'ماجستير',
-    'دكتوراة',
-  ];
-  final List<String> _year = [
-    'السنة الاولى',
-    'السنة الثانية',
-    'السنة الثالثة',
-    'السنة الرابعة',
-    'السنة الخامسة',
-    'السنة السادسة',
-    'السنة الثامنة',
-    'السنة التاسعة',
-    'السنة العاشرة',
-  ];
+
   var snack = '';
   var error = false;
 
   Future _editCrs() async {
     var data = {
+      "id": widget.current.id,
       "name_ar": _courseAR.text,
       "name_en": _courseEN.text,
-      'level': translateLevelAE(sellevel),
       'code': _code.text,
       'unit': _unit.text,
-      'year': translateYearAE(selyear),
       'ins_name': selins.toString(),
       'success': _success.text
     };
@@ -68,7 +51,7 @@ class _EditCourseState extends State<EditCourse> {
     try {
       await CallApi().postData(data, "/api/courses/update");
 
-      snack = 'تم تحديث معلومات الطالب بنجاح';
+      snack = 'تم تحديث معلومات التدريسي بنجاح';
     } catch (e) {
       snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
       error = true;
@@ -104,8 +87,6 @@ class _EditCourseState extends State<EditCourse> {
 
   late int id;
 
-  late String sellevel = 'بكالوريوس';
-  late String selyear = 'السنة الاولى';
   String? selins;
   late Future<List<Instructor>> futureAlbum;
   List<Instructor> _data = [];
@@ -119,8 +100,6 @@ class _EditCourseState extends State<EditCourse> {
     _success.text = widget.current.success.toString();
     id = widget.current.id;
     selins = widget.current.instructor!.nameAr;
-    selyear = translateYearEA(widget.current.year);
-    sellevel = translateLevelEA(widget.current.level);
     _unit.text = widget.current.unit.toString();
   }
 
@@ -208,6 +187,7 @@ class _EditCourseState extends State<EditCourse> {
                     children: [
                       TextFormField(
                         controller: _courseEN,
+                        textDirection: TextDirection.ltr,
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'الرجاء ادخال اسم المادة';
@@ -240,8 +220,14 @@ class _EditCourseState extends State<EditCourse> {
                                   }
                                   return StatefulBuilder(
                                     builder: (BuildContext context, setState) {
-                                      return DropdownButton<String>(
+                                      return DropdownButtonFormField<String>(
                                         isExpanded: true,
+                                        validator: (value) {
+                                          if (value == null) {
+                                            return " الرجاء  اختيار التدريسي ";
+                                          }
+                                          return null;
+                                        },
                                         hint: const Text('اختيار التدريسي'),
                                         value: selins,
                                         onChanged: (newValue) {
@@ -343,57 +329,7 @@ class _EditCourseState extends State<EditCourse> {
                           ),
                         ),
                       ).margin9,
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 40,
-                          child: ButtonTheme(
-                            child: DropdownButton<String>(
-                              isExpanded: true,
-                              hint: const Text('اختيار المرحلة الدراسية'),
-                              value: sellevel,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  sellevel = newValue.toString();
-                                });
-                              },
-                              items: _level.map((level) {
-                                return DropdownMenuItem(
-                                  child: Text(level),
-                                  value: level,
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
                       const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 40,
-                          child: ButtonTheme(
-                            child: DropdownButtonFormField(
-                              isExpanded: true,
-                              hint: const Text('اختيار السنة الدراسية'),
-                              value: selyear,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  selyear = newValue.toString();
-                                });
-                              },
-                              items: _year.map((year) {
-                                return DropdownMenuItem(
-                                  child: Text(year),
-                                  value: year,
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -486,7 +422,7 @@ class _EditCourseState extends State<EditCourse> {
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              'اضافة',
+                              'حفظ التعديلات',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,

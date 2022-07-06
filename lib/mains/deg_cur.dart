@@ -5,6 +5,7 @@ import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:schoolmanagement/api.dart';
 import 'package:schoolmanagement/components/sidemenus.dart';
 import 'package:schoolmanagement/components/utils.dart';
+import 'package:schoolmanagement/editpages/addhelp.dart';
 import 'package:schoolmanagement/models/course.dart';
 import 'package:schoolmanagement/models/degree.dart';
 import 'package:schoolmanagement/module/extension.dart';
@@ -33,7 +34,6 @@ Future<List<Degree>> fetchAlbum() async {
   final response = await CallApi().getData('/api/degrees');
   if (response.statusCode == 200) {
     final result = jsonDecode(response.body) as List;
-
     return result.map((e) => Degree?.fromJson(e)).toList();
   } else {
     throw Exception('Failed to load');
@@ -59,7 +59,6 @@ class _DegCurState extends State<DegCur> {
   @override
   void initState() {
     super.initState();
-    // futureAlbum = fetchAlbum();
   }
 
   @override
@@ -81,10 +80,6 @@ class _DegCurState extends State<DegCur> {
       'السنة الثالثة',
       'السنة الرابعة',
       'السنة الخامسة',
-      'السنة السادسة',
-      'السنة الثامنة',
-      'السنة التاسعة',
-      'السنة العاشرة',
     ];
     final _formKey = GlobalKey<FormState>();
 
@@ -227,18 +222,21 @@ class _DegCurState extends State<DegCur> {
                           DataColumn(label: Text('التقدير', style: header)),
                           DataColumn(label: _verticalDivider),
                           DataColumn(label: Text('الحالة', style: header)),
+                          DataColumn(label: _verticalDivider),
                         ],
                         arrowHeadColor: blue,
                         source: MyData(_data, (_data) {
-                          // showDialog(
-                          //   context: context,
-                          //   builder: (context) =>
-                          //       stuEditAlert(current: _data),
-                          // );
+                          showDialog(
+                            context: context,
+                            builder: (context) => AddHelp(current: _data),
+                          );
                         }),
-                        columnSpacing: 30,
+                        columnSpacing: MediaQuery.of(context).size.width / 30,
                         showCheckboxColumn: true,
                         actions: [
+                          IconButton(
+                              onPressed: () async {},
+                              icon: const Icon(Icons.download)),
                           IconButton(
                               onPressed: () {
                                 showDialog(
@@ -481,10 +479,26 @@ class _DegCurState extends State<DegCur> {
                                                   return s.coursename.nameEn
                                                           .contains(
                                                               selCourse!) &&
-                                                      s.coursename.level
+                                                      s.coursename.year
                                                           .contains(
                                                               translateYearAE(
                                                                   selYear!));
+                                                }).toList();
+                                              } else if (selLevel != null &&
+                                                  selYear != null &&
+                                                  selCourse != null) {
+                                                _data =
+                                                    snapshot.data!.where((s) {
+                                                  return s.coursename.nameEn ==
+                                                          (selCourse!) &&
+                                                      s.coursename.year
+                                                          .contains(
+                                                              translateYearAE(
+                                                                  selYear!)) &&
+                                                      s.coursename.level
+                                                          .contains(
+                                                              translateLevelAE(
+                                                                  selLevel!));
                                                 }).toList();
                                               }
                                             });
@@ -545,8 +559,15 @@ class MyData extends DataTableSource {
       }
     }
 
+    String carry() {
+      if (current.stuname.year != current.coursename.year) {
+        return (current.stuname.nameAr + " (محمل)");
+      }
+      return current.stuname.nameAr;
+    }
+
     return DataRow(cells: [
-      DataCell(Text(current.stuname.nameAr)),
+      DataCell(Text(carry())),
       DataCell(_verticalDivider),
       DataCell(
         Text(current.coursename.nameEn),
@@ -577,6 +598,7 @@ class MyData extends DataTableSource {
               color: Colors.white),
         ),
       ),
+      DataCell(_verticalDivider),
     ]);
   }
 }

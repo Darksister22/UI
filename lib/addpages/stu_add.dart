@@ -23,10 +23,6 @@ class AddStuAlert extends StatelessWidget {
     'السنة الثالثة',
     'السنة الرابعة',
     'السنة الخامسة',
-    'السنة السادسة',
-    'السنة الثامنة',
-    'السنة التاسعة',
-    'السنة العاشرة',
   ];
   TextEditingController nameAr = TextEditingController();
   TextEditingController nameEn = TextEditingController();

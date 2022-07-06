@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:schoolmanagement/components/utils.dart';
-import 'package:schoolmanagement/editpages/averages.dart';
-import 'package:schoolmanagement/models/student.dart';
+import 'package:schoolmanagement/editpages/avergasgrad.dart';
+import 'package:schoolmanagement/mains/grads.dart';
+import 'package:schoolmanagement/models/grads.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../addpages/attend.dart';
 import '../api.dart';
-import '../mains/students.dart';
 
-class StuEditAlert extends StatefulWidget {
-  final Student current;
-  const StuEditAlert({Key? key, required this.current}) : super(key: key);
+class GradEditAlert extends StatefulWidget {
+  final Grad current;
+  const GradEditAlert({Key? key, required this.current}) : super(key: key);
 
   @override
-  State<StuEditAlert> createState() => _StuEditAlertState();
+  State<GradEditAlert> createState() => _GradEditAlertState();
 }
 
-class _StuEditAlertState extends State<StuEditAlert> {
+class _GradEditAlertState extends State<GradEditAlert> {
   late String sellevel = 'بكالوريوس';
 
   late String selyear = 'السنة الاولى';
@@ -45,61 +44,28 @@ class _StuEditAlertState extends State<StuEditAlert> {
     nameAr.text = widget.current.nameAr;
     nameEn.text = widget.current.nameEn;
     note.text = widget.current.note ?? '';
-    isEnded = widget.current.isEnded;
+    deg.text = widget.current.summer ?? "";
   }
 
+  // static Student currents = const Student(
   TextEditingController nameAr = TextEditingController();
 
   TextEditingController nameEn = TextEditingController();
 
   TextEditingController note = TextEditingController();
-  late int isEnded;
+  TextEditingController deg = TextEditingController();
 
+  // static String namear = current.level;
   var snack = '';
 
   var error = false;
 
-  Future _delStu() async {
-    String id = widget.current.id.toString();
-    var data = {};
-
-    try {
-      await CallApi().postData(data, "/api/students/destroy/$id");
-
-      snack = 'تم حذف الطالب بنجاح';
-    } catch (e) {
-      snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
-      error = true;
-    }
-  }
-
-  Future _remStu() async {
-    String id = widget.current.id.toString();
-    var data = {};
-
-    try {
-      await CallApi().postData(data, "/api/students/remove/$id");
-
-      snack = 'تم قطع العلاقة مع الطالب بنجاح';
-    } catch (e) {
-      snack = 'حدث خطاُ ما يرجى اعادة المحاولة';
-      error = true;
-    }
-  }
-
   Future _editStu() async {
     String id = widget.current.id.toString();
-    var data = {
-      "id": id,
-      'name_ar': nameAr.text,
-      'name_en': nameEn.text,
-      "level": translateLevelAE(sellevel),
-      "year": translateYearAE(selyear),
-      "note": note.text
-    };
+    var data = {"id": id, "note": note.text, "summer_deg": deg.text};
 
     try {
-      await CallApi().postData(data, "/api/students/update");
+      await CallApi().postData(data, "/api/grads/update");
 
       snack = 'تم تحديث معلومات الطالب بنجاح';
     } catch (e) {
@@ -124,7 +90,7 @@ class _StuEditAlertState extends State<StuEditAlert> {
                   children: [
                     TextFormField(
                       controller: nameAr,
-                      enabled: isEnabled,
+                      enabled: false,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return "لا يمكن ترك الحقل فارغاً";
@@ -142,7 +108,7 @@ class _StuEditAlertState extends State<StuEditAlert> {
                     const SizedBox(height: 10),
                     TextFormField(
                       controller: nameEn,
-                      enabled: isEnabled,
+                      enabled: false,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return "لا يمكن ترك الحقل فارغاً";
@@ -166,7 +132,7 @@ class _StuEditAlertState extends State<StuEditAlert> {
                         height: 40,
                         child: ButtonTheme(
                           child: IgnorePointer(
-                            ignoring: !isEnabled,
+                            ignoring: true,
                             child: DropdownButton<String>(
                               isExpanded: true,
                               hint: const Text('اختيار المرحلة الدراسية'),
@@ -195,7 +161,7 @@ class _StuEditAlertState extends State<StuEditAlert> {
                         height: 40,
                         child: ButtonTheme(
                           child: IgnorePointer(
-                            ignoring: !isEnabled,
+                            ignoring: true,
                             child: DropdownButtonFormField(
                               isExpanded: true,
                               hint: const Text('اختيار السنة الدراسية'),
@@ -227,6 +193,17 @@ class _StuEditAlertState extends State<StuEditAlert> {
                         ),
                       ),
                     ).margin9,
+                    TextFormField(
+                      controller: note,
+                      enabled: isEnabled,
+                      decoration: InputDecoration(
+                        labelText: 'درجة التدريب الصيفي',
+                        prefixIcon: const Icon(Icons.note),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ).margin9,
                   ],
                 ),
               ),
@@ -241,14 +218,10 @@ class _StuEditAlertState extends State<StuEditAlert> {
               child: const Text('الخروج')),
           ElevatedButton(
               onPressed: () {
-                if (isEnded == 1) {
-                  context.showSnackBar('لا يمكنك تعديل معلومات الطالب',
-                      isError: true);
-                } else {
-                  showDialog(
-                      context: context,
-                      builder: (context) => Averages(current: widget.current));
-                }
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        AveragesGrad(current: widget.current));
               },
               child: const Text('عرض معدلات الطالب')),
           ElevatedButton(
@@ -258,9 +231,6 @@ class _StuEditAlertState extends State<StuEditAlert> {
 
                 if (localStorage.getString("token") == null) {
                   context.showSnackBar('لا تملك صلاحية الوصول', isError: true);
-                } else if (isEnded == 1) {
-                  context.showSnackBar('لا يمكنك تعديل معلومات الطالب',
-                      isError: true);
                 } else {
                   setState(() {
                     isEnabled = true;
@@ -276,71 +246,12 @@ class _StuEditAlertState extends State<StuEditAlert> {
                 if (localStorage.getString("token") == null) {
                   context.showSnackBar('لا تملك صلاحية الوصول', isError: true);
                 } else {
-                  await _delStu();
-                  context.showSnackBar(snack, isError: error);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Students(),
-                    ),
-                  );
-                }
-              },
-              child: const Text('حذف الطالب')),
-          ElevatedButton(
-              onPressed: () async {
-                SharedPreferences localStorage =
-                    await SharedPreferences.getInstance();
-
-                if (localStorage.getString("token") == null) {
-                  context.showSnackBar('لا تملك صلاحية الوصول', isError: true);
-                } else {
-                  await _remStu();
-                  context.showSnackBar(snack, isError: error);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Students(),
-                    ),
-                  );
-                }
-              },
-              child: const Text('قطع العلاقة')),
-          ElevatedButton(
-              onPressed: () async {
-                SharedPreferences localStorage =
-                    await SharedPreferences.getInstance();
-
-                if (localStorage.getString("token") == null) {
-                  context.showSnackBar('لا تملك صلاحية الوصول', isError: true);
-                } else if (isEnded == 1) {
-                  context.showSnackBar('لا يمكنك تعديل معلومات الطالب',
-                      isError: true);
-                } else {
-                  Navigator.pop(context);
-                  showDialog(
-                      context: context,
-                      builder: (contest) => AddCarry(current: widget.current));
-                }
-              },
-              child: const Text('اضافة الطالب الى مادة')),
-          ElevatedButton(
-              onPressed: () async {
-                SharedPreferences localStorage =
-                    await SharedPreferences.getInstance();
-
-                if (localStorage.getString("token") == null) {
-                  context.showSnackBar('لا تملك صلاحية الوصول', isError: true);
-                } else if (isEnded == 1) {
-                  context.showSnackBar('لا يمكنك تعديل معلومات الطالب',
-                      isError: true);
-                } else {
                   await _editStu();
                   context.showSnackBar(snack, isError: error);
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const Students(),
+                      builder: (context) => const Grads(),
                     ),
                   );
                 }

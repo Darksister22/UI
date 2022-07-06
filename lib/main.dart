@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:schoolmanagement/editpages/sem_edit.dart';
 import 'package:schoolmanagement/mains/course.dart';
 import 'package:schoolmanagement/mains/degrees.dart';
@@ -47,7 +48,10 @@ class MyApp extends StatelessWidget {
         Locale("ar", "IQ"),
       ],
       locale: const Locale('ar', 'IQ'),
-      theme: ThemeData(primarySwatch: myColor, selectedRowColor: myColor),
+      theme: ThemeData(
+          primarySwatch: myColor,
+          selectedRowColor: myColor,
+          textTheme: GoogleFonts.ibmPlexSansArabicTextTheme()),
       home: const Login(),
       routes: {
         HomePage.id: (_) => const HomePage(),

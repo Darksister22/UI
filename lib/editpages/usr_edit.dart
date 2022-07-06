@@ -201,7 +201,7 @@ class _UserEditAlertState extends State<UserEditAlert> {
                   );
                 }
               },
-              child: const Text('حذف الطالب')),
+              child: const Text('حذف المستخدم')),
           ElevatedButton(
               onPressed: () async {
                 SharedPreferences localStorage =

@@ -63,7 +63,7 @@ class _OverviewCardsState extends State<OverviewCards> {
                           children: [
                             Text(
                               "الصفحة الرئيسية",
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.ibmPlexSansArabic(
                                 fontSize: 25,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.black,

@@ -189,6 +189,7 @@ class _UsersState extends State<Users> {
                               DataColumn(label: _verticalDivider),
                               DataColumn(
                                   label: Text('الصلاحية', style: header)),
+                              DataColumn(label: _verticalDivider),
                             ],
                             arrowHeadColor: blue,
                             source: MyData(_data, (_data) {
@@ -198,7 +199,8 @@ class _UsersState extends State<Users> {
                                     UserEditAlert(current: _data),
                               );
                             }),
-                            columnSpacing: 45,
+                            columnSpacing:
+                                MediaQuery.of(context).size.width / 30,
                             showCheckboxColumn: true,
                             actions: [
                               IconButton(
@@ -206,7 +208,8 @@ class _UsersState extends State<Users> {
                                     showDialog(
                                       context: context,
                                       builder: (context) => AlertDialog(
-                                        title: const Text('عرض المعلومات حسب...'),
+                                        title:
+                                            const Text('عرض المعلومات حسب...'),
                                         content: SingleChildScrollView(
                                           child: Column(
                                             children: [
@@ -347,6 +350,7 @@ class MyData extends DataTableSource {
       DataCell(
         Text(translateRoleEA(current.role)),
       ),
+      DataCell(_verticalDivider),
     ]);
   }
 }
