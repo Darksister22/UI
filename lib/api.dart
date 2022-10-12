@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:schoolmanagement/url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CallApi {
-  final String _url = 'http://127.0.0.1:8000';
+  final String _url = URL.url;
 
   Future<http.Response> postData(Map data, String apiUrl) async {
     var fullUrl = _url + apiUrl;

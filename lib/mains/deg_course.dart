@@ -9,9 +9,10 @@ import 'package:schoolmanagement/models/instructor.dart';
 import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/customtext.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
+import 'package:schoolmanagement/url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../api.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/course.dart';
 import 'login.dart';
 import 'settingsmain.dart';
@@ -103,13 +104,25 @@ class _DegCourseState extends State<DegCourse> {
     }
   }
 
+  // Future _export() async {
+  //   try {
+  //     await CallApi().getData("/api/degrees/exfourty?course_id=$id");
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
+
+  void _export() async {
+    String url = URL.url;
+    final Uri _url = Uri.parse(url + '/api/degrees/exfourty?course_id=$id');
+
+    if (!await launchUrl(_url)) throw 'Could not launch $_url';
+  }
+
   @override
   Widget build(BuildContext context) {
     SideBarWidget _sideBar = SideBarWidget();
     TextEditingController search = TextEditingController();
-    Future _export() async {
-      await CallApi().postData({}, "/api/export");
-    }
 
     return AdminScaffold(
       appBar: AppBar(
@@ -233,7 +246,7 @@ class _DegCourseState extends State<DegCourse> {
                             actions: [
                               IconButton(
                                   onPressed: () async {
-                                    await _export();
+                                    _export();
                                   },
                                   icon: const Icon(Icons.download))
                             ],

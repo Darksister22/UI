@@ -10,10 +10,12 @@ import 'package:schoolmanagement/module/extension.dart';
 import 'package:schoolmanagement/stylefiles/style.dart';
 import 'package:schoolmanagement/translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../editpages/deg_edit.dart';
 import '../models/course.dart';
 import '../stylefiles/customtext.dart';
+import '../url.dart';
 import 'login.dart';
 
 Widget _verticalDivider = const VerticalDivider(
@@ -97,11 +99,17 @@ class _StuSemState extends State<StuSem> {
   String? sellevel;
 
   String? selyear;
-
+  String? seldor;
   final List<String> _level = [
     'بكالوريوس',
     'ماجستير',
     'دكتوراة',
+  ];
+
+  final List<String> _dor = [
+    'الدور الاول',
+    'الدور الثاني',
+    'الدور الثالث',
   ];
 
   final List<String> _year = [
@@ -111,6 +119,21 @@ class _StuSemState extends State<StuSem> {
     'السنة الرابعة',
     'السنة الخامسة',
   ];
+  void _export() async {
+    String number = "";
+    if (seldor == "الدور الاول") {
+      number = '1';
+    } else if (seldor == "الدور الثاني") {
+      number = '2';
+    } else if (seldor == "الدور الثالث") {
+      number = '3';
+    }
+    String url = URL.url;
+    final Uri _url =
+        Uri.parse(url + '/api/degrees/excourse?course_id=$id&number=$number');
+
+    if (!await launchUrl(_url)) throw 'Could not launch $_url';
+  }
 
   late List<Student> _data;
   late List<Student> _carries;
@@ -277,7 +300,52 @@ class _StuSemState extends State<StuSem> {
                   showCheckboxColumn: true,
                   actions: [
                     IconButton(
-                        onPressed: () async {},
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('اختيار الدور الحالي'),
+                              content: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SizedBox(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: 40,
+                                  child: ButtonTheme(
+                                    child: DropdownButtonFormField(
+                                      isExpanded: true,
+                                      hint: const Text('الدور'),
+                                      value: seldor,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          seldor = newValue.toString();
+                                        });
+                                      },
+                                      items: _dor.map((level) {
+                                        return DropdownMenuItem(
+                                          child: Text(level),
+                                          value: level,
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              actions: [
+                                ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('الغاء')),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      _export();
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('تحميل'))
+                              ],
+                            ),
+                          );
+                        },
                         icon: const Icon(Icons.download)),
                     IconButton(
                       onPressed: () {

@@ -28,6 +28,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   http: ^0.13.4
+  url_launcher: ^6.1.4
   cupertino_icons: ^1.0.2
   advanced_datatable: ^0.0.7+hotfix
   shared_preferences: ^2.0.15

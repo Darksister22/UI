@@ -53,10 +53,8 @@ class SideBarWidget {
             title: 'عرض الطلبة المتخرجين',
             route: Grads.id,
             icon: Icons.school_outlined),
-        MenuItem(
-            title: 'ادارة الملفات',
-            route: Grads.id,
-            icon: Icons.school_outlined),
+        // MenuItem(
+        //     title: 'ادارة الملفات', route: Files.id, icon: Icons.upload_file),
       ],
       selectedRoute: selectedRoute,
       onSelected: (item) {

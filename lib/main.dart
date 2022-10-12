@@ -63,6 +63,7 @@ class MyApp extends StatelessWidget {
         Users.id: (_) => const Users(),
         Grads.id: (_) => const Grads(),
         SemEditMain.id: (_) => const SemEditMain(),
+        // Files.id: (_) => const Files(),
       },
     );
   }
