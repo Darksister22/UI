@@ -28,33 +28,36 @@ class SideBarWidget {
       ),
       // backgroundColor: Colors.black54,
       items: const [
-        MenuItem(
-          title: 'الصفحة الرئيسية',
-          route: HomePage.id,
-          icon: Icons.home_outlined,
-        ),
-        MenuItem(
-            title: 'معلومات الطلبة',
-            route: Students.id,
-            icon: Icons.people_alt_outlined),
-        MenuItem(
-            title: 'معلومات التدريسيين',
-            route: Instructors.id,
-            icon: Icons.assignment_ind_outlined),
-        MenuItem(
-            title: 'الكورس الدراسي الحالي',
-            route: Courses.id,
-            icon: Icons.library_books_outlined),
-        MenuItem(
-            title: 'درجات الطلبة',
-            route: DegreeHome.id,
-            icon: Icons.table_view_outlined),
-        MenuItem(
-            title: 'عرض الطلبة المتخرجين',
-            route: Grads.id,
-            icon: Icons.school_outlined),
+        // AdminMenuItem(
+        //   title: 'الصفحة الرئيسية',
+        //   route: HomePage.id,
+        //   icon: Icons.home_outlined,
+        // ),
+
         // MenuItem(
-        //     title: 'ادارة الملفات', route: Files.id, icon: Icons.upload_file),
+        //     title: 'معلومات الطلبة',
+        //     route: Students.id,
+        //     icon: Icons.people_alt_outlined),
+        // MenuItem(
+        //     title: 'معلومات التدريسيين',
+        //     route: Instructors.id,
+        //     icon: Icons.assignment_ind_outlined),
+        // MenuItem(
+        //     title: 'الكورس الدراسي الحالي',
+        //     route: Courses.id,
+        //     icon: Icons.library_books_outlined),
+        // MenuItem(
+        //     title: 'درجات الطلبة',
+        //     route: DegreeHome.id,
+        //     icon: Icons.table_view_outlined),
+        // MenuItem(
+        //     title: 'عرض الطلبة المتخرجين',
+        //     route: Grads.id,
+        //     icon: Icons.school_outlined),
+        // // MenuItem(
+        // //     title: 'ادارة الملفات', route: Files.id, icon: Icons.upload_file),
+        //   AdminMenuItem(title: title)
+        //  MenuItem(title: title)
       ],
       selectedRoute: selectedRoute,
       onSelected: (item) {
